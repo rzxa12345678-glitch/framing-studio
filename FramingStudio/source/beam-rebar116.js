@@ -57,6 +57,7 @@ const BeamRebar116=(()=>{
    const active=document.activeElement,key=active?.dataset?.inlineRebar234,selection=key?[active.selectionStart,active.selectionEnd]:null;
 
    const automatic=$('ex-steel-mode').value==='AUTO',awaitAuto=automatic&&(dirty||!row),status=status227(h.p,row,dirty);if(Object.keys(errors234).length)status.reasons=Object.values(errors234);
+   if($('rebar-mode235'))$('rebar-mode235').textContent=automatic?'配筋：自動選筋':'配筋：手動'+(dirty?'（已修改，待保存）':'');
    const badge=card.querySelector('.rebar-rc227');badge.textContent=status.text;badge.dataset.tone=status.tone;
    card.querySelector('.rebar-reasons227').textContent=status.reasons.join('；');
    const linkText=prefix=>awaitAuto?'待自動選筋':$('ex-'+prefix+'-legs').value+' 肢 T'+$('ex-'+prefix+'-dia').value+' @ '+$('ex-'+prefix+'-space').value+' mm';

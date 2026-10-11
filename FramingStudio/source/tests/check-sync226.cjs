@@ -9,7 +9,7 @@ const project=c.run(`(()=>{const p=Engine.clone(argument),r=Engine.generate(p);L
  const scenarios=await c.run(`(async()=>{
  const answer=argument.answer,p=Engine.clone(argument.p),host={get:()=>({p,result:{}}),refresh(){},toast(){}},oldRun=AuditRunner132.run,oldSize=BeamSizing83.apply;let requests=[],sizeCalls=0;
  AuditRunner132.run=async(q,r,options)=>{return await new Promise((resolve,reject)=>requests.push({resolve,reject,options}));};BeamSizing83.apply=async()=>{sizeCalls++;throw Error('Sizing must not run');};
- let cache228=null,auditJob132=0,auditBusy131=false,auditOpen131=false,auditProgress132='',auditNotice132='',busy=false,calculation=null,output=null,stamp='',audit131=null,auditStamp131='',auditBatchStamp157='',auditApplied157=new Set(),auditBatchStates157=new Map();
+ let inputStamp231='';const checkStamp231=p=>JSON.stringify(p);let cache228=null,auditJob132=0,auditBusy131=false,auditOpen131=false,auditProgress132='',auditNotice132='',busy=false,calculation=null,output=null,stamp='',audit131=null,auditStamp131='',auditBatchStamp157='',auditApplied157=new Set(),auditBatchStates157=new Map();
  ${flow}
  const tick=()=>new Promise(r=>setTimeout(r,30)),before=JSON.stringify(p),first=calculate(),same=first===calculate();await tick();const count=requests.length;requests.shift().resolve(answer);await first;
  const success=output===answer.output226&&audit131.total===answer.total&&stamp===JSON.stringify(p)&&auditStamp131===stamp&&!busy&&!auditBusy131;

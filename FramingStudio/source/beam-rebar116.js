@@ -39,6 +39,8 @@ const BeamRebar116=(()=>{
   if(saveRow?.querySelector('[data-ex="steel"]'))card.append(saveRow);
   const counts=part=>$('ex-'+part+'-counts').value.split(/[,，]/).map(x=>Number(x.trim()));
   const countText=part=>{const ns=counts(part),dia=$('ex-'+part+'-dia').value;return ns.some(x=>!Number.isInteger(x)||x<0)||ns.length>8?'請輸入有效根數':ns.some(x=>x>0)?ns.map((n,i)=>n>0?'第 '+(i+1)+' 層 '+n+'T'+dia:'').filter(Boolean).join(' + '):'未配筋';};
+  const fields231=[...Object.values(fieldRows)].flatMap(fields=>[...fields.querySelectorAll('input,select')]),initial231=fields231.map(field=>field.value),mode231=$('ex-steel-mode').value;
+  const changed231=()=>$('ex-steel-mode').value!==mode231||fields231.some((field,i)=>field.value!==initial231[i]);
   let dirty=false;
   function draw(){
    const automatic=$('ex-steel-mode').value==='AUTO',awaitAuto=automatic&&(dirty||!row),status=status227(h.p,row,dirty);
@@ -53,8 +55,8 @@ const BeamRebar116=(()=>{
    try{const size=Reports.sizing(h.p,{kind:beam.kind,member:beam,floor:h.floor,input,loading:{L}});card.querySelector('.rebar-ratio227').textContent='Span/Depth · L/h = '+Number(size.ratio.toFixed(3))+' / '+size.limit+' · '+size.status+'（獨立判定）';}catch{card.querySelector('.rebar-ratio227').textContent='';}
    card.querySelector('.rebar-status116').textContent=automatic?(awaitAuto?'待自動選筋；以下為輸入預設值，修改即轉為手動。':'自動選筋結果；可直接修改，修改後轉為手動。'):'手動配筋；修改後按「保存配筋并检查」。';
   }
-  for(const fields of Object.values(fieldRows))for(const field of fields.querySelectorAll('input,select'))field.addEventListener('input',()=>{dirty=true;$('ex-steel-mode').value='MANUAL';draw();});
-  $('ex-steel-mode').addEventListener('change',()=>{dirty=true;draw();});draw();
+  for(const fields of Object.values(fieldRows))for(const field of fields.querySelectorAll('input,select'))field.addEventListener('input',()=>{$('ex-steel-mode').value='MANUAL';dirty=changed231();draw();});
+  $('ex-steel-mode').addEventListener('change',()=>{if(mode231==='AUTO'&&$('ex-steel-mode').value==='AUTO')fields231.forEach((field,i)=>field.value=initial231[i]);dirty=changed231();draw();});draw();
  }
  return {decorate,faces227,status227,diagram227};
 })();

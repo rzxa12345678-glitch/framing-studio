@@ -13,6 +13,12 @@ const BeamRebar116=(()=>{
   return typeof v==='number'&&Number.isFinite(v)&&v>=0?(dirty?'上次 ':'')+'As req = '+BeamLoads.display208(v)+' mm²'+(dirty?' · 待更新':''):'As req · 待計算';
  }
  const rows237=f=>Array.from({length:8},(_,i)=>f+i+(i>3?66:0)),diameters237=[10,12,16,20,25,32,40];
+ // Older cached automatic results omitted derived E58 from their steel object.
+ function steel239(saved,result){
+  const steel={...(saved||result?.steel||{})};
+  if(steel.E58==null&&['MB','SB','TB','CB'].includes(result?.kind)&&result.inputs)steel.E58=SectionB.machine(result.kind,{...result.inputs,...steel}).get('E58');
+  return steel;
+ }
  function readSteel237(){
   const steel={};
   for(const [f,part]of [[40,'top'],[44,'bottom']]){
@@ -140,5 +146,5 @@ const BeamRebar116=(()=>{
   card.addEventListener('click',e=>{if(e.target.closest('[data-ex="steel"]')&&Object.keys(errors234).length){e.preventDefault();e.stopPropagation();card.querySelector('[aria-invalid="true"]')?.focus();}});
   $('ex-steel-mode').addEventListener('change',()=>{if($('ex-steel-mode').value==='AUTO'){for(const key of Object.keys(drafts234))delete drafts234[key];for(const key of Object.keys(errors234))delete errors234[key];}if(mode231==='AUTO'&&$('ex-steel-mode').value==='AUTO'){fields231.forEach((field,i)=>field.value=initial231[i]);for(const part of ['top','bottom'])$('ex-'+part+'-dia').dataset.layers237=JSON.stringify(initialDias237[part]);}dirty=changed231();draw();});draw();
  }
- return {decorate,faces227,status227,diagram227,required234,readSteel237,preview237,measures237,metrics238};
+ return {decorate,faces227,status227,diagram227,required234,readSteel237,preview237,measures237,metrics238,steel239};
 })();

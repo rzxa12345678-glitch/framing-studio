@@ -17,6 +17,14 @@ async function click(s){$(s).dispatchEvent(new window.Event('click',{bubbles:tru
  const render=()=>c.run(`(()=>{const t=test227;document.getElementById('side').innerHTML=t.ui.render('checks');BeamRebar116.decorate({...t,selected:{kind:'MB',id:'B1'},memberResult:(f,k)=>t.ui.getMemberResult227(t.p,f,k)});})()`);
  render();assert.equal(document.querySelectorAll('[data-rc-metric238]').length,3);assert([...document.querySelectorAll('[data-rc-metric238]')].every(el=>el.textContent==='待計算'));assert.equal($('.rebar-rc227').textContent,'RC 待計算');assert.equal($('#beam-rebar116 svg circle'),null);assert($('.rebar-summary227').textContent.includes('待自動選筋'));
  await c.run('test227.ui.calculate()');render();assert(!$('.rebar-rc227').textContent.includes('待計算'));
+ const actualLegs239=c.run('(()=>{const row=test227.ui.getOutput().rows.find(r=>r.id==="B1");return SectionB.machine(row.result.kind,row.result.inputs).get("E58");})()');
+ assert(actualLegs239>2);assert.equal(Number($('#ex-link-legs').value),actualLegs239);assert.equal(Number($('[data-inline-rebar234="shear:legs"]').value),actualLegs239);
+ // Restore an older automatic result lacking serialized E58 and render it again.
+ c.run('delete test227.ui.getOutput().rows.find(r=>r.id==="B1").result.steel.E58');render();assert.equal(Number($('#ex-link-legs').value),actualLegs239);
+ input('ex-top-counts',$('#ex-top-counts').value);assert.equal(Number($('#ex-link-legs').value),actualLegs239,'Unrelated rebar edit retains computed legs');assert.equal(c.run('BeamRebar116.readSteel237().E58'),actualLegs239);
+ await click('[data-ex=steel]');render();assert.equal(Number($('#ex-link-legs').value),actualLegs239,'Save and reload retains automatic legs');
+ await click('[data-ex=auto-steel]');render();assert.equal(Number($('#ex-link-legs').value),actualLegs239,'Restore AUTO retains computed legs');
+
  for(const part of ['top','bottom','shear','torsion']){assert($('[data-measure237='+part+']').textContent.includes('required'));assert($('[data-measure237='+part+']').textContent.includes('provided'));}
  assert($('[data-member-deflection231]').textContent.includes('δmax ='));
  // Member deflection uses the same emphasis and existing strict L/250 criterion.

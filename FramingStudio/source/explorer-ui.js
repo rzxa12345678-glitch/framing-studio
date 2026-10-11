@@ -426,7 +426,7 @@ return html;}
   if(action==='reset'){BeamLoadUI.clear();store((ex,h)=>{Loading.saveFramingSupports(h.p,h.floor,chosen,{});delete ex.members[h.floor+'|'+chosen];});}
   if(action==='steel'||action==='auto-steel'){const h=state();let steel=null;if(action==='steel'&&$('ex-steel-mode').value==='MANUAL'){steel={};if(h.selected.kind==='SLAB'){for(const [k,id]of Object.entries({F35:'slab-dia',H35:'slab-space',C57:'trans-dia',D57:'trans-space'}))steel[k]=positive(read('ex-'+id,true),id);}
     else if(h.selected.kind==='COL'){steel.C5=read('ex-col-dia',true);steel.C32=positive(read('ex-col-count',true),'根数');if(!Number.isInteger(steel.C32))throw Error('钢筋根数须为整数');}
-    else{for(const [f,prefix]of [[40,'top'],[44,'bottom']]){const counts=$('ex-'+prefix+'-counts').value.split(/[,，]/).map(x=>Number(x.trim()));if(counts.length>8||counts.some(x=>!Number.isInteger(x)||x<0))throw Error('每面最多 8 层，各层根数为非负整数');const d=read('ex-'+prefix+'-dia',true);for(let i=0;i<8;i++){const r=f+i+(i>3?66:0),n=counts[i]||0;steel['C'+r]=n||'';steel['D'+r]=n?d:'';}}for(const [k,id]of Object.entries({E58:'link-legs',G58:'link-dia',H58:'link-space',E76:'tor-legs',G76:'tor-dia',H76:'tor-space'}))steel[k]=positive(read('ex-'+id,true),id);if(steel.H58<100||steel.H76<100)throw Error('抗剪及抗扭箍筋間距不得小於 100 mm');if(!Number.isInteger(steel.E58)||!Number.isInteger(steel.E76))throw Error('箍筋肢数须为整数');}
+    else steel=BeamRebar116.readSteel237();
    }memberSave(o=>o.steel=steel);if(document.querySelector('.slab-panel121')){host.refresh();return;}await calculate();return;}
   if(action==='report-a'||action==='report-b'){host.tab(action==='report-a'?'reportA':'reportB');return;}
   if(action==='report-close')$('ex-report-dialog').close();

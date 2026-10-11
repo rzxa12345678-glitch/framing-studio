@@ -32,6 +32,13 @@ async function click(s){$(s).dispatchEvent(new window.Event('click',{bubbles:tru
   assert.equal($('.rebar-rc227').textContent,previousRC,'Scope change retains RC');assert.equal($('#beam-rebar116 svg').outerHTML,previousDiagram);assert.equal($('[data-member-deflection231]').textContent,previousDeflection);
   const parity=c.run('test227.ui.getOutput().rows.every(row=>row.checked===(test227.p.explorer.selected[row.floor+"|"+row.token]===true))');assert(parity,'Check scope must update checked rows');
  }
+
+ const key233=c.run("(()=>{const t=test227,m=Loading.members(t.p,t.result,1).find(m=>m.id==='B1'),key='1|'+m.token;for(const k of ['selected','reportA','reportB'])t.p.explorer[k][key]=true;return key;})()");render();
+ const removalSnapshot233=c.run('JSON.stringify(test227.p)'),model233=c.run('JSON.stringify(test227.p.types)'),inputs233=c.run('JSON.stringify(test227.p.explorer.members)');
+ const removeSelector233='[data-ex="remove-member233"][data-token="'+key233.slice(2)+'"]',remove233=$(removeSelector233);assert(remove233);assert.equal(remove233.closest('td'),remove233.closest('tr').firstElementChild,'Remove action is visible in the first column');
+ await click(removeSelector233);render();
+ assert(c.run("['selected','reportA','reportB'].every(k=>!test227.p.explorer[k][argument])",key233));assert.equal(c.run('JSON.stringify(test227.p.types)'),model233);assert.equal(c.run('JSON.stringify(test227.p.explorer.members)'),inputs233);assert.equal($(removeSelector233),null);assert.equal($('.rebar-rc227').textContent,previousRC,'Removal does not invalidate calculations');
+ c.run('test227.p=JSON.parse(argument)',removalSnapshot233);render();assert($(removeSelector233),'Undo restores list item');
  c.run('test227.p=JSON.parse(argument);',scopeSnapshot);render();assert.equal($('.rebar-rc227').textContent,previousRC,'Undo of selection retains result');
  const summary=c.run('test227.ui.beamInputs(null)');assert(!summary.includes('以下為上次檢查結果'),'Scope changes do not stale Summary');c.run("test227.ui.selectPlanMember({kind:'MB',id:'B1'});");render();
  input('ex-top-counts','99');$('#ex-steel-mode').value='AUTO';$('#ex-steel-mode').dispatchEvent(new window.Event('change',{bubbles:true}));assert.equal($('.rebar-rc227').textContent,previousRC);assert.equal($('#beam-rebar116 svg').outerHTML,previousDiagram,'Returning to original AUTO restores original bars');
@@ -52,6 +59,9 @@ async function click(s){$(s).dispatchEvent(new window.Event('click',{bubbles:tru
  await click('#beam-rebar116 [data-ex=steel]');
  const result=c.run(`(()=>{const t=test227,m=Loading.members(t.p,t.result,1).find(x=>x.id==='B1');return {steel:Loading.input(t.p,1,m.token).steel,row:t.ui.getMemberResult227(t.p,1,m.token),maps:JSON.stringify([t.p.explorer.selected,t.p.explorer.reportA,t.p.explorer.reportB])};})()`);
  assert.equal(result.steel.C40,2);assert.equal(result.steel.C110,1);assert.equal(result.steel.D110,20);assert.equal(result.steel.C44,4);assert.equal(result.steel.C45,3);assert.equal(result.steel.D44,25);assert.equal(result.steel.H58,150);assert(result.row);assert.equal(result.maps,maps);render();assert(!$('.rebar-rc227').textContent.includes('重新'));
+
+ assert.equal($('#ex-link-space').getAttribute('min'),'100');assert.equal($('#ex-tor-space').getAttribute('min'),'100');
+ for(const id of ['ex-link-space','ex-tor-space']){const saved233=c.run('JSON.stringify(test227.p)');input(id,'75');await click('[data-ex=steel]');assert.equal(c.run('JSON.stringify(test227.p)'),saved233);assert(c.run("test227.messages.at(-1).includes('100 mm')"));render();}
  const saved=c.run('JSON.stringify(test227.p)');input('ex-bottom-counts','-1');await click('[data-ex=steel]');assert.equal(c.run('JSON.stringify(test227.p)'),saved);assert(c.run("test227.messages.at(-1).includes('非负整数')"));
  render();c.run("Engine.floorModel(test227.result,1).beams.find(b=>b.id==='B1').displayKind='CB'");render();assert.equal($('#rebar-editor116-bottom h4').textContent,'上筋 · 受拉面');assert.equal($('.rebar-fields227').firstElementChild.id,'rebar-editor116-bottom');assert($('[data-rebar-upper]').textContent.includes('4T25'));
  input('ex-bottom-counts','6');assert($('[data-rebar-upper]').textContent.includes('6T25'));assert($('#beam-rebar116 svg [data-rebar-layer232=upper]').textContent.includes('6T25'));assert.equal($('#beam-rebar116 svg [data-rebar-layer232=upper]').dataset.rebarEdit232,'bottom');assert.equal(document.querySelectorAll('circle[fill="#9c3d10"]').length,6);

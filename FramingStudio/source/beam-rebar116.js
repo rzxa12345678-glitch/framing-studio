@@ -38,6 +38,7 @@ const BeamRebar116=(()=>{
   for(const part of [upper,lower,'shear','torsion']){
    const panel=document.createElement('section');panel.className='rebar-editor116';panel.id='rebar-editor116-'+part;
    const label=document.createElement('h4');label.textContent=titles[part];panel.append(label,fieldRows[part]);
+   if(part==='shear'||part==='torsion'){const hint=document.createElement('small');hint.textContent='項目最小間距 100 mm。';panel.append(hint);}
    if(part==='top'||part==='bottom'){
     const hint=document.createElement('small');hint.id='rebar-hint227-'+part;hint.textContent='每層根數用逗號分隔，例如 4, 3；由該面向內，最多 8 層。';panel.append(hint);panel.querySelector('#ex-'+part+'-counts').setAttribute('aria-describedby',hint.id);
    }

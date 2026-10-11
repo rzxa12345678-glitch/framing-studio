@@ -8,14 +8,21 @@ const BeamRebar116=(()=>{
   const rc=Loading.auditChecks205(p,row).b,ok=/^OK(?:$|[ (])/.test(rc.status);
   return {tone:ok?'pass':rc.status==='NOT OK'?'fail':'pending',text:ok?'RC 通過':rc.status==='NOT OK'?'RC 未通過':'RC 待確認',reasons:rc.reasons||[]};
  }
- function diagram227(upper,lower,b,d){
-  // A schematic cross-section: dots identify layers, labels give the actual counts.
-  const dots=(ns,up)=>ns.slice(0,8).map((n,i)=>{
-   if(!Number.isInteger(n)||n<=0)return '';
-   const count=Math.min(n,12),y=up?58+i*7:174-i*7;
-   return Array.from({length:count},(_,j)=>'<circle cx="'+(count===1?160:83+j*154/(count-1))+'" cy="'+y+'" r="2.8" fill="'+(up?'#9c3d10':'#185ba2')+'"/>').join('');
-  }).join('');
-  return '<svg role="img" viewBox="0 0 320 222" aria-label="梁截面配筋示意，上筋在上、下筋在下；不按比例，根數以輸入為準"><text x="160" y="16" text-anchor="middle">B = '+esc(Math.round(b*1000))+' mm</text><rect x="62" y="30" width="196" height="172" rx="2" fill="#f3f6f8" stroke="#5c7181"/><rect x="74" y="43" width="172" height="146" rx="9" fill="none" stroke="#18736b" stroke-width="2"/>'+dots(upper,true)+dots(lower,false)+'<text x="281" y="116" text-anchor="middle" transform="rotate(90 281 116)">D = '+esc(Math.round(d*1000))+' mm</text><text x="26" y="61" text-anchor="middle">上</text><text x="26" y="177" text-anchor="middle">下</text><text x="160" y="219" text-anchor="middle" class="rebar-svg-note227">截面示意 · 根數及層數以輸入為準</text></svg>';
+ function diagram227(upper,lower,b,d,info={}){
+  // Layer labels give actual counts; dots are schematic and capped for legibility.
+  const step=22,top=76,upN=Math.max(1,Math.min(8,upper.length)),lowN=Math.max(1,Math.min(8,lower.length)),bottom=top+(upN+lowN-2)*step+72,base=bottom+28,height=base+124;
+  const label=(x,y,text,attrs='')=>'<text x="'+x+'" y="'+y+'" '+attrs+'>'+esc(text)+'</text>';
+  const layers=(ns,up)=>{
+   const tone=up?'#9c3d10':'#185ba2',part=up?info.upperPart:info.lowerPart,dia=up?info.upperDia:info.lowerDia;
+   if(info.pending||!ns.some(n=>n>0)||ns.length>8||ns.some(n=>!Number.isInteger(n)||n<0))return label(302,up?top:bottom,info.pending?'待自動選筋':ns.length>8||ns.some(n=>!Number.isInteger(n)||n<0)?'請輸入有效根數':'未配筋','text-anchor="middle" fill="'+tone+'"');
+   return ns.slice(0,8).map((n,i)=>{
+    if(!n)return '';
+    const count=Math.min(n,12),y=up?top+i*step:bottom-i*step;
+    const dots=Array.from({length:count},(_,j)=>'<circle cx="'+(count===1?302:200+j*204/(count-1))+'" cy="'+y+'" r="3.2" fill="'+tone+'"/>').join('');
+    return '<g data-rebar-layer232="'+(up?'upper':'lower')+'" data-layer="'+(i+1)+'" data-rebar-edit232="'+esc(part||'')+'" role="button" tabindex="0" aria-label="'+esc((up?'上筋':'下筋')+'第 '+(i+1)+' 層 '+n+'T'+(dia||'')+'，修改配筋')+'">'+label(158,y+5,(i+1)+' · '+n+'T'+(dia||''),'text-anchor="end" fill="'+tone+'"')+'<path d="M164 '+y+' H193" stroke="'+tone+'"/>'+dots+'</g>';
+   }).join('');
+  };
+  return '<svg role="group" viewBox="0 0 520 '+height+'" aria-label="梁截面配筋示意，上筋在上、下筋在下；逐層標示根數和直徑，點標示可修改；不按比例">'+label(302,22,'B = '+Math.round(b*1000)+' mm','text-anchor="middle"')+'<rect x="180" y="40" width="244" height="'+(base-40)+'" rx="2" fill="#f3f6f8" stroke="#5c7181"/><rect x="190" y="52" width="224" height="'+(base-64)+'" rx="9" fill="none" stroke="#18736b" stroke-width="2"/>'+label(158,52,'上筋 · '+(info.upperRole||''),'text-anchor="end" fill="#9c3d10"')+label(158,bottom-(lowN-1)*step-23,'下筋 · '+(info.lowerRole||''),'text-anchor="end" fill="#185ba2"')+layers(upper,true)+layers(lower,false)+label(452,(40+base)/2,'D = '+Math.round(d*1000)+' mm','text-anchor="middle" transform="rotate(90 452 '+((40+base)/2)+')"')+'<path d="M414 '+(base-18)+' H482 V'+(base+28)+' H24" fill="none" stroke="#18736b"/>'+label(24,base+52,'抗剪 · '+(info.shear||'待確認'),'data-rebar-edit232="shear" role="button" tabindex="0"')+label(24,base+78,'抗扭 · '+(info.torsion||'待確認'),'data-rebar-edit232="torsion" role="button" tabindex="0"')+label(260,base+107,'層號 · 根數T直徑；點標示可修改 · 圓點不代表實際根數','text-anchor="middle" class="rebar-svg-note227"')+'</svg>';
  }
  function decorate(h){
   const top=$('ex-top-counts'),bottom=$('ex-bottom-counts');if(!top||!bottom||$('beam-rebar116'))return;
@@ -25,7 +32,7 @@ const BeamRebar116=(()=>{
   const first=fieldRows.top,previous=first.previousElementSibling;if(previous?.tagName==='P'&&previous.textContent.includes('每面最多'))previous.remove();
   const saveRow=fieldRows.torsion.nextElementSibling;
   const card=document.createElement('section');card.id='beam-rebar116';card.className='beam-rebar116';card.setAttribute('aria-label','梁 RC 結果與配筋編輯');
-  card.innerHTML='<header class="rebar-heading227"><strong>'+esc(beam.displayId||beam.id)+' · '+Math.round(beam.b*1000)+' × '+Math.round(beam.d*1000)+' mm</strong><span class="rebar-rc227" aria-live="polite"></span></header><p class="rebar-reasons227" aria-live="polite"></p><div class="rebar-overview227"><div class="rebar-section227"></div><div class="rebar-summary227"><p data-rebar-upper></p><p data-rebar-lower></p><p data-rebar-shear></p><p data-rebar-torsion></p></div></div><p class="rebar-ratio227"></p><div class="rebar-fields227"></div><p class="rebar-status116" aria-live="polite"></p>';
+  card.innerHTML='<header class="rebar-heading227"><strong>'+esc(beam.displayId||beam.id)+' · '+Math.round(beam.b*1000)+' × '+Math.round(beam.d*1000)+' mm</strong><span class="rebar-rc227" aria-live="polite"></span></header><p class="rebar-reasons227" aria-live="polite"></p><div class="rebar-overview227"><div class="rebar-section227"></div><div class="rebar-summary227" aria-hidden="true"><p data-rebar-upper></p><p data-rebar-lower></p><p data-rebar-shear></p><p data-rebar-torsion></p></div></div><p class="rebar-ratio227"></p><div class="rebar-fields227"></div><p class="rebar-status116" aria-live="polite"></p>';
   first.before(card);
   const titles={top:(cb?'下筋':'上筋')+' · 受壓面',bottom:(cb?'上筋':'下筋')+' · 受拉面',shear:'抗剪箍筋',torsion:'抗扭箍筋'};
   for(const part of [upper,lower,'shear','torsion']){
@@ -46,7 +53,8 @@ const BeamRebar116=(()=>{
    const automatic=$('ex-steel-mode').value==='AUTO',awaitAuto=automatic&&(dirty||!row),status=status227(h.p,row,dirty);
    const badge=card.querySelector('.rebar-rc227');badge.textContent=status.text;badge.dataset.tone=status.tone;
    card.querySelector('.rebar-reasons227').textContent=status.reasons.join('；');
-   card.querySelector('.rebar-section227').innerHTML=diagram227(awaitAuto?[]:counts(upper),awaitAuto?[]:counts(lower),beam.b,beam.d);
+   const linkText=prefix=>awaitAuto?'待自動選筋':$('ex-'+prefix+'-legs').value+' 肢 T'+$('ex-'+prefix+'-dia').value+' @ '+$('ex-'+prefix+'-space').value+' mm';
+   card.querySelector('.rebar-section227').innerHTML=diagram227(awaitAuto?[]:counts(upper),awaitAuto?[]:counts(lower),beam.b,beam.d,{upperPart:upper,lowerPart:lower,upperDia:$('ex-'+upper+'-dia').value,lowerDia:$('ex-'+lower+'-dia').value,upperRole:cb?'受拉':'受壓',lowerRole:cb?'受壓':'受拉',pending:awaitAuto,shear:linkText('link'),torsion:linkText('tor')});
    card.querySelector('[data-rebar-upper]').textContent='上筋 · '+(awaitAuto?'待自動選筋':countText(upper));
    card.querySelector('[data-rebar-lower]').textContent='下筋 · '+(awaitAuto?'待自動選筋':countText(lower));
    card.querySelector('[data-rebar-shear]').textContent='抗剪 · '+(awaitAuto?'待自動選筋':$('ex-link-legs').value+' 肢 T'+$('ex-link-dia').value+' @ '+$('ex-link-space').value+' mm');
@@ -56,6 +64,8 @@ const BeamRebar116=(()=>{
    card.querySelector('.rebar-status116').textContent=automatic?(awaitAuto?'待自動選筋；以下為輸入預設值，修改即轉為手動。':'自動選筋結果；可直接修改，修改後轉為手動。'):'手動配筋；修改後按「保存配筋并检查」。';
   }
   for(const fields of Object.values(fieldRows))for(const field of fields.querySelectorAll('input,select'))field.addEventListener('input',()=>{$('ex-steel-mode').value='MANUAL';dirty=changed231();draw();});
+  const editLabel232=e=>{const target=e.target.closest('[data-rebar-edit232]');if(!target||e.type==='keydown'&&!['Enter',' '].includes(e.key))return;const part=target.dataset.rebarEdit232,panel=$('rebar-editor116-'+part),field=panel?.querySelector('input,select');if(field){e.preventDefault();panel.scrollIntoView?.({block:'nearest'});field.focus();}};
+  card.addEventListener('click',editLabel232);card.addEventListener('keydown',editLabel232);
   $('ex-steel-mode').addEventListener('change',()=>{if(mode231==='AUTO'&&$('ex-steel-mode').value==='AUTO')fields231.forEach((field,i)=>field.value=initial231[i]);dirty=changed231();draw();});draw();
  }
  return {decorate,faces227,status227,diagram227};

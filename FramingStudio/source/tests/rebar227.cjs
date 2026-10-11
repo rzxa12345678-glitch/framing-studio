@@ -15,7 +15,7 @@ async function click(s){$(s).dispatchEvent(new window.Event('click',{bubbles:tru
 (async()=>{
  c.run(`globalThis.test227={p:Engine.clone(argument),floor:1,key:'F1',messages:[]};test227.result=Engine.generate(test227.p);test227.host={get:()=>test227,repaint(){},refresh(){},toast:s=>test227.messages.push(s),transact(fn){fn();return true;},floor(f){test227.floor=f;},focusMember(){}};test227.ui=ExplorerUI(test227.host);test227.ui.selectPlanMember({kind:'MB',id:'B1'});`,fixture.p);
  const render=()=>c.run(`(()=>{const t=test227;document.getElementById('side').innerHTML=t.ui.render('checks');BeamRebar116.decorate({...t,selected:{kind:'MB',id:'B1'},memberResult:(f,k)=>t.ui.getMemberResult227(t.p,f,k)});})()`);
- render();assert.equal($('.rebar-rc227').textContent,'RC 待計算');assert.equal($('#beam-rebar116 svg circle'),null);assert($('.rebar-summary227').textContent.includes('待自動選筋'));
+ render();assert.equal(document.querySelectorAll('[data-rc-metric238]').length,3);assert([...document.querySelectorAll('[data-rc-metric238]')].every(el=>el.textContent==='待計算'));assert.equal($('.rebar-rc227').textContent,'RC 待計算');assert.equal($('#beam-rebar116 svg circle'),null);assert($('.rebar-summary227').textContent.includes('待自動選筋'));
  await c.run('test227.ui.calculate()');render();assert(!$('.rebar-rc227').textContent.includes('待計算'));
  for(const part of ['top','bottom','shear','torsion']){assert($('[data-measure237='+part+']').textContent.includes('required'));assert($('[data-measure237='+part+']').textContent.includes('provided'));}
  assert($('[data-member-deflection231]').textContent.includes('δmax ='));
@@ -77,10 +77,10 @@ async function click(s){$(s).dispatchEvent(new window.Event('click',{bubbles:tru
  assert.deepEqual([...$('[data-inline-rebar234="torsion:dia"]').querySelectorAll('option')].map(o=>o.getAttribute('value')),['8','10','12','16']);
  // Exact existing engine parity, with no project mutation or all-floor calculation.
  const previewRow237=c.run('BeamRebar116.preview237(test227.ui.getOutput().rows.find(r=>r.id==="B1"),BeamRebar116.readSteel237())');
- assert.equal($('.rebar-rc227').textContent,c.run('BeamRebar116.status227(test227.p,argument,false).text',previewRow237));assert.equal(c.run('JSON.stringify(test227.p)'),before);
+ assert.equal($('.rebar-rc227').textContent,c.run('BeamRebar116.status227(test227.p,argument,false).text',previewRow237));assert.equal($('.rebar-metrics238').innerHTML,c.run('BeamRebar116.metrics238(argument)',previewRow237));assert.equal(c.run('JSON.stringify(test227.p)'),before);
  assert($('[data-measure237=shear]').textContent.includes('mm²/mm'));assert($('[data-pass237=top]').textContent.length);
- const requiredBefore237=$('[data-required234=lower]').textContent;inline234('bottom:1:dia','32');assert.notEqual($('[data-required234=lower]').textContent,requiredBefore237,'Required area is recalculated from changed effective depth');inline234('bottom:1:dia','25');
- inline234('top:1:count','');inline234('top:4:dia','32');assert.equal($('[data-inline-rebar234="top:1:count"]').getAttribute('aria-invalid'),'true');assert.equal($('.rebar-rc227').textContent,'RC 輸入待修正');inline234('top:1:count','0');inline234('top:4:dia','25');
+ const requiredBefore237=$('[data-required234=lower]').textContent,depthBefore238=$('[data-rc-metric238=G29]').textContent;inline234('bottom:1:dia','32');assert.notEqual($('[data-rc-metric238=G29]').textContent,depthBefore238,'Effective depth updates immediately with reinforcement');assert.notEqual($('[data-required234=lower]').textContent,requiredBefore237,'Required area is recalculated from changed effective depth');inline234('bottom:1:dia','25');
+ inline234('top:1:count','');inline234('top:4:dia','32');assert.equal($('[data-inline-rebar234="top:1:count"]').getAttribute('aria-invalid'),'true');assert.equal($('.rebar-rc227').textContent,'RC 輸入待修正');assert([...document.querySelectorAll('[data-rc-metric238]')].every(el=>el.textContent==='待計算'),'Invalid inputs do not retain old metrics');inline234('top:1:count','0');inline234('top:4:dia','25');
  const dense232=c.run('BeamRebar116.diagram227(Array(8).fill(18),Array(8).fill(18),1.8,3.2,{upperDia:40,lowerDia:40})');const denseDoc232=parseHTML(dense232).document;
  assert.equal(denseDoc232.querySelectorAll('[data-rebar-layer232]').length,16);assert.equal(denseDoc232.querySelectorAll('[data-layer="8"]').length,2);assert(denseDoc232.querySelector('svg').textContent.includes('8 · 18T40'));
  await click('#beam-rebar116 [data-ex=steel]');

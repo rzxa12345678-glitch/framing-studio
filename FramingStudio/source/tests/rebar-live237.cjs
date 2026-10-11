@@ -6,11 +6,12 @@ const result=c.run(`(()=>{
   const options={kind,L:6,b:400,h:750,fcu:45,cover:40,M:400,V:100,T:80},original=SectionB.beam(options),row={kind,result:original},snapshot=JSON.stringify(row);
   const good=BeamRebar116.preview237(row,original.steel),weakSteel={...original.steel,G58:8,H58:250,G76:8,H76:250},weak=BeamRebar116.preview237(row,weakSteel);
   const mixed={...original.steel,C110:1,D110:20},mixedResult=BeamRebar116.preview237(row,mixed);
-  cases.push({kind,original,good,weak,mixedResult,providedTorsion:SectionB.machine(kind,good.result.inputs).get("K76"),direct:SectionB.beam({...options,steel:mixed}),measures:BeamRebar116.measures237(good,original.steel),unchanged:snapshot===JSON.stringify(row),goodRC:Loading.auditChecks205({},good).b,weakRC:Loading.auditChecks205({},weak).b});
+  cases.push({kind,original,good,weak,mixedResult,providedTorsion:SectionB.machine(kind,good.result.inputs).get("K76"),direct:SectionB.beam({...options,steel:mixed}),measures:BeamRebar116.measures237(good,original.steel),metrics:BeamRebar116.metrics238(good),unchanged:snapshot===JSON.stringify(row),goodRC:Loading.auditChecks205({},good).b,weakRC:Loading.auditChecks205({},weak).b});
  }
  return {cases,missing:BeamRebar116.preview237(null,{}),invalid:BeamRebar116.preview237(cases[0].good,{...cases[0].original.steel,C40:9999})};
 })()`);
 for(const entry of result.cases){
+ for(const cell of ['G29','K30','K51'])assert(entry.metrics.includes('data-rc-metric238="'+cell+'">'+c.run('BeamLoads.display208(argument)',entry.good.result.values[cell])));
  assert(entry.unchanged,'Draft evaluation must not mutate cached results');
  assert.deepEqual(entry.mixedResult.result,entry.direct,'Preview must use existing engine exactly');
  for(const [part,required,provided,check]of [['top','K36','G40','N40'],['bottom','K38','G44','N44'],['shear','K56','K58','N59'],['torsion','K72','K76','N77']]){

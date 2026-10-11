@@ -36,6 +36,13 @@ const BeamRebar116=(()=>{
   const link=(f,req,check)=>({req:cell(req),provided:steel&&['E','G','H'].every(k=>typeof steel[k+f]==='number'&&Number.isFinite(steel[k+f]))&&steel['H'+f]>0?Number(steel['E'+f])*Number(steel['G'+f])**2*Math.PI/4/Number(steel['H'+f]):cell('K'+f),status:v[check],unit:'mm²/mm',symbol:'Asv/s'});
   return {top:face(40,'K36','G40','N40'),bottom:face(44,'K38','G44','N44'),shear:link(58,'K56','N59'),torsion:link(76,'K72','N77')};
  }
+ function metrics238(row){
+  const values=row?.result?.values||{};
+  return [['G29','Effective depth · d','mm','受壓邊至受拉鋼筋重心'],['K30','RC 彎矩係數 · K','','K = M / (b d² fcu)'],['K51','梁剪應力 · v','N/mm²','v = V / (b d)']].map(([cell,label,unit,description])=>{
+   const value=values[cell],valid=typeof value==='number'&&Number.isFinite(value);
+   return '<div><dt>'+label+'</dt><dd data-rc-metric238="'+cell+'">'+(valid?esc(BeamLoads.display208(value))+(unit?' '+unit:''):'待計算')+'</dd><small>'+description+'</small></div>';
+  }).join('');
+ }
  function diagram227(upper,lower,b,d,info={}){
   const step=30,top=128,upN=info.editable?8:Math.max(1,Math.min(8,upper.length)),lowN=info.editable?8:Math.max(1,Math.min(8,lower.length)),bottom=top+(upN+lowN-2)*step+144,base=bottom+28,height=base+244;
   const label=(x,y,text,attrs='')=>'<text x="'+x+'" y="'+y+'" '+attrs+'>'+esc(text)+'</text>';
@@ -69,7 +76,7 @@ const BeamRebar116=(()=>{
   const first=fieldRows.top,previous=first.previousElementSibling;if(previous?.tagName==='P'&&previous.textContent.includes('每面最多'))previous.remove();
   const saveRow=fieldRows.torsion.nextElementSibling;
   const card=document.createElement('section');card.id='beam-rebar116';card.className='beam-rebar116';card.setAttribute('aria-label','梁 RC 結果與配筋編輯');
-  card.innerHTML='<header class="rebar-heading227"><strong>'+esc(beam.displayId||beam.id)+' · '+Math.round(beam.b*1000)+' × '+Math.round(beam.d*1000)+' mm</strong><span class="rebar-rc227" aria-live="polite"></span></header><p class="rebar-reasons227" aria-live="polite"></p><div class="rebar-overview227"><div class="rebar-section227"></div><div class="rebar-summary227" aria-hidden="true"><p data-rebar-upper></p><p data-rebar-lower></p><p data-rebar-shear></p><p data-rebar-torsion></p></div></div><p class="rebar-ratio227"></p><div class="rebar-fields227" hidden></div><p class="rebar-status116" aria-live="polite"></p>';
+  card.innerHTML='<header class="rebar-heading227"><strong>'+esc(beam.displayId||beam.id)+' · '+Math.round(beam.b*1000)+' × '+Math.round(beam.d*1000)+' mm</strong><span class="rebar-rc227" aria-live="polite"></span></header><p class="rebar-reasons227" aria-live="polite"></p><dl class="rebar-metrics238" aria-label="目前梁 RC 計算數值" aria-live="polite"></dl><div class="rebar-overview227"><div class="rebar-section227"></div><div class="rebar-summary227" aria-hidden="true"><p data-rebar-upper></p><p data-rebar-lower></p><p data-rebar-shear></p><p data-rebar-torsion></p></div></div><p class="rebar-ratio227"></p><div class="rebar-fields227" hidden></div><p class="rebar-status116" aria-live="polite"></p>';
   first.before(card);
   const titles={top:(cb?'下筋':'上筋')+' · 受壓面',bottom:(cb?'上筋':'下筋')+' · 受拉面',shear:'抗剪箍筋',torsion:'抗扭箍筋'};
   for(const part of [upper,lower,'shear','torsion']){
@@ -100,6 +107,7 @@ const BeamRebar116=(()=>{
    if($('rebar-mode235'))$('rebar-mode235').textContent=automatic?'配筋：自動選筋':'配筋：手動'+(dirty?'（已修改，待保存）':'');
    const badge=card.querySelector('.rebar-rc227');badge.textContent=status.text;badge.dataset.tone=status.tone;
    card.querySelector('.rebar-reasons227').textContent=status.reasons.join('；');
+   card.querySelector('.rebar-metrics238').innerHTML=metrics238(live);
    const linkText=prefix=>awaitAuto?'待自動選筋':$('ex-'+prefix+'-legs').value+' 肢 T'+$('ex-'+prefix+'-dia').value+' @ '+$('ex-'+prefix+'-space').value+' mm';
    card.querySelector('.rebar-section227').innerHTML=diagram227(awaitAuto?[]:counts(upper),awaitAuto?[]:counts(lower),beam.b,beam.d,{upperPart:upper,lowerPart:lower,upperDias:dias(upper),lowerDias:dias(lower),options:Object.fromEntries(['top','bottom','shear','torsion'].map(part=>[part,[...$('ex-'+(part==='shear'?'link':part==='torsion'?'tor':part)+'-dia').options].map(o=>Number(o.value))])),measures,upperRole:cb?'受拉':'受壓',lowerRole:cb?'受壓':'受拉',pending:awaitAuto,editable:true,drafts:drafts234,errors:errors234,shear:linkText('link'),torsion:linkText('tor'),shearFields:{legs:$('ex-link-legs').value,dia:$('ex-link-dia').value,space:$('ex-link-space').value},torsionFields:{legs:$('ex-tor-legs').value,dia:$('ex-tor-dia').value,space:$('ex-tor-space').value}});
    card.querySelector('[data-rebar-upper]').textContent='上筋 · '+(awaitAuto?'待自動選筋':countText(upper));
@@ -132,5 +140,5 @@ const BeamRebar116=(()=>{
   card.addEventListener('click',e=>{if(e.target.closest('[data-ex="steel"]')&&Object.keys(errors234).length){e.preventDefault();e.stopPropagation();card.querySelector('[aria-invalid="true"]')?.focus();}});
   $('ex-steel-mode').addEventListener('change',()=>{if($('ex-steel-mode').value==='AUTO'){for(const key of Object.keys(drafts234))delete drafts234[key];for(const key of Object.keys(errors234))delete errors234[key];}if(mode231==='AUTO'&&$('ex-steel-mode').value==='AUTO'){fields231.forEach((field,i)=>field.value=initial231[i]);for(const part of ['top','bottom'])$('ex-'+part+'-dia').dataset.layers237=JSON.stringify(initialDias237[part]);}dirty=changed231();draw();});draw();
  }
- return {decorate,faces227,status227,diagram227,required234,readSteel237,preview237,measures237};
+ return {decorate,faces227,status227,diagram227,required234,readSteel237,preview237,measures237,metrics238};
 })();

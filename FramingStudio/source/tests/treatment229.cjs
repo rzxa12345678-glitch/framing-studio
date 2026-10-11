@@ -12,7 +12,7 @@ const $=s=>document.querySelector(s),click=async el=>{el.dispatchEvent(new windo
  const original=AuditRunner132.run;AuditRunner132.run=(...args)=>{t.runs++;return original(...args);};t.render=()=>{document.getElementById('side').innerHTML=t.ui.beamInputs(null);};t.host={get:()=>t,refresh:()=>t.render(),toast:()=>{},transact(fn){t.undo.push(Engine.clone(t.p));fn();t.result=Engine.generate(t.p);t.render();return true;}};t.ui=ExplorerUI(t.host);t.render();`);
  await c.run('t229.ui.calculate()');assert($('[data-ex=audit-sb-apply220]'));assert($('[data-ex=audit-tb-apply222]'));
  assert(rows().every(row=>row.dataset.auditApplied229==='false'));
- assert($('[data-sb-advice220]').textContent.includes('此建議按 RC 通過選取'));
+ assert($('[data-sb-advice220]').textContent.includes('建議須 RC 通過'));
  await click($('[data-ex=audit-sb-apply220]'));assert.equal(c.run('t229.runs'),1);
  const sb=$('[data-ex=audit-sb-apply220]').closest('tr'),tb=$('[data-ex=audit-tb-apply222]').closest('tr');
  assert.equal(sb.dataset.auditApplied229,'true');assert.equal(tb.dataset.auditApplied229,'false');assert(rows().indexOf(tb)<rows().indexOf(sb));

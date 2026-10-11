@@ -15,17 +15,17 @@ const BeamRebar116=(()=>{
  function diagram227(upper,lower,b,d,info={}){
   const step=30,top=100,upN=info.editable?8:Math.max(1,Math.min(8,upper.length)),lowN=info.editable?8:Math.max(1,Math.min(8,lower.length)),bottom=top+(upN+lowN-2)*step+110,base=bottom+28,height=base+144;
   const label=(x,y,text,attrs='')=>'<text x="'+x+'" y="'+y+'" '+attrs+'>'+esc(text)+'</text>';
-  const editor=(key,value,x,y,width,title)=>'<foreignObject x="'+x+'" y="'+y+'" width="'+width+'" height="30"><div xmlns="http://www.w3.org/1999/xhtml" class="rebar-inline234"><input type="text" data-inline-rebar234="'+key+'" value="'+esc(info.drafts?.[key]??value)+'" aria-label="'+esc(title)+'" '+(info.errors?.[key]?'aria-invalid="true"':'')+' autocomplete="off" spellcheck="false"/></div></foreignObject>';
+  const editor=(key,value,x,y,width,title)=>'<foreignObject x="'+x+'" y="'+y+'" width="'+width+'" height="30"><div xmlns="http://www.w3.org/1999/xhtml" class="rebar-inline234"><input type="text" inputmode="numeric" data-inline-rebar234="'+key+'" value="'+esc(info.drafts?.[key]??value)+'" aria-label="'+esc(title)+'" '+(info.errors?.[key]?'aria-invalid="true"':'')+' autocomplete="off" spellcheck="false"/></div></foreignObject>';
   const layers=(ns,up)=>{
    const tone=up?'#9c3d10':'#185ba2',part=up?info.upperPart:info.lowerPart,dia=up?info.upperDia:info.lowerDia,countLayers=up?upN:lowN;
    return Array.from({length:countLayers},(_,i)=>{
     const n=ns[i]||0,y=up?top+i*step:bottom-i*step,count=info.pending?0:Math.min(Math.max(0,n),12),dots=Number.isInteger(n)?Array.from({length:count},(_,j)=>'<circle cx="'+(count===1?302:200+j*204/(count-1))+'" cy="'+y+'" r="3.2" fill="'+tone+'"/>').join(''):'';
-    const text=(i+1)+' · '+n+'T'+(dia||''),field=info.editable?label(19,y+6,i+1,'fill="'+tone+'"')+editor(part+':'+i,n+'T'+dia,38,y-15,122,(up?'上筋':'下筋')+'第 '+(i+1)+' 層，根數T直徑；同面同徑'):label(158,y+5,text,'text-anchor="end" fill="'+tone+'"');
+    const text=(i+1)+' · '+n+'T'+(dia||''),field=info.editable?label(19,y+6,i+1,'fill="'+tone+'"')+editor(part+':'+i+':count',n,38,y-15,48,(up?'上筋':'下筋')+'第 '+(i+1)+' 層根數')+label(91,y+6,'T','data-fixed236="T"')+editor(part+':'+i+':dia',dia,111,y-15,49,(up?'上筋':'下筋')+'第 '+(i+1)+' 層直徑；同面同徑'):label(158,y+5,text,'text-anchor="end" fill="'+tone+'"');
     return '<g data-rebar-layer232="'+(up?'upper':'lower')+'" data-layer="'+(i+1)+'" data-rebar-edit232="'+esc(part||'')+'"><title>'+esc(text)+'</title>'+field+'<path d="M164 '+y+' H193" stroke="'+tone+'"/>'+dots+'</g>';
    }).join('');
   };
-  const link=(part,y,title,value)=>info.editable?label(24,y+7,title)+editor(part,info[part+'Value']||'',98,y-16,294,title+'，肢數T直徑@間距 mm，間距最小 100 mm')+label(402,y+7,'mm'):label(24,y+7,title+' · '+value);
-  return '<svg role="group" viewBox="0 0 520 '+height+'" aria-label="梁截面配筋編輯，上筋在上、下筋在下；直接輸入根數T直徑；不按比例">'+label(302,22,'B = '+Math.round(b*1000)+' mm','text-anchor="middle"')+'<rect x="180" y="40" width="244" height="'+(base-40)+'" rx="2" fill="#f3f6f8" stroke="#5c7181"/><rect x="190" y="80" width="224" height="'+(base-92)+'" rx="9" fill="none" stroke="#18736b" stroke-width="2"/>'+label(158,58,'上筋 · '+(info.upperRole||''),'text-anchor="end" fill="#9c3d10"')+label(302,62,info.upperRequired||'As req · 待計算','text-anchor="middle" class="rebar-required234" data-required234="upper"')+label(158,bottom-(lowN-1)*step-56,'下筋 · '+(info.lowerRole||''),'text-anchor="end" fill="#185ba2"')+label(302,bottom-(lowN-1)*step-30,info.lowerRequired||'As req · 待計算','text-anchor="middle" class="rebar-required234" data-required234="lower"')+layers(upper,true)+layers(lower,false)+label(452,(40+base)/2,'D = '+Math.round(d*1000)+' mm','text-anchor="middle" transform="rotate(90 452 '+((40+base)/2)+')"')+link('shear',base+38,'抗剪',info.shear||'待確認')+link('torsion',base+76,'抗扭',info.torsion||'待確認')+label(260,base+115,'同面同徑：修改 T 會同步該面各層；0 表示無筋','text-anchor="middle" class="rebar-svg-note227"')+label(260,base+137,'截面不按比例；圓點不代表實際根數 · 箍筋最小間距 100 mm','text-anchor="middle" class="rebar-svg-note227"')+'</svg>';
+  const link=(part,y,title,value)=>info.editable?label(24,y+7,title)+editor(part+':legs',info[part+'Fields']?.legs??'',98,y-16,55,title+'肢數')+label(160,y+7,'T','data-fixed236="T"')+editor(part+':dia',info[part+'Fields']?.dia??'',182,y-16,65,title+'直徑')+label(258,y+7,'@','data-fixed236="@"')+editor(part+':space',info[part+'Fields']?.space??'',291,y-16,101,title+'間距 mm，最小 100 mm')+label(402,y+7,'mm'):label(24,y+7,title+' · '+value);
+  return '<svg role="group" viewBox="0 0 520 '+height+'" aria-label="梁截面配筋編輯，上筋在上、下筋在下；分別輸入根數及直徑；不按比例">'+label(302,22,'B = '+Math.round(b*1000)+' mm','text-anchor="middle"')+'<rect x="180" y="40" width="244" height="'+(base-40)+'" rx="2" fill="#f3f6f8" stroke="#5c7181"/><rect x="190" y="80" width="224" height="'+(base-92)+'" rx="9" fill="none" stroke="#18736b" stroke-width="2"/>'+label(158,58,'上筋 · '+(info.upperRole||''),'text-anchor="end" fill="#9c3d10"')+label(302,62,info.upperRequired||'As req · 待計算','text-anchor="middle" class="rebar-required234" data-required234="upper"')+label(158,bottom-(lowN-1)*step-56,'下筋 · '+(info.lowerRole||''),'text-anchor="end" fill="#185ba2"')+label(302,bottom-(lowN-1)*step-30,info.lowerRequired||'As req · 待計算','text-anchor="middle" class="rebar-required234" data-required234="lower"')+layers(upper,true)+layers(lower,false)+label(452,(40+base)/2,'D = '+Math.round(d*1000)+' mm','text-anchor="middle" transform="rotate(90 452 '+((40+base)/2)+')"')+link('shear',base+38,'抗剪',info.shear||'待確認')+link('torsion',base+76,'抗扭',info.torsion||'待確認')+label(260,base+115,'同面同徑：修改直徑會同步該面各層；0 表示無筋','text-anchor="middle" class="rebar-svg-note227"')+label(260,base+137,'截面不按比例；圓點不代表實際根數 · 箍筋最小間距 100 mm','text-anchor="middle" class="rebar-svg-note227"')+'</svg>';
  }
  function decorate(h){
   const top=$('ex-top-counts'),bottom=$('ex-bottom-counts');if(!top||!bottom||$('beam-rebar116'))return;
@@ -61,7 +61,7 @@ const BeamRebar116=(()=>{
    const badge=card.querySelector('.rebar-rc227');badge.textContent=status.text;badge.dataset.tone=status.tone;
    card.querySelector('.rebar-reasons227').textContent=status.reasons.join('；');
    const linkText=prefix=>awaitAuto?'待自動選筋':$('ex-'+prefix+'-legs').value+' 肢 T'+$('ex-'+prefix+'-dia').value+' @ '+$('ex-'+prefix+'-space').value+' mm';
-   card.querySelector('.rebar-section227').innerHTML=diagram227(awaitAuto?[]:counts(upper),awaitAuto?[]:counts(lower),beam.b,beam.d,{upperPart:upper,lowerPart:lower,upperDia:$('ex-'+upper+'-dia').value,lowerDia:$('ex-'+lower+'-dia').value,upperRole:cb?'受拉':'受壓',lowerRole:cb?'受壓':'受拉',pending:awaitAuto,editable:true,drafts:drafts234,errors:errors234,upperRequired:required234(row,upper,dirty),lowerRequired:required234(row,lower,dirty),shear:linkText('link'),torsion:linkText('tor'),shearValue:$('ex-link-legs').value+'T'+$('ex-link-dia').value+'@'+$('ex-link-space').value,torsionValue:$('ex-tor-legs').value+'T'+$('ex-tor-dia').value+'@'+$('ex-tor-space').value});
+   card.querySelector('.rebar-section227').innerHTML=diagram227(awaitAuto?[]:counts(upper),awaitAuto?[]:counts(lower),beam.b,beam.d,{upperPart:upper,lowerPart:lower,upperDia:$('ex-'+upper+'-dia').value,lowerDia:$('ex-'+lower+'-dia').value,upperRole:cb?'受拉':'受壓',lowerRole:cb?'受壓':'受拉',pending:awaitAuto,editable:true,drafts:drafts234,errors:errors234,upperRequired:required234(row,upper,dirty),lowerRequired:required234(row,lower,dirty),shear:linkText('link'),torsion:linkText('tor'),shearFields:{legs:$('ex-link-legs').value,dia:$('ex-link-dia').value,space:$('ex-link-space').value},torsionFields:{legs:$('ex-tor-legs').value,dia:$('ex-tor-dia').value,space:$('ex-tor-space').value}});
    card.querySelector('[data-rebar-upper]').textContent='上筋 · '+(awaitAuto?'待自動選筋':countText(upper));
    card.querySelector('[data-rebar-lower]').textContent='下筋 · '+(awaitAuto?'待自動選筋':countText(lower));
    card.querySelector('[data-rebar-shear]').textContent='抗剪 · '+(awaitAuto?'待自動選筋':$('ex-link-legs').value+' 肢 T'+$('ex-link-dia').value+' @ '+$('ex-link-space').value+' mm');
@@ -74,18 +74,16 @@ const BeamRebar116=(()=>{
   for(const fields of Object.values(fieldRows))for(const field of fields.querySelectorAll('input,select'))field.addEventListener('input',()=>{$('ex-steel-mode').value='MANUAL';dirty=changed231();draw();});
   card.addEventListener('input',e=>{
    const key=e.target.dataset?.inlineRebar234;if(!key)return;drafts234[key]=e.target.value;$('ex-steel-mode').value='MANUAL';dirty=true;
-   const isLink=['shear','torsion'].includes(key),match=e.target.value.match(isLink?/^\s*(\d+)\s*T\s*(\d+)\s*@\s*(\d+(?:\.\d+)?)\s*$/i:/^\s*(\d+)\s*T\s*(\d+)\s*$/i);
-   let error=isLink?'請輸入肢數T直徑@間距，例如 2T10@100。':'請輸入根數T直徑，例如 18T40。';
-   if(match){
-    const prefix=isLink?(key==='shear'?'link':'tor'):key.split(':')[0],dia=$('ex-'+prefix+'-dia'),validDia=[...dia.options].some(o=>Number(o.value)===Number(match[2]));
-    if(!validDia)error='請使用原有可選鋼筋直徑。';
-    else if(isLink&&(+match[1]<1||+match[3]<100))error='箍筋肢數須為正整數，間距不得小於 100 mm。';
-    else{
-     dia.value=match[2];
-     if(isLink){$('ex-'+prefix+'-legs').value=match[1];$('ex-'+prefix+'-space').value=match[3];}
-     else{const ns=Array.from({length:8},(_,i)=>counts(prefix)[i]||0);ns[Number(key.split(':')[1])]=Number(match[1]);$('ex-'+prefix+'-counts').value=ns.join(', ');for(const k of Object.keys(drafts234))if(k.startsWith(prefix+':')&&k!==key&&!errors234[k])delete drafts234[k];}
-     error='';
-    }
+   const parts=key.split(':'),part=parts[0],field=parts.at(-1),isLink=['shear','torsion'].includes(part),prefix=isLink?(part==='shear'?'link':'tor'):part;
+   const raw=e.target.value.trim(),value=Number(raw),valid=(field==='space'?/^\d+(?:\.\d+)?$/:/^\d+$/).test(raw)&&Number.isSafeInteger(field==='space'?Math.trunc(value):value);
+   let error=valid?'':'請輸入有效'+(field==='space'?'間距數值。':'整數。');
+   if(!error&&field==='dia'&&![...$('ex-'+prefix+'-dia').options].some(o=>Number(o.value)===value))error='請使用原有可選鋼筋直徑。';
+   if(!error&&field==='legs'&&value<1)error='箍筋肢數須為正整數。';
+   if(!error&&field==='space'&&value<100)error='箍筋間距不得小於 100 mm。';
+   if(!error){
+    if(field==='count'){const ns=Array.from({length:8},(_,i)=>counts(prefix)[i]||0);ns[Number(parts[1])]=value;$('ex-'+prefix+'-counts').value=ns.join(', ');}
+    else $('ex-'+prefix+'-'+field).value=String(value);
+    if(!isLink&&field==='dia')for(const k of Object.keys(drafts234))if(k.startsWith(prefix+':')&&k.endsWith(':dia')&&k!==key&&!errors234[k])delete drafts234[k];
    }
    if(error)errors234[key]=error;else delete errors234[key];dirty=changed231()||Object.keys(errors234).length>0;draw();
   });

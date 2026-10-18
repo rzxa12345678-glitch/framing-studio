@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict'),Drawing=require('../drawing.js'),select=Drawing.boxSelect321;
+const r=(x0,y0,x1,y1)=>({x0,y0,x1,y1}),box=r(2,2,6,6),partial=r(1,3,3,5),full=r(3,3,4,4),pairs=[[[2,2],[6,6]],[[2,6],[6,2]],[[6,2],[2,6]],[[6,6],[2,2]]];
+for(let i=0;i<pairs.length;i++){const [a,z]=pairs[i];assert(select(a,z,[full]));assert.equal(select(a,z,[partial]),i>=2);assert(select(a,z,[box]));assert(!select(a,z,[r(7,7,8,8)]));}
+assert(!select([2,2],[6,6],[{x:2,y:4,w:2,d:2}]),'window requires full column section, not its centre');assert(select([6,6],[2,2],[{x:1.5,y:4,w:2,d:2}]),'crossing includes a touched column with centre outside');
+assert(select([1,2],[-1,0],[r(-5,.9,5,1.1)]),'edge crossing without any polygon/corner containment');assert(select([6,6],[2,2],[r(0,0,10,10)]),'box entirely inside object');assert(select([6,6],[2,2],[r(6,3,8,5)]),'closed-edge contact');assert(!select([2,2],[6,6],[r(6,3,8,5)]));
+const parts=[r(3,3,4,4),r(7,3,8,4)];assert(!select([2,2],[6,6],parts),'all pieces of a slab must be enclosed');assert(select([6,6],[2,2],parts));assert(select([2,2],[9,6],parts));
+const ring=[r(0,0,10,2),r(0,8,10,10),r(0,2,2,8),r(8,2,10,8)];assert(!select([6,6],[4,4],ring),'crossing a slab hole alone selects nothing');
+const triangle=[[0,0],[10,0],[10,10]],diagonal=[[0,.1],[9.9,10],[10,9.9],[.1,0]];
+assert(!select([2,9],[1,8],[triangle]),'triangular slab bounding-box void is not a hit');assert(select([6,5],[4,3],[triangle]));assert(!select([4,3],[6,5],[triangle]));assert(select([-1,-1],[11,11],[{points315:triangle}]));
+assert(!select([9,1],[8,0],[diagonal]),'slanted beam bounding-box void is not a hit');assert(select([5.2,5.2],[4.8,4.8],[diagonal]));assert(!select([4.8,4.8],[5.2,5.2],[diagonal]));assert(select([-1,-1],[11,11],[diagonal]));
+for(const dx of [-1000,1000]){const shape=triangle.map(([x,y])=>[x+dx,y-dx]);assert(select([dx-1,-dx-1],[dx+11,-dx+11],[shape]));assert(!select([dx+2,-dx+9],[dx+1,-dx+8],[shape]));}
+const frozen=JSON.stringify(parts);select([9,6],[2,2],parts);assert.equal(JSON.stringify(parts),frozen);assert(!select([0,0],[1,1],[]));assert(!select([0,0],[1,1],[r(NaN,0,1,1)]));assert(!select([NaN,0],[1,1],[full]));
+let state={strokeStyle:'original',fillStyle:'original',lineWidth:7,dash:[2]},stack=[],draws=[];const ctx={save(){stack.push(structuredClone(state));},restore(){state=stack.pop();},setLineDash(d){state.dash=d;},fillRect(){},strokeRect(){draws.push(structuredClone(state));}};for(const k of ['strokeStyle','fillStyle','lineWidth'])Object.defineProperty(ctx,k,{get(){return state[k]},set(v){state[k]=v}});
+const old=structuredClone(state),plot={ox:0,oy:0,scale:10};Drawing.drawSelectionBox321(ctx,plot,[0,0],[1,1]);Drawing.drawSelectionBox321(ctx,plot,[1,1],[0,0]);assert.deepEqual(state,old,'selection overlay restores canvas state');assert.deepEqual(draws.map(d=>d.dash),[[],[5,3]]);assert.notEqual(draws[0].strokeStyle,draws[1].strokeStyle);
+console.log('PASS CAD window/crossing in both vertical directions, full column sections, edge contact, unions/holes, slanted and polygon footprints, translated geometry, unchanged inputs and balanced overlay canvas state');

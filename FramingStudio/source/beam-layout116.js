@@ -153,7 +153,7 @@ function BeamLayoutUI116(host){
  document.addEventListener('toggle',e=>{if(!e.target.isConnected||!e.target.matches?.('[data-bl-fold]'))return;folds[e.target.dataset.blFold]=e.target.open;try{localStorage.setItem('beam-layout-folds116',JSON.stringify(folds));}catch{}},true);
  function begin(point,hit,append){remember();if(hit&&hit.kind!=='SLAB'){selection=[];return false;}draft=null;gesture={from:point,to:point,append};return true;}
  function move(point){if(!gesture)return false;gesture.to=point;host.repaint();return true;}
- function finish(cancel=false){if(!gesture)return false;const g=gesture;gesture=null;if(cancel){host.repaint();return true;}const box={x0:Math.min(g.from[0],g.to[0]),x1:Math.max(g.from[0],g.to[0]),y0:Math.min(g.from[1],g.to[1]),y1:Math.max(g.from[1],g.to[1])},click=Math.hypot(g.to[0]-g.from[0],g.to[1]-g.from[1])<.08;let chosen=panels().filter(s=>(s.rects||[s]).some(r=>click?g.to[0]>r.x0&&g.to[0]<r.x1&&g.to[1]>r.y0&&g.to[1]<r.y1:Math.min(r.x1,box.x1)>Math.max(r.x0,box.x0)&&Math.min(r.y1,box.y1)>Math.max(r.y0,box.y0)));if(click)chosen=chosen.slice(0,1);selection=[...new Set([...(g.append?selection:[]),...chosen.map(s=>Loading.token('SLAB',s))])];activeTab='slab';host.clearSelection();host.refresh();return true;}
+ function finish(cancel=false){if(!gesture)return false;const g=gesture;gesture=null;if(cancel){host.repaint();return true;}const click=Math.hypot(g.to[0]-g.from[0],g.to[1]-g.from[1])<.08;let chosen=panels().filter(s=>click?(s.polygons315?s.polygons315.some(p=>Diagonal315.inside(g.to,p)):(s.rects||[s]).some(r=>g.to[0]>r.x0&&g.to[0]<r.x1&&g.to[1]>r.y0&&g.to[1]<r.y1)):Drawing.boxSelect321(g.from,g.to,s.polygons315||s.rects||[s]));if(click)chosen=chosen.slice(0,1);selection=[...new Set([...(g.append?selection:[]),...chosen.map(s=>Loading.token('SLAB',s))])];activeTab='slab';host.clearSelection();host.refresh();return true;}
  function overlay(ctx,plot){
   const h=sync(),m=Engine.floorModel(h.result,h.floor,h.key),xy=(x,y)=>[plot.ox+x*plot.scale,plot.oy+y*plot.scale];ctx.save();
   if(draft){ctx.strokeStyle='#16899d';ctx.lineWidth=2.5;ctx.setLineDash([7,4]);for(const b of Engine.floorModel(draft.result,h.floor,h.key).beams.filter(b=>b.source==='auto'&&(draft.step==='main'?(b.baseKind||b.kind)==='MB':(b.baseKind||b.kind)==='SB'))){ctx.beginPath();ctx.moveTo(...xy(...b.a));ctx.lineTo(...xy(...b.z));ctx.stroke();}ctx.setLineDash([]);}
@@ -161,7 +161,7 @@ function BeamLayoutUI116(host){
   }
   plot.slabDirections=host.showDirections()?BeamLayout116.drawDirections(h.p,m,h.floor,ctx,plot):[];
   plot.slabThicknessLabels=BeamLayout116.drawThicknessLabels(m,ctx,plot);
-  if(gesture){ctx.strokeStyle='#0082d2';ctx.fillStyle='rgba(0,130,210,.12)';ctx.setLineDash([5,3]);const a=xy(...gesture.from),b=xy(...gesture.to);ctx.fillRect(a[0],a[1],b[0]-a[0],b[1]-a[1]);ctx.strokeRect(a[0],a[1],b[0]-a[0],b[1]-a[1]);}ctx.restore();
+  if(gesture)Drawing.drawSelectionBox321(ctx,plot,gesture.from,gesture.to);ctx.restore();
  }
  function reset(){draft=null;selection=[];gesture=null;context='';form=null;thicknessForm=null;beamForm=null;}
  const clone=BeamLayout116Clone=>JSON.parse(JSON.stringify(BeamLayout116Clone));

@@ -1,3 +1,9 @@
+# E2.318 — Separate plan fill and 3D slab visibility
+
+04 Region plan always shows the existing pale-yellow building/slab extent. Its checked plan-fill control explains that this page is fixed; other plan pages retain the user's independent optional fill preference. A separate 3D slab-body checkbox controls 3D rendering, with matching pale-yellow/green legend swatches. Opening and outside colours remain unchanged, including diagonal outlines.
+
+Verified in the packaged Windows WebView2 EXE with 16 display/model assertions plus 3 native confirmation-response checks. Tests cover the current model, mixed Opening/outside cells, diagonal slab faces, independent toggles and exact project/generated-result preservation. The existing browser tab was refreshed after backup, UI toggles verified, and before/after exported project files are byte-identical. No calculation, Excel workbook/worker or Section A/B report code changed; the 44 other embedded scripts are byte-identical. Native Excel recalculation was not rerun for this display-only update.
+
 # E2.317 — In-page confirmations with Windows EXE verification
 
 Replace application-level native confirm/prompt calls with an accessible in-page dialog shared by browser and WebView2: type deletion, Opening deletion, pure-auto column reset, new/open project replacement, recovery and new type names. Cancel is focused by default; Escape cancels; duplicate requests fail closed; name validation remains visible. Confirmed operations retain the original transactions and undo.

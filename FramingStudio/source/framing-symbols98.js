@@ -56,14 +56,14 @@ const FramingSymbols98=(()=>{
  }
  function voids318(out,m,X,Y,scale,u){
   const outline=m.diagonal315.outline;
-  for(const [items,label]of [[m.ts.filter(t=>t.state===2),'OP'],[m.slabVoids,'NO SLAB']])for(const ps of Diagonal315.groups(items.map(item=>Diagonal315.clip(Diagonal315.shape(item),outline)).filter(poly=>poly.length))){
+  for(const [items,label]of [[m.openingPolygons319?m.openingPolygons319.map(Diagonal315.region):m.ts.filter(t=>t.state===2),'OP'],[m.slabVoids,'NO SLAB']])for(const ps of Diagonal315.groups(items.map(item=>Diagonal315.clip(Diagonal315.shape(item),outline)).filter(poly=>poly.length))){
    const bb=Diagonal315.bounds(ps),box=interior318([...ps].sort((a,b)=>Diagonal315.area(b)-Diagonal315.area(a))[0]);
    for(const [a,z]of Diagonal315.outlineEdges(ps)){line(out,X(a[0]),Y(a[1]),X(z[0]),Y(z[1]),.4);out.at(-1).void318=ps.find(p=>[a,z].every(q=>Diagonal315.inside(q,p)));}
    for(const poly of ps)for(const [a,z]of [[ [bb.x0,bb.y0],[bb.x1,bb.y1] ],[ [bb.x0,bb.y1],[bb.x1,bb.y0] ]]){const hit=Diagonal315.segment(a,z,poly);if(hit){line(out,X(hit[0][0]),Y(hit[0][1]),X(hit[1][0]),Y(hit[1][1]),.4);out.at(-1).void318=poly;}}
    const size=Math.min(8*u,(box.x1-box.x0)*scale/label.length*1.5,(box.y1-box.y0)*scale*.5);
    if(size>0)text(out,label,X(box.x)-label.length*size/2,Y(box.y)-size,label.length*size,2*size,size);
   }
-  const whole=m.ts.filter(t=>t.state!==0).map(Diagonal315.rectangle).map(p=>Diagonal315.clip(p,outline)).filter(p=>p.length);
+  const whole=m.buildingPolygons319||m.ts.filter(t=>t.state!==0).map(Diagonal315.rectangle).map(p=>Diagonal315.clip(p,outline)).filter(p=>p.length);
   for(const [a,z]of Diagonal315.outlineEdges(whole)){line(out,X(a[0]),Y(a[1]),X(z[0]),Y(z[1]),.8);out.at(-1).outline318=true;}
  }
  function members(p,m,f,result,X,Y,scale,opt={}){

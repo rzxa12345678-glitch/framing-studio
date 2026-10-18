@@ -4,8 +4,10 @@ const BeamLayout116=(()=>{
  function settings(p,key){const t=p.types[key];return {main:t.autoBeams101!==false,secondary:t.autoBeams101!==false,mainDirection:'XY',secondaryDirection:p.defaults.direction,gap:p.defaults.gap,scope:'all',...t.beamLayout116};}
  // A region update owns only complete beam segments contained in its saved rectangles.
  function inSecondaryAreas(beam,areas){
+  if(beam.polygonBay315)return Diagonal315.areaOwns320(beam,areas);
+  if(areas.some(a=>a.polygon320)&&Diagonal315.areaOwns320(beam,areas))return true;
   const a=beam.rawA||beam.a,z=beam.rawZ||beam.z,axis=Math.abs(z[0]-a[0])>=Math.abs(z[1]-a[1])?0:1,cross=1-axis,lo=Math.min(a[axis],z[axis]),hi=Math.max(a[axis],z[axis]),eps=1e-6;
-  const cuts=areas.flatMap(area=>area.rects).filter(r=>a[cross]>=r[cross?'y0':'x0']-eps&&a[cross]<=r[cross?'y1':'x1']+eps).map(r=>[Math.max(lo,r[axis?'y0':'x0']),Math.min(hi,r[axis?'y1':'x1'])]).filter(([l,h])=>h-l>eps).sort((x,y)=>x[0]-y[0]);
+  const cuts=areas.filter(area=>!area.polygon320).flatMap(area=>area.rects).filter(r=>a[cross]>=r[cross?'y0':'x0']-eps&&a[cross]<=r[cross?'y1':'x1']+eps).map(r=>[Math.max(lo,r[axis?'y0':'x0']),Math.min(hi,r[axis?'y1':'x1'])]).filter(([l,h])=>h-l>eps).sort((x,y)=>x[0]-y[0]);
   let end=lo;for(const [l,h]of cuts){if(l>end+eps)return false;end=Math.max(end,h);if(end>=hi-eps)return true;}return false;
  }
  function candidate(p,key,step,values,rebuild=false){
@@ -15,7 +17,7 @@ const BeamLayout116=(()=>{
   if(step==='main')Object.assign(cfg,{main:true,mainDirection:values.mainDirection,shortSpanMain:true});
   else Object.assign(cfg,{secondary:true,secondaryDirection:values.secondaryDirection,gap:values.gap,scope:values.scope});
   t.beamLayout116=cfg;
-  if(step==='secondary'&&cfg.scope==='selected'&&!t.secondaryAreas?.length)throw Error('请先拖画次梁分区。');
+  if(step==='secondary'&&cfg.scope==='selected'&&!t.secondaryAreas?.length)throw Error('还没有 SB 分区：请先框选梁格，或将布置区域改为全部区域后预览。');
   if(rebuild){
    const suppressed=[...t.suppressed];t.suppressed=[];
    Engine.validate(next);const m=Engine.model(next,key),restore=new Set(m.beams.filter(b=>b.source==='auto'&&(step==='main'?(b.baseKind||b.kind)==='MB':(b.baseKind||b.kind)==='SB')).map(b=>Engine.sig(b.rawA,b.rawZ)));
@@ -90,6 +92,36 @@ const BeamLayout116=(()=>{
  return {settings,candidate,clear,setDirections,setThickness,drawDirections,drawThicknessLabels};
 })();
 
+// UI-only transaction feedback. The existing atomic model edit stays synchronous.
+const BeamUpdate315=(()=>{
+ let busy=false;const messages=new Map();
+ const paint=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(resolve,0))));
+ function publish(key,text,error=false){messages.set(key,{text,error});for(const el of document.querySelectorAll('[data-beam-update315]'))if(el.dataset.beamUpdate315===key){el.textContent=text;el.hidden=false;el.dataset.error=String(error);el.setAttribute('role',error?'alert':'status');}}
+ async function run(key,count,edit){
+  if(busy)return false;busy=true;
+  const started=performance.now(),focus=document.activeElement,focusId=focus?.id,focusLabel=focus?.getAttribute?.('aria-label');
+  const mask=document.createElement('div');mask.className='beam-update-mask315';
+  mask.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="beam-update-title315" tabindex="-1"><h3 id="beam-update-title315">正在更新梁尺寸</h3><p role="status" aria-live="polite"></p><progress aria-label="梁尺寸更新進行中"></progress><p>正在同步模型及檢查幾何，完成前請稍候。</p></section>';
+  mask.querySelector('[role="status"]').textContent=key+' · '+count+' 根梁 · 更新中';
+  const prior=[...document.body.children].map(el=>[el,el.inert]);for(const [el]of prior)el.inert=true;
+  const events=['click','dblclick','pointerdown','pointerup','keydown','input','change','submit'];
+  const block=e=>{e.preventDefault();e.stopImmediatePropagation();};for(const name of events)document.addEventListener(name,block,true);
+  document.body.appendChild(mask);mask.querySelector('section').focus();
+  let answer;
+  try{await paint();answer=edit();}
+  catch(error){answer={ok:false,error:error.message||String(error)};}
+  finally{
+   // Keep the guard through the first post-work paint so queued clicks cannot submit again.
+   await paint();mask.remove();for(const [el,inert]of prior)el.inert=inert;for(const name of events)document.removeEventListener(name,block,true);busy=false;
+  }
+  const seconds=((performance.now()-started)/1000).toFixed(1),ok=!!answer?.ok;
+  publish(key,ok?(answer.count?'已更新 '+answer.count+' 根梁 · '+key+' 共用樓層同步 · 耗時 '+seconds+' 秒 · 可一次撤銷':'尺寸沒有變更，未新增撤銷紀錄'):'未套用：'+(answer?.error||'請查看尺寸或幾何提示')+'。尺寸輸入已保留，請修正後重試。',!ok);
+  const target=focus?.isConnected?focus:focusId?document.getElementById(focusId):focusLabel?[...document.querySelectorAll('[aria-label]')].find(el=>el.getAttribute('aria-label')===focusLabel):document.querySelector('[data-bl116="beam-selected"]');target?.focus?.({preventScroll:true});
+  return ok;
+ }
+ return {run,busy:()=>busy,message:key=>messages.get(key)};
+})();
+
 function BeamLayoutUI116(host){
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const $=id=>document.getElementById(id),folds={main:true,secondary:true,slab:true};
@@ -104,7 +136,8 @@ function BeamLayoutUI116(host){
  function switchTab(step,focus=false){if(!['main','secondary','slab'].includes(step))return;remember();if(activeTab!==step){host.clearSelection();host.selectMode();gesture=null;}activeTab=step;host.refresh();if(focus)$('bl116-tab-'+step)?.focus();}
  function selectedBeams(){const h=host.get(),ids=new Set((host.selectedMembers?.()||[]).map(b=>b.kind+':'+b.id));return Engine.floorModel(h.result,h.floor,h.key).beams.filter(b=>ids.has(b.kind+':'+b.id));}
  function beamTable(h,m){const chosen=selectedBeams(),ids=new Set(chosen.map(b=>b.kind+':'+b.id)),count=chosen.length;
-  return '<section id="bl116-beam-table" class="beam-parameters116" '+(activeTab==='slab'?'hidden':'')+'><h3>梁參數 · '+esc(FloorLevels.name(h.p,h.floor))+'</h3><p class="muted">只顯示圖上選中的 '+(activeTab==='main'?'MB／TB／CB':'SB')+'；修改同步至 '+esc(h.key)+' 共用樓層。</p><div class="row"><label class="field">批量梁闊 B mm<input id="bl116-beam-width" type="number" min="1" max="20000" step="any" placeholder="留空不修改" data-input-state="required"></label>'+'<label class="field">批量梁深 D mm<input id="bl116-beam-depth" type="number" min="1" max="20000" step="any" placeholder="留空不修改" data-input-state="required"></label>'+btn('套用已選（'+count+'）','beam-selected',count?'':'disabled')+'</div>'+(count?'<div class="beam-parameters-scroll116"><table><thead><tr><th>梁</th><th>類型</th><th>B mm</th><th>D mm</th><th>跨度 m</th></tr></thead><tbody>'+m.beams.map((b,i)=>ids.has(b.kind+':'+b.id)?'<tr><td>'+esc(b.displayId||b.id)+'</td><td><select data-beam-kind="'+i+'" aria-label="'+esc(b.displayId||b.id)+' 類型">'+['MB','SB','TB','CB'].map(k=>'<option '+(k===b.kind?'selected':'')+'>'+k+'</option>').join('')+'</select></td><td><input data-beam-width="'+i+'" aria-label="'+esc(b.displayId||b.id)+' 梁闊 B mm" type="number" min="1" max="20000" step="any" value="'+Number((b.b*1000).toFixed(6))+'" data-input-state="required"></td><td><input data-beam-depth="'+i+'" aria-label="'+esc(b.displayId||b.id)+' 梁深 D mm" type="number" min="1" max="20000" step="any" value="'+Number((b.d*1000).toFixed(3))+'" data-input-state="required"></td><td>'+Math.hypot(b.rawZ[0]-b.rawA[0],b.rawZ[1]-b.rawA[1]).toFixed(2)+'</td></tr>':'').join('')+'</tbody></table></div><p class="muted">修改後按 Enter 或離開欄位即套用；可撤銷。逐列 B／D 留空恢復預設。</p>':'<p class="muted">請在圖上單擊或拖拉框選梁。</p>')+'<p class="muted">B 須符合共用樓層最嚴格 FRR（1／2 h：200 mm；4 h：280 mm）；不足時不套用。D 可個別指定，須符合所有共用樓層／局部 Structural Zone 上限。未指定時 MB／TB／CB 用 Structural Zone；SB 用「00 參數」的 Framing SB 深度。修改尺寸保留原布置方式；B／D 留空恢復跟參數。</p></section>';
+  const feedback=BeamUpdate315.message(h.key),status='<p class="beam-update-status315" data-beam-update315="'+esc(h.key)+'" data-error="'+!!feedback?.error+'" role="'+(feedback?.error?'alert':'status')+'" aria-live="polite" '+(!feedback||activeTab==='slab'?'hidden':'')+'>'+esc(feedback?.text||'')+'</p>';
+  return status+'<section id="bl116-beam-table" class="beam-parameters116" '+(activeTab==='slab'?'hidden':'')+'><h3>梁參數 · '+esc(FloorLevels.name(h.p,h.floor))+'</h3><p class="muted">只顯示圖上選中的 '+(activeTab==='main'?'MB／TB／CB':'SB')+'；修改同步至 '+esc(h.key)+' 共用樓層。</p><div class="row"><label class="field">批量梁闊 B mm<input id="bl116-beam-width" type="number" min="1" max="20000" step="any" placeholder="留空不修改" data-input-state="required"></label>'+'<label class="field">批量梁深 D mm<input id="bl116-beam-depth" type="number" min="1" max="20000" step="any" placeholder="留空不修改" data-input-state="required"></label>'+btn('套用已選（'+count+'）','beam-selected',count?'':'disabled')+'</div>'+(count?'<div class="beam-parameters-scroll116"><table><thead><tr><th>梁</th><th>類型</th><th>B mm</th><th>D mm</th><th>跨度 m</th></tr></thead><tbody>'+m.beams.map((b,i)=>ids.has(b.kind+':'+b.id)?'<tr><td>'+esc(b.displayId||b.id)+'</td><td><select data-beam-kind="'+i+'" aria-label="'+esc(b.displayId||b.id)+' 類型">'+['MB','SB','TB','CB'].map(k=>'<option '+(k===b.kind?'selected':'')+'>'+k+'</option>').join('')+'</select></td><td><input data-beam-width="'+i+'" aria-label="'+esc(b.displayId||b.id)+' 梁闊 B mm" type="number" min="1" max="20000" step="any" value="'+Number((b.b*1000).toFixed(6))+'" data-input-state="required"></td><td><input data-beam-depth="'+i+'" aria-label="'+esc(b.displayId||b.id)+' 梁深 D mm" type="number" min="1" max="20000" step="any" value="'+Number((b.d*1000).toFixed(3))+'" data-input-state="required"></td><td>'+Math.hypot(b.rawZ[0]-b.rawA[0],b.rawZ[1]-b.rawA[1]).toFixed(2)+'</td></tr>':'').join('')+'</tbody></table></div><p class="muted">修改後按 Enter 或離開欄位即套用；可撤銷。逐列 B／D 留空恢復預設。</p>':'<p class="muted">請在圖上單擊或拖拉框選梁。</p>')+'<p class="muted">B 須符合共用樓層最嚴格 FRR（1／2 h：200 mm；4 h：280 mm）；不足時不套用。D 可個別指定，須符合所有共用樓層／局部 Structural Zone 上限。未指定時 MB／TB／CB 用 Structural Zone；SB 用「00 參數」的 Framing SB 深度。修改尺寸保留原布置方式；B／D 留空恢復跟參數。</p></section>';
  }
  function thicknessTable(h,m,chosen){const selected=new Set(chosen.map(s=>s.id)),count=selected.size;
   return '<section id="bl116-thickness" class="slab-thickness116" '+(activeTab==='slab'?'':'hidden')+'><h3>樓板厚度 · '+esc(FloorLevels.name(h.p,h.floor))+'</h3><p class="muted">修改同步至 '+esc(h.key)+' 的共用樓層。只顯示圖上選中的樓板。</p><div class="row"><label class="field">批量厚度 mm<input id="bl116-thickness-value" type="number" min="1" max="20000" step="any" placeholder="輸入厚度" data-input-state="required"></label>'+btn('套用已選（'+count+'）','thickness-selected',count?'':'disabled')+'</div>'+(count?'<div class="slab-thickness-scroll116"><table><thead><tr><th>樓板</th><th>跨度 L · m</th><th>淨面積 m²</th><th>厚度 mm</th></tr></thead><tbody>'+m.slabs.map((s,i)=>selected.has(s.id)?'<tr data-slab-row="'+i+'"><td>'+esc(s.id)+'</td><td>'+(()=>{const token=Loading.token('SLAB',s),dir=Loading.slabDirection(h.p,h.floor,token,s,m),L=Loading.slabCalculation(s,dir,m,Loading.input(h.p,h.floor,token)).L;return L>0?L.toFixed(3):'待確認';})()+'</td><td>'+s.area.toFixed(2)+'</td><td><input type="number" min="1" max="20000" step="any" data-slab-thickness="'+i+'" aria-label="'+esc(s.id)+' 厚度 mm" value="'+s.thickness+'" data-input-state="required"></td></tr>':'').join('')+'</tbody></table></div><p class="muted">逐列修改後按 Enter 或離開欄位即套用；可撤銷。Esc 清除圖上選取。</p>':'<p class="muted">請在圖上單擊或拖拉框選樓板。</p>')+'</section>';
@@ -113,22 +146,23 @@ function BeamLayoutUI116(host){
 
  function render(){
   for(const el of document.querySelectorAll('[data-bl-fold]'))folds[el.dataset.blFold]=el.open;
-  const h=sync(),cfg=BeamLayout116.settings(h.p,h.key),m=Engine.floorModel(h.result,h.floor,h.key),chosen=selectedSlabs(),preview=step=>draft?.step===step?'<p role="status">预览 '+draft.count+' 根自动'+(step==='main'?'主梁':'次梁')+'；虚线显示候选布置。</p><div class="row">'+btn('应用布置','apply')+btn('取消','cancel')+'</div>':'';
+  const h=sync(),cfg=BeamLayout116.settings(h.p,h.key),m=Engine.floorModel(h.result,h.floor,h.key),chosen=selectedSlabs(),preview=step=>draft?.step===step?'<p role="status">预览 '+draft.count+' 根自动'+(step==='main'?'主梁':'次梁')+'；虚线显示候选布置。</p>'+(step==='secondary'&&draft.count===0?'<p class="issue">未生成次梁：请检查区域、两端边梁／墙及最大间距；间距内无需加梁时可以为 0 根。</p>':'')+(draft.warnings?.length?'<p class="issue">'+draft.warnings.map(esc).join('<br>')+'</p>':'')+'<div class="row">'+btn('应用布置','apply')+btn('取消','cancel')+'</div>':'';
   let html='<section class="beam-layout116"><div class="beam-layout-header128"><h2>梁布置</h2>'+btn('重新布置','reset','title="清空梁及板布置，保留柱和牆"')+'</div><p class="muted">应用到 '+esc(h.key)+' 的所有楼层</p>';
   html+='<div class="beam-layout-tabs116" role="tablist" aria-label="梁與板布置">'+[['main','MB'],['secondary','SB'],['slab','Slab']].map(([step,label])=>'<button type="button" id="bl116-tab-'+step+'" role="tab" data-bl-tab="'+step+'" aria-controls="bl116-panel-'+step+'" aria-selected="'+(activeTab===step)+'" tabindex="'+(activeTab===step?'0':'-1')+'">'+label+'</button>').join('')+'</div>';
   html+=fold('main','① 自动画主梁 MB',selectControl('bl116-main-direction','布置方向',cfg.mainDirection,[['XY','X + Y 向'],['X','X 向'],['Y','Y 向']])+'<div class="row">'+btn('自动画主梁','main')+'</div>'+preview('main'));
-  html+=fold('secondary','② 自动画次梁 SB','<div class="row">'+selectControl('bl116-secondary-direction','布置方向',cfg.secondaryDirection,[['自动','自动'],['X','X 向'],['Y','Y 向']])+'<label class="field">最大间距 m<input id="bl116-gap" type="number" min="0.1" max="20" step="0.1" value="'+cfg.gap/1000+'" data-input-state="default"></label></div>'+selectControl('bl116-scope','布置区域',cfg.scope,[['all','全部区域'],['selected','已儲存的 SB 分區']])+'<div class="row">'+'<button type="button" id="bl116-draw-region" data-action="draw-sb-area">框選 SB 區域</button>'+btn('預覽次梁','secondary')+'</div>'+preview('secondary')+'<details class="beam-layout-zones116" '+(cfg.scope==='selected'?'open':'')+'><summary>次梁分区 · '+(h.p.types[h.key].secondaryAreas?.length||0)+' 个</summary>'+host.zones()+'</details>');
+  html+=fold('secondary','② 自动画次梁 SB','<div class="row">'+selectControl('bl116-secondary-direction','布置方向',cfg.secondaryDirection,[['自动','自动'],['X','X 向'],['Y','Y 向']])+'<label class="field">最大间距 m<input id="bl116-gap" type="number" min="0.1" max="20" step="0.1" value="'+cfg.gap/1000+'" data-input-state="default"></label></div>'+selectControl('bl116-scope','布置区域',cfg.scope,[['all','全部区域'],['selected','已儲存的 SB 分區']])+'<div class="row">'+'<button type="button" id="bl116-draw-region" data-action="draw-sb-area">框選 SB 區域</button>'+btn('預覽次梁','secondary')+'</div>'+preview('secondary')+'<p id="bl116-empty-regions" class="muted" hidden>还没有 SB 分区。先框选三角形或完整主梁格；也可 '+btn('使用全部区域','scope-all')+' 后预览。</p><details class="beam-layout-zones116" '+(cfg.scope==='selected'?'open':'')+'><summary>次梁分区 · '+(h.p.types[h.key].secondaryAreas?.length||0)+' 个</summary>'+host.zones()+'</details>');
   html+=fold('slab','③ 板受力方向','<p>單向板預設按支承中心距選短跨；等跨時沿用同一 bay 內其他板的一致方向。点击单块或拖框多选后修改方向。</p><label class="beam-layout-check116"><input id="bl116-show-directions" type="checkbox" '+(host.showDirections()?'checked':'')+'> 显示方向</label><p id="bl116-default-thickness" class="muted">默認 200 mm · 非 200 mm 樓板在圖上顯示厚度</p><p id="bl116-selection" role="status">'+(chosen.length===1?esc(chosen[0].id):chosen.length?'已选 '+chosen.length+' 块板':'未选择板块')+'</p><div class="row">'+['X','Y'].map(d=>btn('单向 '+d+(d==='X'?' ↔':' ↕'),'way-'+d,(!chosen.length?'disabled ':'')+'aria-pressed="'+(chosen.length>0&&chosen.every(s=>Loading.slabDirection(h.p,h.floor,Loading.token('SLAB',s),s,m)===d))+'"')).join('')+'</div>');
   html+=thicknessTable(h,m,chosen);
-  html+='<details '+(activeTab==='slab'?'hidden ':'')+'data-bl-fold="manual" '+(folds.manual?'open':'')+'><summary>手动画梁</summary><div class="beam-layout-body116">'+host.manual()+'<p class="muted">连接柱、梁端点、中点或梁中线上的位置。選起點後，所有梁類型均可點選水平／垂直 grid 投影圓點；軸線本身不算支承。</p></div></details>';
+  html+='<details '+(activeTab==='slab'?'hidden ':'')+'data-bl-fold="manual" '+(folds.manual?'open':'')+'><summary>手动画梁</summary><div class="beam-layout-body116">'+host.manual()+'<p class="muted">连接柱、梁端点、中点或梁中线上的位置；可直接画斜梁，无需先设置斜边范围。水平／垂直 grid 投影圆点仍可用；轴线本身不算支承。</p></div></details>';
   html+=beamTable(h,m);
   const selected=host.selectedMembers?.()||[];if(selected.length)html+='<div class="row beam-layout-selected116"><span id="member-selection-count">已選取 '+selected.length+' 個構件</span>'+btn('刪除所選 · Delete','delete')+'</div>';
   return html+'</section>';
  }
  function values(){const v={mainDirection:$('bl116-main-direction').value,secondaryDirection:$('bl116-secondary-direction').value,gap:Number($('bl116-gap').value)*1000,scope:$('bl116-scope').value};if(!Number.isFinite(v.gap)||v.gap<100||v.gap>20000)throw Error('次梁间距须为 0.1–20 m');return v;}
- function preview(step,rebuild){const h=host.get(),next=BeamLayout116.candidate(h.p,h.key,step,values(),rebuild),m=Engine.floorModel(next.result,h.floor,h.key);draft={...next,key:h.key,step,base:JSON.stringify(h.p),count:m.beams.filter(b=>b.source==='auto'&&(step==='main'?(b.baseKind||b.kind)==='MB':(b.baseKind||b.kind)==='SB')).length};host.selectMode();host.refresh();}
+ function preview(step,rebuild){const h=host.get(),next=BeamLayout116.candidate(h.p,h.key,step,values(),rebuild),m=Engine.floorModel(next.result,h.floor,h.key);draft={...next,key:h.key,step,base:JSON.stringify(h.p),count:m.beams.filter(b=>b.source==='auto'&&(step==='main'?(b.baseKind||b.kind)==='MB':(b.baseKind||b.kind)==='SB')).length,warnings:[...new Set(m.issues.filter(i=>/次梁|支承/.test(i.msg)).map(i=>i.id+'：'+i.msg))].slice(0,8)};host.selectMode();host.refresh();}
  function action(a){
   try{
+   if(a==='scope-all'){$('bl116-scope').value='all';remember();draft=null;showRegions();host.refresh();return;}
    if(a==='beam-selected'){const width=$('bl116-beam-width').value.trim(),depth=$('bl116-beam-depth').value.trim();if(width===''&&depth===''){host.toast('請輸入梁闊 B 或梁深 D');return;}host.applyBeamEdits(selectedBeams().map(beam=>({beam,size:{b:width===''?beam.b*1000:Number(width),kind:beam.kind,...(depth!==''?{d:Number(depth)}:{})}})));return;}
    if(a==='thickness-selected'){const value=Number($('bl116-thickness-value').value);applyThickness(selectedSlabs().map(slab=>({slab,value})));return;}
    if(a==='reset'){const h=host.get(),v=values();if(host.transact(()=>BeamLayout116.clear(h.p,h.key,v))){reset();host.clearSelection();host.selectMode();host.refresh();host.toast(h.key+' 已清空梁及板布置，柱和牆已保留；可撤銷');}return;}
@@ -142,7 +176,7 @@ function BeamLayoutUI116(host){
  // Keep form drafts during ordinary pointer selections; previewing never changes the model.
  let form=null,thicknessForm=null,beamForm=null;
  function remember(){const h=host.get();if($('bl116-beam-width'))beamForm={key:h.key,floor:h.floor,tab:activeTab,base:JSON.stringify(h.p),width:$('bl116-beam-width').value,depth:$('bl116-beam-depth').value};if($('bl116-thickness-value'))thicknessForm={key:h.key,floor:h.floor,base:JSON.stringify(h.p),bulk:$('bl116-thickness-value').value};if(!$('bl116-gap'))return;form={key:host.get().key,base:JSON.stringify(host.get().p),values:Object.fromEntries(['main-direction','secondary-direction','gap','scope'].map(k=>[k,$('bl116-'+k).value]))};}
- function showRegions(){const el=document.querySelector('.beam-layout-zones116');if(el&&$('bl116-scope')?.value==='selected')el.open=true;}
+ function showRegions(){const empty=$('bl116-empty-regions');if(empty)empty.hidden=$('bl116-scope')?.value!=='selected'||!!host.get().p.types[host.get().key].secondaryAreas?.length;const el=document.querySelector('.beam-layout-zones116');if(el&&$('bl116-scope')?.value==='selected')el.open=true;}
  function restore(){const h=host.get();if(beamForm&&(beamForm.key!==h.key||beamForm.floor!==h.floor||beamForm.tab!==activeTab||beamForm.base!==JSON.stringify(h.p)))beamForm=null;if(beamForm&&$('bl116-beam-width')){$('bl116-beam-width').value=beamForm.width;$('bl116-beam-depth').value=beamForm.depth;}if(thicknessForm&&(thicknessForm.key!==h.key||thicknessForm.floor!==h.floor||thicknessForm.base!==JSON.stringify(h.p)))thicknessForm=null;if(thicknessForm?.key===h.key&&thicknessForm.floor===h.floor&&thicknessForm.base===JSON.stringify(h.p)){if($('bl116-thickness-value'))$('bl116-thickness-value').value=thicknessForm.bulk;}if(form?.key===host.get().key&&form.base===JSON.stringify(host.get().p))for(const [k,v]of Object.entries(form.values)){const e=$('bl116-'+k);if(e)e.value=v;}showRegions();}
  document.addEventListener('click',e=>{const tab=e.target.closest('[data-bl-tab]');if(tab){switchTab(tab.dataset.blTab,true);return;}const b=e.target.closest('[data-bl116]');if(!b)return;remember();action(b.dataset.bl116);});
  document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('[data-slab-thickness],[data-beam-width],[data-beam-depth]')){e.preventDefault();e.target.blur();return;}const tab=e.target.closest?.('[data-bl-tab]');if(!tab||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const tabs=['main','secondary','slab'],i=tabs.indexOf(activeTab),next=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length;switchTab(tabs[next],true);});
@@ -150,7 +184,7 @@ function BeamLayoutUI116(host){
  document.addEventListener('toggle',e=>{if(!e.target.isConnected||!e.target.matches?.('[data-bl-fold]'))return;folds[e.target.dataset.blFold]=e.target.open;try{localStorage.setItem('beam-layout-folds116',JSON.stringify(folds));}catch{}},true);
  function begin(point,hit,append){remember();if(hit&&hit.kind!=='SLAB'){selection=[];return false;}draft=null;gesture={from:point,to:point,append};return true;}
  function move(point){if(!gesture)return false;gesture.to=point;host.repaint();return true;}
- function finish(cancel=false){if(!gesture)return false;const g=gesture;gesture=null;if(cancel){host.repaint();return true;}const box={x0:Math.min(g.from[0],g.to[0]),x1:Math.max(g.from[0],g.to[0]),y0:Math.min(g.from[1],g.to[1]),y1:Math.max(g.from[1],g.to[1])},click=Math.hypot(g.to[0]-g.from[0],g.to[1]-g.from[1])<.08;let chosen=panels().filter(s=>(s.rects||[s]).some(r=>click?g.to[0]>r.x0&&g.to[0]<r.x1&&g.to[1]>r.y0&&g.to[1]<r.y1:Math.min(r.x1,box.x1)>Math.max(r.x0,box.x0)&&Math.min(r.y1,box.y1)>Math.max(r.y0,box.y0)));if(click)chosen=chosen.slice(0,1);selection=[...new Set([...(g.append?selection:[]),...chosen.map(s=>Loading.token('SLAB',s))])];activeTab='slab';host.clearSelection();host.refresh();return true;}
+ function finish(cancel=false){if(!gesture)return false;const g=gesture;gesture=null;if(cancel){host.repaint();return true;}const click=Math.hypot(g.to[0]-g.from[0],g.to[1]-g.from[1])<.08;let chosen=panels().filter(s=>click?(s.polygons315?s.polygons315.some(p=>Diagonal315.inside(g.to,p)):(s.rects||[s]).some(r=>g.to[0]>r.x0&&g.to[0]<r.x1&&g.to[1]>r.y0&&g.to[1]<r.y1)):Drawing.boxSelect321(g.from,g.to,s.polygons315||s.rects||[s]));if(click)chosen=chosen.slice(0,1);selection=[...new Set([...(g.append?selection:[]),...chosen.map(s=>Loading.token('SLAB',s))])];activeTab='slab';host.clearSelection();host.refresh();return true;}
  function overlay(ctx,plot){
   const h=sync(),m=Engine.floorModel(h.result,h.floor,h.key),xy=(x,y)=>[plot.ox+x*plot.scale,plot.oy+y*plot.scale];ctx.save();
   if(draft){ctx.strokeStyle='#16899d';ctx.lineWidth=2.5;ctx.setLineDash([7,4]);for(const b of Engine.floorModel(draft.result,h.floor,h.key).beams.filter(b=>b.source==='auto'&&(draft.step==='main'?(b.baseKind||b.kind)==='MB':(b.baseKind||b.kind)==='SB'))){ctx.beginPath();ctx.moveTo(...xy(...b.a));ctx.lineTo(...xy(...b.z));ctx.stroke();}ctx.setLineDash([]);}
@@ -158,7 +192,7 @@ function BeamLayoutUI116(host){
   }
   plot.slabDirections=host.showDirections()?BeamLayout116.drawDirections(h.p,m,h.floor,ctx,plot):[];
   plot.slabThicknessLabels=BeamLayout116.drawThicknessLabels(m,ctx,plot);
-  if(gesture){ctx.strokeStyle='#0082d2';ctx.fillStyle='rgba(0,130,210,.12)';ctx.setLineDash([5,3]);const a=xy(...gesture.from),b=xy(...gesture.to);ctx.fillRect(a[0],a[1],b[0]-a[0],b[1]-a[1]);ctx.strokeRect(a[0],a[1],b[0]-a[0],b[1]-a[1]);}ctx.restore();
+  if(gesture)Drawing.drawSelectionBox321(ctx,plot,gesture.from,gesture.to);ctx.restore();
  }
  function reset(){draft=null;selection=[];gesture=null;context='';form=null;thicknessForm=null;beamForm=null;}
  const clone=BeamLayout116Clone=>JSON.parse(JSON.stringify(BeamLayout116Clone));

@@ -1,6 +1,6 @@
 // E2.104: columns and column defaults are shared by a framing, independent of other framings.
 const FloorColumns101=(()=>{
- const fields=['mode','columns','columnSizes','columnAxisPositions','columnPlacements','suppressedColumns','transferColumns','autoBeamSnapshot'];
+ const fields=['mode','columns','columnSizes','columnAxisPositions','columnPlacements','suppressedColumns','transferColumns','autoBeamSnapshot','columnSchemeDeleted319'];
  function record(p,key,f){if(!p.types[key])throw Error('Framing 已不存在');const t=p.types[key];t.columnDefaults101??={cb:p.defaults.cb,cd:p.defaults.cd};return t;}
  function view(p,key,f){const t=p.types[key];return {...p,defaults:{...p.defaults,...t.columnDefaults101}};}
  function mutate(p,key,f,fn){record(p,key,f);const q=view(p,key,f),t={...p.types[key],beams:Engine.clone(p.types[key].beams)};for(const k of fields)t[k]=Engine.clone(t[k]??(k==='mode'?'manual':[]));q.types={...p.types,[key]:t};if(p.types[key].autoBeamSnapshot===undefined)delete t.autoBeamSnapshot;Engine.bindMainColumns164(q,key,Engine.model(p,key));const out=fn(q);Engine.validate(q);p.types[key].beams=Engine.clone(t.beams);for(const k of fields){if(k==='autoBeamSnapshot'&&t[k]===undefined)delete p.types[key][k];else p.types[key][k]=Engine.clone(t[k]??[]);}return out;}
@@ -247,11 +247,11 @@ const FloorWalls292=(()=>{
    if(m.walls.some(w=>horizontal===near(w.rawA[1],w.rawZ[1])&&Engine.overlap(r,Engine.rect(w))))throw Error(hit.id+'：目標層有重疊的平行牆；整批未複製');
    const raw=Engine.clone(p.types[key].walls.find(w=>w.id===hit.id));if(!raw)throw Error('牆已不存在，請重新選取');
    const a=[...wall.rawA],z=[...wall.rawZ],matches=pos=>pos&&pos.a.every((v,i)=>near(v,wall.a[i]))&&pos.z.every((v,i)=>near(v,wall.z[i]));
-   let position=raw.axisPosition??'auto';
-   if(!matches(Engine.wallPosition(m.ts,a,z,wall.b,position))){const cross=horizontal?1:0,offset=wall.a[cross]-a[cross];position=near(offset,0)?'center':horizontal?(offset>0?'down':'up'):(offset>0?'right':'left');}
-   if(!matches(Engine.wallPosition(m.ts,a,z,wall.b,position)))throw Error(hit.id+'：目標層此位置不在有效建築範圍，未能保留牆位置；整批未複製');
+   const at=position=>Engine.wallPlacement322(m.ts,a,z,wall.b,position,source.walls)?.pos??Engine.wallPosition(m.ts,a,z,wall.b,position);let position=raw.axisPosition??'auto';
+   if(!matches(at(position))){const cross=horizontal?1:0,offset=wall.a[cross]-a[cross];position=near(offset,0)?'center':horizontal?(offset>0?'down':'up'):(offset>0?'right':'left');}
+   if(!matches(at(position)))throw Error(hit.id+'：目標層此位置不在有效建築範圍，未能保留牆位置；整批未複製');
    let id=wall.id,n=1;while(used.has(id))id='W'+n++;used.add(id);
-   if(!copied)Engine.freezeAutoBeams(trial,targetKey,Engine.model(trial,targetKey));
+   if(!copied)Engine.freezeAutoBeams(trial,targetKey,Engine.floorModel(current,target,targetKey));
    t.walls.push({...raw,id,a:{x:a[0],y:a[1]},z:{x:z[0],y:z[1]},b:wall.b*1000,on:true,axisPosition:position});
    current=Engine.generate(trial);const built=Engine.floorModel(current,target,targetKey).walls.find(w=>w.id===id);
    if(!built||!same(Engine.rect(built),r))throw Error(hit.id+'：未能保留牆座標及厚度；整批未複製');

@@ -16,8 +16,8 @@ const GeometryIssuesLocal=(()=>{
   const t=p.types[key];if(!t)return [];
   // Openings remain part of the building outline. Touching/partly crossing
   // columns need review, not automatic deletion. Visibility is irrelevant.
-  const outline=Engine.tiles(p,t).filter(r=>r.state!==0);
-  return t.columns.filter(c=>c.on&&(t.mode!=='auto'||c.autoAdded)).map(c=>columnRecord(p,key,c)).filter(Boolean).filter(c=>{const r=Engine.columnRect(c);return !outline.some(t=>r.x+r.w/2>=t.x0-eps&&r.x-r.w/2<=t.x1+eps&&r.y+r.d/2>=t.y0-eps&&r.y-r.d/2<=t.y1+eps);});
+  const tiles=Engine.tiles(p,t),outline=tiles.filter(r=>r.state!==0),polys=t.regions319?Diagonal315.regions319(t,tiles).building:null;
+  return t.columns.filter(c=>c.on&&(t.mode!=='auto'||c.autoAdded)).map(c=>columnRecord(p,key,c)).filter(Boolean).filter(c=>{const r=Engine.columnRect(c);if(polys){const box=Diagonal315.box(r);return !polys.some(poly=>Diagonal315.clip(box,poly).length||box.some(q=>Diagonal315.inside(q,poly))||poly.some(q=>q[0]>=r.x-r.w/2-eps&&q[0]<=r.x+r.w/2+eps&&q[1]>=r.y-r.d/2-eps&&q[1]<=r.y+r.d/2+eps));}return !outline.some(t=>r.x+r.w/2>=t.x0-eps&&r.x-r.w/2<=t.x1+eps&&r.y+r.d/2>=t.y0-eps&&r.y-r.d/2<=t.y1+eps);});
  }
  function cleanup(p,key){
   const t=p.types[key],removed=outsideColumns(p,key);if(!removed.length)return [];
@@ -38,7 +38,7 @@ const GeometryIssuesLocal=(()=>{
   Engine.bindWallChanges302(p,before);
   for(const key of Object.keys(p.types))if(before.types[key]&&JSON.stringify(p.types[key].noColumnZones)!==JSON.stringify(before.types[key].noColumnZones))Engine.bindMainColumns164(p,key,Engine.model(before,key));
   const changes=[];for(const key of Object.keys(p.types)){if(!before.types[key])continue;
-   const shape=q=>JSON.stringify([q.types[key].building,Engine.axisData(q,key)]);
+   const shape=q=>JSON.stringify([q.types[key].building,Engine.axisData(q,key),q.types[key].regions319?.building]);
    if(shape(p)===shape(before))continue;const ids=cleanup(p,key);if(ids.length)changes.push({key,ids});
   }return changes;
  }

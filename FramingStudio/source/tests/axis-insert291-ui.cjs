@@ -3,7 +3,7 @@ const {chromium}=require('playwright');const {fixture}=require('./axis-insert291
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe'});
 try{const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
  const url=process.env.FRAMING_PREVIEW_URL||'http://127.0.0.1:8783/';await page.goto(url+'?axis291='+Date.now());await page.waitForFunction(()=>window.StudioHost);
- const load=async p=>{await page.locator('#file').setInputFiles({name:'axis291.framing.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(p))});await page.waitForFunction(()=>StudioHost.get().p.name==='Axis insertion 291');await page.evaluate(()=>StudioHost.navigate('axes'));};
+ const load=async p=>{await page.locator('#file').setInputFiles({name:'axis291.framing.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(p))});await require('./project-import324.cjs').confirmProjectImport324(page);await page.waitForFunction(()=>StudioHost.get().p.name==='Axis insertion 291');await page.evaluate(()=>StudioHost.navigate('axes'));};
  const state=()=>page.evaluate(()=>JSON.parse(JSON.stringify(StudioHost.get().p)));
  const coords=()=>page.evaluate(()=>{const h=StudioHost.get();return {x:Engine.axes(h.p,'x',h.key),y:Engine.axes(h.p,'y',h.key)};});
  const geometry=()=>page.evaluate(()=>{const h=StudioHost.get(),m=Engine.floorModel(h.result,1);return {columns:m.columns.map(c=>({id:c.id,...Engine.columnRect(c)})),walls:m.walls.map(w=>({id:w.id,a:w.a,z:w.z})),beams:m.beams.filter(b=>b.source==='manual').map(b=>({id:b.id,rawA:b.rawA,rawZ:b.rawZ}))};});

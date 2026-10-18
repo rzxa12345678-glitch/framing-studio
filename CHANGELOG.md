@@ -1,3 +1,80 @@
+# E2.324 — 斜梁版整合发布
+
+- 以 E2.320 整合 PR #28（含 #27）及 #24，保留区域点选、三角形次梁、CAD 框选、墙对齐、柱方案、确认和显示改进。
+- 完整柱截面按实际多边形范围／洞口及各楼层墙位验证，越界或预览不一致时整批拒绝。
+- 上墙自动偏移超出点选建筑范围时保留原墙并提示，不再无提示裁掉。
+- 72 组回归、65 项 Windows EXE 检查通过；原 A/B 格式和 Excel/VBA 文件保留。详见 verification/integration324.md。
+
+# E2.319 — Offline column-layout proposals
+
+06 Columns now offers bounded offline candidate search, preview and explicit one-transaction apply. It respects actual section footprints, X/Y spacing, Opening/exclusion/wall/outside boundaries and shared-Framing interfaces. Existing manual/input/beam-connected columns, upper reference columns and real deletion records remain protected. Proposed layouts that alter existing beams are excluded before display; stale drafts require regeneration. No web service or AI is required. This geometry assistant does not replace structural design checks.
+
+Passed 13 synthetic regression groups and the current HKIE Q5 model group, plus 18 isolated Windows EXE UI/native-response checks. Current F03 retains its 24 beam-connected columns; incompatible alternatives are excluded. Original browser tab refreshed after backup, preview checked, exported model byte-identical before/after. E2.318 app/source/model separately preserved. Original calculation equations, Excel templates/bridge and A/B report formats unchanged. See verification/E2.319-column-schemes.md.
+
+# E2.318 — Separate plan fill and 3D slab visibility
+
+04 Region plan always shows the existing pale-yellow building/slab extent. Its checked plan-fill control explains that this page is fixed; other plan pages retain the user's independent optional fill preference. A separate 3D slab-body checkbox controls 3D rendering, with matching pale-yellow/green legend swatches. Opening and outside colours remain unchanged, including diagonal outlines.
+
+Verified in the packaged Windows WebView2 EXE with 16 display/model assertions plus 3 native confirmation-response checks. Tests cover the current model, mixed Opening/outside cells, diagonal slab faces, independent toggles and exact project/generated-result preservation. The existing browser tab was refreshed after backup, UI toggles verified, and before/after exported project files are byte-identical. No calculation, Excel workbook/worker or Section A/B report code changed; the 44 other embedded scripts are byte-identical. Native Excel recalculation was not rerun for this display-only update.
+
+# E2.317 — In-page confirmations with Windows EXE verification
+
+Replace application-level native confirm/prompt calls with an accessible in-page dialog shared by browser and WebView2: type deletion, Opening deletion, pure-auto column reset, new/open project replacement, recovery and new type names. Cancel is focused by default; Escape cancels; duplicate requests fail closed; name validation remains visible. Confirmed operations retain the original transactions and undo.
+
+The EXE uses the same panel for dirty closing and export-file overwrite confirmation. Save acknowledgement clears dirty state only after a matching project is actually written. Restored backups are included in dirty-close checks. Native Help opens the existing in-page help instead of a missing text file. Test mode no longer automatically accepts native script dialogs. Windows file selection remains a system file picker; startup errors without a working page remain native notifications.
+
+Actual packaged WebView2 testing: 27 isolated checks passed, then 28 passed with the current HKIE Q5 model, including cancel/confirm, delete/undo, new type, replacement cancellation, native project write, stale save acknowledgement and native close-choice messaging. Browser recovery and F04 deletion cancellation passed; before/after project exports are exactly equal. Native Excel/report generation was not rerun. Visible Windows EXE checks also passed: native Save cancellation, in-page overwrite cancellation with an unchanged file hash, confirmed overwrite, title-bar close/return/save-first, clean close, backup recovery and close without another save. Both visible runs exited with code 0; the saved model matched its source except the intentional QA name.
+
+Calculation engines, original Excel templates/worker logic, Section A/B report content and embedded report code are unchanged. E2.315 beam update feedback is retained.
+
+# E2.315 — Beam-size update feedback
+
+Batch and per-row beam-size edits show a blocking busy indicator before the existing synchronous transaction begins. Queued input cannot submit the edit twice. Completion leaves a persistent member count and elapsed time; rejected edits retain their inputs and show the original validation reason. Successful batches remain one undo operation.
+
+Verified using the current HKIE 2025 Q5 model: five 25 m TBs changed from 3500 to 3400 mm (visible completion: 7.5 s), 3600 mm rejected by the existing 3500 mm structural-zone limit, then one undo restored the complete saved model exactly. Old/new transaction runs produced identical model and generated geometry; this release improves feedback, not calculation speed.
+
+Calculation/loading engines, Excel templates and native bridge, Section A/B report modules and embedded report code are unchanged. Native Excel reports were not regenerated for this UI-only update.
+
+# E2.323 — Summary Check 右側樣式修復
+
+- 全樓檢查的動態組合表補回側欄共用表格容器及主題；窄側欄仍能換行顯示，保留原數據、文字及勾選狀態。
+- 樓層／構件篩選下拉使用一般介面白底，避免被當作模型手動輸入染黃；更新全樓 Check 套回既有主按鈕樣式。
+- 保留批次建議對原結果表的捲動處理、全樓／增量 App 檢查、報表往返及縮放設定。計算、E2.322 牆對齊、CAD 框選和原 A/B、Excel/VBA 格式不改。
+
+# E2.322 — 上下層同軸牆自動沿用偏移
+
+- 自動定位的上層牆依相鄰下層同軸、正長度重疊牆段的實際中心偏移定位；不同牆厚仍保持中心線一致。原始端點、構件身分和共用 Framing 輸入不改寫，各層按自己的下層推導。
+- 保留上層明確手動軸線位置。多段下牆偏移一致時可跟隨；互相矛盾、超出本層範圍或碰到固定柱時保留原位並提示，不任選一面牆。
+- 在柱、梁、樓板生成前套用實體牆位；局部淨高模型保留對齊。下層修改同步既有上層梁端的牆面連接，支承選項、CB 根部、反力路徑檢查實際接觸；固定梁不會因仍在舊參考線上而誤判連接。
+- 向上複製自動牆時保留實體位置及自動跟隨，保留原衝突回滾、共享樓層、Undo 及保存重開。
+- 包含 PR #27 的 CAD 方向框選；本分支以正式 E2.316 加該框選提交為基線，未合併 PR #24、#26。原 A／B 抄內容、公式、格式及 Excel／VBA 模板保留。
+
+# E2.320 — 斜梁版试用：三角形次梁分区及保存修复
+
+- 框选三角形及斜边区域按实际主梁／墙梁格保存，避免误判为矩形悬挑区；区域重叠按实际多边形判断。MB、TB、CB 及墙分别作为边界，不跨中间主梁布置。
+- 最大间距按支承参考中心线站位控制。预览、应用、撤销及保存重开保持次梁，手动梁、指定梁宽及删除记录保留；旧 SB315 快照及误判的封闭三角形分区可重新识别。
+- 空分区显示先框选或使用全部区域的入口，预览显示无梁原因及支承提示。缺少柱／墙传荷路径仍待确认，支承改变不会默默补成有效构件。
+- Slab 页按实际三角形／多边形点选、框选及高亮，X/Y 方向统一保存在板设置；次梁分区显示实际轮廓。
+- 原矩形计算、Section A/B 内容和格式、原生 Excel/VBA 保持；本版更新 PR #26，不合并 main 或独立 PR #24。
+
+# E2.319 — 斜梁版试用：区域点选与统一 Slab 方向
+
+- 区域保留原轴网涂选／擦除，增加点选范围、预览、确认、退回一点与取消；建筑范围和 Opening 均支持局部多边形，原网格输入可继续覆盖整格。
+- 斜边坐标输入及应用面板保留，取消其中 X/Y 选择；三角形板在 Slab 选择单向 X／Y。旧项目方向继续保留，各板设置优先，最长条带验算跨度与实际板区传荷共用该方向。
+- 平面、几何出图、SVG／打印和受荷面积使用同一实际范围。撤销及保存再打开保留点选结果；范围外柱按既有可撤销清理规则处理。
+- Section A/B 公式、报告格式及 Excel/VBA 保持；未使用新点选的现有样例模型、荷载、报告内容和 Excel 输入计划与 E2.318 比较一致。
+- 试用更新仍在 PR #26，未合并 main；不包含独立 PR #24。原生 Excel、原生 A/B PDF 和 Windows 桌面 GUI 本轮未重跑。
+
+# E2.318 — 斜梁版试用：直接画斜梁及多边形出图
+
+- 梁布置直接连接柱中心、梁端或梁墙线上的点画斜梁，不再要求先启用斜边范围。画梁保留原建筑格及 Opening；区域外轮廓另行裁切。无斜梁、无多边形区域的项目保持原路径。
+- 完整矩形外轮廓也可画第一根斜梁；恢复原轴网范围保留已画斜梁。支持撤销、保存重开及连接 SB，缺少支承仍保留未确认结果。
+- 几何与出图按实际斜梁截面选取和高亮；三角形板标记限制在实际板区内。多边形无板区合并边界与标签，叉线裁到实际边界。预览、SVG、打印共用图形。
+- 修复区域“应用斜边范围／取消点选”调用不存在刷新方法的问题。
+- Section A/B 公式、原生 Excel/VBA、模板和报告绘图路径不变。E2.316 的矩形、三角形及带次梁样例逐项比较模型、A/B 荷载、报表图形和 Excel 输入计划。
+
+这是独立试用 PR，基于正式 E2.316；PR #24（E2.317）仍独立，未并入本版。验证记录见 `FramingStudio/verification/slanted318.json`。本轮不重新执行原生 Excel、原生 A/B PDF 或 Windows 桌面 GUI 验证。
+
 # E2.316 — 斜梁版：斜梁、三角形单向板与实际区域传荷
 
 - 区域页可输入或点选凸多边形外轮廓；新增斜梁绘制、真实截面选取及 3D 显示。旧矩形模型默认沿用原计算。

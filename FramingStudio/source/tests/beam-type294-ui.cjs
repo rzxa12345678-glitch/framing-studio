@@ -8,7 +8,7 @@ const {pathToFileURL}=require('node:url'),{chromium}=require('playwright'),{fixt
   page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
   await page.goto(pathToFileURL(path.resolve('FramingStudio/assets/index.html')).href);await page.waitForFunction(()=>window.StudioHost);
   await page.evaluate(()=>{const draw=Drawing.plan;Drawing.plan=(...args)=>window.beamPlot294=draw(...args);});
-  const load=async p=>{await page.locator('#file').setInputFiles({name:'beam294.framing.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(p))});await page.evaluate(()=>StudioHost.navigate('checks'));};
+  const load=async p=>{await page.locator('#file').setInputFiles({name:'beam294.framing.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(p))});await require('./project-import324.cjs').confirmProjectImport324(page);await page.evaluate(()=>StudioHost.navigate('checks'));};
   const state=()=>page.evaluate(()=>JSON.stringify(StudioHost.get().p));
   const beam=()=>page.evaluate(()=>{const h=StudioHost.get();return Engine.floorModel(h.result,h.floor).beams.find(b=>b.id==='EDGE');});
   const open=async()=>{
@@ -28,7 +28,7 @@ const {pathToFileURL}=require('node:url'),{chromium}=require('playwright'),{fixt
   await page.locator('#memberd').fill('900');await page.locator('#sizeapply').click();await open();await page.locator('#memberreset199').click();assert.equal((await beam()).kind,'MB');assert.equal((await beam()).manualKind294,'MB','Reset dimensions does not reset chosen type');
   await open();await page.locator('#memberclose').click();
   const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#save').click()]);await download.saveAs(path.join(out,'beam294.saved.framing.json'));
-  await page.locator('#file').setInputFiles(path.join(out,'beam294.saved.framing.json'));assert.equal((await beam()).kind,'MB');assert.equal((await beam()).manualKind294,'MB');
+  await page.locator('#file').setInputFiles(path.join(out,'beam294.saved.framing.json'));await require('./project-import324.cjs').confirmProjectImport324(page);assert.equal((await beam()).kind,'MB');assert.equal((await beam()).manualKind294,'MB');
   await load(fixture());await open();assert.equal((await beam()).kind,'MB');assert.match(await page.locator('#memberbody').innerText(),/TOP_CB/);assert.match(await page.locator('#memberbody').innerText(),/BOTTOM_CB/);
   await page.screenshot({path:path.join(out,'beam294-connected.png')});
   assert.deepEqual(errors,[]);console.log('PASS real card type apply, size-only edit, invalid draft, reset, Undo, Save Project/reopen and physical support labels; zero page errors');

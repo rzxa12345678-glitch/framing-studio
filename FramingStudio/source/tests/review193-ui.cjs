@@ -11,7 +11,7 @@ const path=require('path'),assert=require('assert/strict'),{pathToFileURL}=requi
  await page.locator('[data-review191="restore"]').click();await clear();await page.locator('#review-filter191').selectOption('ALL');
  await box(.9,1.9,9.1,2.1);assert.equal(await page.locator('#review-layout191 tbody tr').count(),0,'touching/crossing beam and column fragments are not selected');
  await box(.5,1.5,9.5,2.5);assert.equal(await page.locator('#review-layout191 tbody tr').count(),3,'fully enclosed B1 and two columns only');assert.equal(await page.locator('[data-review-select191="MB:V2"]').count(),0);
- await clear();await box(9.5,2.5,.5,1.5);assert.equal(await page.locator('#review-layout191 tbody tr').count(),3,'reverse drag also uses complete containment');
+ await clear();await box(9.5,2.5,.5,1.5);assert.deepEqual(await page.locator('[data-review-select191]').evaluateAll(es=>es.map(e=>e.dataset.reviewSelect191).sort()),['COL:C0','COL:C1','MB:B1','MB:V1','MB:V2','MB:V3'],'right-to-left crossing adds the partially intersecting vertical beams');
  await clear();await page.locator('#review-filter191').selectOption('COL');await box(.5,1.5,9.5,2.5);assert.equal(await page.locator('#review-layout191 tbody tr').count(),2,'column filter applies to canvas selection');await canvas.focus();await page.keyboard.press('Escape');assert.equal(await page.locator('#review-layout191 tbody tr').count(),0);
- assert.deepEqual(errors,[]);console.log('PASS: selected-only table, column+beam selection and movement, uncheck removes row, full containment both drag directions, type filter, reset and Esc');
+ assert.deepEqual(errors,[]);console.log('PASS: selected-only table, column+beam selection and movement, uncheck removes row, left window containment and right crossing selection, type filter, reset and Esc');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1});

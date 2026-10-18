@@ -1,3 +1,10 @@
+# E2.324 — 斜梁版整合发布
+
+- 以 E2.320 整合 PR #28（含 #27）及 #24，保留区域点选、三角形次梁、CAD 框选、墙对齐、柱方案、确认和显示改进。
+- 完整柱截面按实际多边形范围／洞口及各楼层墙位验证，越界或预览不一致时整批拒绝。
+- 上墙自动偏移超出点选建筑范围时保留原墙并提示，不再无提示裁掉。
+- 72 组回归、65 项 Windows EXE 检查通过；原 A/B 格式和 Excel/VBA 文件保留。详见 verification/integration324.md。
+
 # E2.319 — Offline column-layout proposals
 
 06 Columns now offers bounded offline candidate search, preview and explicit one-transaction apply. It respects actual section footprints, X/Y spacing, Opening/exclusion/wall/outside boundaries and shared-Framing interfaces. Existing manual/input/beam-connected columns, upper reference columns and real deletion records remain protected. Proposed layouts that alter existing beams are excluded before display; stale drafts require regeneration. No web service or AI is required. This geometry assistant does not replace structural design checks.

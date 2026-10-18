@@ -3,7 +3,7 @@ const {chromium}=require('playwright'),{pathToFileURL}=require('node:url'),path=
  const page=await browser.newPage({viewport:{width:1650,height:1050}}),errors=[],out=path.resolve('tmp/slanted318/ui');fs.mkdirSync(out,{recursive:true});page.on('pageerror',e=>errors.push(e.stack));page.on('dialog',d=>d.accept());
  await page.goto(pathToFileURL(path.resolve(__dirname,'../../assets/index.html')).href);await page.waitForFunction(()=>window.StudioHost);
  await page.evaluate(()=>{const old=Drawing.plan;Drawing.plan=(...args)=>window.plot318=old(...args);});
- const load=async p=>{await page.locator('#file').setInputFiles({name:'trial.framing.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(p))});await page.waitForFunction(()=>StudioHost.get().p.types.F1);};
+ const load=async p=>{await page.locator('#file').setInputFiles({name:'trial.framing.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(p))});await require('./project-import324.cjs').confirmProjectImport324(page);await page.waitForFunction(()=>StudioHost.get().p.types.F1);};
  const click=async q=>{await page.waitForTimeout(120);const pos=await page.evaluate(q=>({x:plot318.ox+q[0]*plot318.scale,y:plot318.oy+q[1]*plot318.scale}),q);await page.locator('#canvas').click({position:pos});};
  for(const withOutline of [false,true]){
   const p=square();p.types.F1.beams=p.types.F1.beams.filter(b=>b.id!=='D1');if(withOutline)p.types.F1.diagonal315={outline:[[0,0],[9,0],[9,9],[0,9]],direction:'X'};await load(p);await page.evaluate(()=>StudioHost.navigate('beamLayout'));await page.locator('#drawtool').click();await click([9,0]);await click([0,9]);

@@ -1,5 +1,10 @@
 # Framing Studio
 
+E2.324 · **斜梁版整合发布**：以 E2.320 为基础，包含 PR #24、#26、#27、#28；修复柱方案的实际多边形越界检查及上墙偏移后被裁掉的问题。保留 A/B 公式、格式和原生 Excel/VBA。72 组回归及 65 项 Windows EXE 检查通过。详见 [整合验证](FramingStudio/verification/integration324.md)。
+
+以下为历史版本说明。
+
+
 E2.319 / PR #24：離線柱位方案、明確套用與撤銷；保留手動／已刪／接梁柱。另保留梁尺寸操作回饋、頁內確認及平面填色／3D 分離。
 
 E2.323 · **Summary Check 右側樣式修復**：全樓檢查的篩選器、組合表與主按鈕恢復側欄共用樣式；保留勾選、篩選、更新 Check、上下牆對齊及 CAD 框選。原 A/B 抄畫面、列印與 Excel/VBA 格式維持原樣。詳細驗證見 [Summary 側欄驗證](FramingStudio/verification/summary-sidebar323.md)。

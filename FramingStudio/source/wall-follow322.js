@@ -29,6 +29,12 @@ const WallFollow322=(()=>{
    const f=result.floors[i],source=original[f.n]?.key===f.type?original[f.n]:base[f.type];let m=source;
    if(i){const lower=E.floorModel(result,result.floors[i-1].n),t=p.types[f.type];let byType=plans.get(lower.walls);if(!byType)plans.set(lower.walls,byType=new Map());let plan=byType.get(f.type);
     if(!plan){plan=new Map();for(const w of t.walls.filter(w=>w.on&&(w.axisPosition??'auto')==='auto')){const a=E.resolve(p,w.a,f.type),z=E.resolve(p,w.z,f.type),decision=placement(source.ts,a,z,w.b/1000,'auto',lower.walls);if(!decision)continue;decision.meta.lowerKey=lower.key;
+      if(decision.meta.status==='aligned'&&decision.pos){
+       const box=E.rect({...decision.pos,b:w.b/1000}),boundary=source.buildingPolygons319||(source.diagonal315?.outline?[source.diagonal315.outline]:null);
+       if(boundary&&Diagonal315.sum(Diagonal315.difference([Diagonal315.box(box)],boundary))>eps){
+        const original=source.walls.find(q=>q.id===w.id);decision.pos=original?{a:[...original.a],z:[...original.z]}:null;decision.meta.status='blocked';decision.message='跟隨下層牆會越出本層實際點選／斜邊範圍，已保留原牆位置；請核對範圍或手動指定';
+       }
+      }
       if(decision.meta.status==='aligned'&&decision.pos){const box=E.rect({...decision.pos,b:w.b/1000}),fixed=source.columns.filter(c=>t.mode!=='auto'||t.columnFrozen311||c.autoAdded||c.axisPosition||c.alignmentReference);if(fixed.some(c=>E.overlap(box,E.columnRect(c)))){decision.pos=E.wallPosition(source.ts,a,z,w.b/1000,'auto');decision.meta.status='blocked';decision.message='跟隨下層牆會與本層手動／固定柱重疊，未自動對齊；請先核對柱牆位置';}}
       plan.set(w.id,decision);
      }byType.set(f.type,plan);}

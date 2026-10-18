@@ -333,7 +333,7 @@ const Engine=(()=>{
  const on=(q,m)=>{if(m.diagonal315)return Diagonal315.inside(q,Diagonal315.footprint(m));const r=rect(m);return Math.abs(q[0]-r.x)<=r.w/2+eps&&Math.abs(q[1]-r.y)<=r.d/2+eps;};
  // Drawing uses actual column centres and the facing physical wall surface.
  // Return a unique orthogonal joint only; callers retain OP/overlap validation.
- function beamDrawPath301(model,a,z){if(model.diagonal315&&Math.abs(a[0]-z[0])>eps&&Math.abs(a[1]-z[1])>eps)return {a:[...a],z:[...z]};
+ function beamDrawPath301(model,a,z,allowDiagonal318=false){if(model.diagonal315&&Math.abs(a[0]-z[0])>eps&&Math.abs(a[1]-z[1])>eps)return {a:[...a],z:[...z]};
   const points=[a,z],same=(p,q)=>p.every((v,i)=>near(v,q[i]));
   const cols=points.map(q=>model.columns.filter(c=>c.status!=='上层柱'&&[ [columnRect(c).x,columnRect(c).y],[c.x,c.y] ].some(v=>same(q,v))));
   if(cols.some(c=>c.length>1))return null;
@@ -356,7 +356,7 @@ const Engine=(()=>{
    }
    if(!ambiguous&&near(ends[0][cross],ends[1][cross])&&Math.abs(ends[0][axis]-ends[1][axis])>eps&&!choices.some(v=>same(v.a,ends[0])&&same(v.z,ends[1])))choices.push({a:ends[0],z:ends[1]});
   }
-  return choices.length===1?choices[0]:null;
+  return choices.length===1?choices[0]:allowDiagonal318&&choices.length===0&&Math.abs(a[0]-z[0])>eps&&Math.abs(a[1]-z[1])>eps?{a:centres[0],z:centres[1]}:null;
  }
  const sig=(a,z)=>[a,z].map(v=>v.map(n=>n.toFixed(5)).join(',')).sort().join('|');
  function covered(list,a,z){const h=near(a[1],z[1]);if(!h&&!near(a[0],z[0]))return false;const idx=h?0:1,fix=h?1:0;let at=Math.min(a[idx],z[idx]),end=Math.max(a[idx],z[idx]);const intervals=list.filter(m=>near(m.rawA[fix],a[fix])&&near(m.rawZ[fix],a[fix])).map(m=>[Math.min(m.rawA[idx],m.rawZ[idx]),Math.max(m.rawA[idx],m.rawZ[idx])]).sort((a,b)=>a[0]-b[0]);for(const [lo,hi]of intervals){if(lo>at+eps)break;if(hi>at)at=hi;}return at>=end-eps;}
@@ -848,7 +848,7 @@ const Engine=(()=>{
   for(const s of slabs||[]){const zone=(t.secondaryAreas||[]).find(a=>a.cantilever101&&a.rects.some(r=>s.x0>=r.x0-eps&&s.x1<=r.x1+eps&&s.y0>=r.y0-eps&&s.y1<=r.y1+eps));if(zone)s.direction101=zone.direction==='X'?'Y':'X';}for(const s of slabs||[]){s.thickness=t.slabSizes?.find(o=>o.signature===slabSignature(s))?.value??t.slabSizes?.find(o=>s.legacySignatures120.includes(o.signature))?.value??df.slab;if(t.slabDirections116&&typeof Loading!=='undefined')s.direction116=slabGeometry.record(t.slabDirections116,s);if(layout)s.shortSpan116=true;}
   const uncovered=(slabs||[]).flatMap(s=>s.rects).reduce((sum,t)=>{let coveredArea=0;for(const [a,b,c,d]of [...panels,...irregularRegions305.flatMap(r=>r.rects.map(q=>[q.x0,q.x1,q.y0,q.y1]))])coveredArea+=Math.max(0,Math.min(b,t.x1)-Math.max(a,t.x0))*Math.max(0,Math.min(d,t.y1)-Math.max(c,t.y0));return sum+Math.max(0,(t.x1-t.x0)*(t.y1-t.y0)-coveredArea);},0);
   if(uncovered>.001)issue('SLAB',uncovered.toFixed(1)+' m² 未识别封闭梁格，请核对支承；未按悬臂板处理');
-  const completed315={key,ts,columns,walls,beams,issues,panels,irregularRegions305,duplicateCandidates163,slabs:slabs||[],slabVoids,sh,min,...(columnsOnly?{columnsOnly:true}:{})};return t.diagonal315?Diagonal315.model(p,key,completed315):completed315;
+  const completed315={key,ts,columns,walls,beams,issues,panels,irregularRegions305,duplicateCandidates163,slabs:slabs||[],slabVoids,sh,min,...(columnsOnly?{columnsOnly:true}:{})};return Diagonal315.active(p,key)?Diagonal315.model(p,key,completed315):completed315;
  }
  function slabPanels(ts,beams,walls,voids=[],columns=[]){
   const concrete=slabGeometry.concrete(beams,walls,columns),cuts=[...voids,...concrete],xs=unique([...ts.flatMap(t=>[t.x0,t.x1]),...cuts.flatMap(r=>[r.x0,r.x1])]),ys=unique([...ts.flatMap(t=>[t.y0,t.y1]),...cuts.flatMap(r=>[r.y0,r.y1])]);

@@ -22,7 +22,7 @@ const Drawing=(()=>{
  }
 
  function plan(ctx,w,h,p,m,opt={}){
-  if(opt.monochrome)return FramingSymbols98.plan(ctx,w,h,p,m,opt);
+  if(opt.monochrome)return FramingSymbols98.plan(ctx,w,h,p,m,m.diagonal315?{...opt,geometry318:true,drawingOffsets191:opt.drawingOffsets191||{}}:opt);
   if(m.columnsOnly)opt={...opt,membersOnly:true};
   if(typeof Loading!=='undefined'&&Engine.floors(p)[(opt.floor||1)-1]?.type===m.key)m=Loading.supportModel(p,m,opt.floor);
   const xx=Engine.axes(p,'x',m.key),yy=Engine.axes(p,'y',m.key),maxX=xx.at(-1).v,maxY=yy.at(-1).v;
@@ -216,7 +216,7 @@ const Drawing=(()=>{
   return s+'</g>';
  }
  function svg(p,m,ratio,labels=true,visible={},paper={}){
-  return FramingSymbols98.svg(p,m,ratio,labels,visible,paper);
+  return FramingSymbols98.svg(p,m,ratio,labels,visible,m.diagonal315?{...paper,geometry318:true,drawingOffsets191:paper.drawingOffsets191||{}}:paper);
   const size=paper.size==='A3'?'A3':'A4',portrait=paper.portrait===true,W=size==='A3'?(portrait?297:420):297,H=size==='A3'?(portrait?420:297):210;
   if(typeof Loading!=='undefined')m=Loading.supportModel(p,m);
   if(!Number.isFinite(ratio)||ratio<=0)throw Error('打印比例须为正数');const xs=Engine.axes(p,'x',m.key),ys=Engine.axes(p,'y',m.key),sx=1000/ratio,maxX=xs.at(-1).v*sx,maxY=ys.at(-1).v*sx;

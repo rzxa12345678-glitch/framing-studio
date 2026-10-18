@@ -1,0 +1,586 @@
+{
+  "version": "E2.318",
+  "edition": "斜梁版",
+  "channel": "trial-pull-request",
+  "baseline": "3f84ffa0a11bd948d7be362b41257aeb2e6c7773",
+  "baselineVersion": "E2.316",
+  "excludedIndependentPR": {
+    "number": 24,
+    "version": "E2.317",
+    "head": "f4333ea25c19030833d207bf68fc0fb202c4ed7b"
+  },
+  "tests": [
+    {
+      "test": "diagonal318",
+      "exit": 0,
+      "ms": 3891
+    },
+    {
+      "test": "diagonal318-ui",
+      "exit": 0,
+      "ms": 8160
+    },
+    {
+      "test": "diagonal315-ui",
+      "exit": 0,
+      "ms": 2946
+    },
+    {
+      "test": "deflection210",
+      "exit": 0,
+      "ms": 62
+    },
+    {
+      "test": "wall-beam-junction301",
+      "exit": 0,
+      "ms": 247
+    },
+    {
+      "test": "wall-beam-snap301",
+      "exit": 0,
+      "ms": 381
+    },
+    {
+      "test": "wall-boundary302",
+      "exit": 0,
+      "ms": 249
+    },
+    {
+      "test": "cb-tip303",
+      "exit": 0,
+      "ms": 312
+    },
+    {
+      "test": "secondary-width304",
+      "exit": 0,
+      "ms": 594
+    },
+    {
+      "test": "diagonal315",
+      "exit": 0,
+      "ms": 9235
+    },
+    {
+      "test": "irregular-secondary305",
+      "exit": 0,
+      "ms": 271
+    },
+    {
+      "test": "concave-transfer306",
+      "exit": 0,
+      "ms": 361
+    },
+    {
+      "test": "secondary-fullspan307",
+      "exit": 0,
+      "ms": 496
+    },
+    {
+      "test": "column-transform308",
+      "exit": 0,
+      "ms": 309
+    },
+    {
+      "test": "no-column-grid313",
+      "exit": 0,
+      "ms": 277
+    },
+    {
+      "test": "column-controls311",
+      "exit": 0,
+      "ms": 417
+    },
+    {
+      "test": "column-position257",
+      "exit": 0,
+      "ms": 322
+    },
+    {
+      "test": "no-column-section314",
+      "exit": 0,
+      "ms": 420
+    },
+    {
+      "test": "column-spacing258",
+      "exit": 0,
+      "ms": 390
+    },
+    {
+      "test": "copy-column196",
+      "exit": 0,
+      "ms": 628
+    },
+    {
+      "test": "column-tributary263",
+      "exit": 0,
+      "ms": 495
+    },
+    {
+      "test": "column-representatives271",
+      "exit": 0,
+      "ms": 393
+    },
+    {
+      "test": "copy-column-adjacent",
+      "exit": 0,
+      "ms": 2019
+    },
+    {
+      "test": "column-delete289-ui",
+      "exit": 0,
+      "ms": 2244
+    },
+    {
+      "test": "axis-insert291",
+      "exit": 0,
+      "ms": 309
+    },
+    {
+      "test": "column-reference-selection",
+      "exit": 0,
+      "ms": 2072
+    },
+    {
+      "test": "wall-copy292",
+      "exit": 0,
+      "ms": 255
+    },
+    {
+      "test": "axis-insert291-ui",
+      "exit": 0,
+      "ms": 2850
+    },
+    {
+      "test": "cb-column-follow298",
+      "exit": 0,
+      "ms": 264
+    },
+    {
+      "test": "mb-column-follow299",
+      "exit": 0,
+      "ms": 84
+    },
+    {
+      "test": "wall-copy292-ui",
+      "exit": 0,
+      "ms": 2579
+    },
+    {
+      "test": "secondary-bay-follow300",
+      "exit": 0,
+      "ms": 54
+    },
+    {
+      "test": "geometry-consistency-local",
+      "exit": 0,
+      "ms": 247
+    },
+    {
+      "test": "wall-column-allocation",
+      "exit": 0,
+      "ms": 299
+    },
+    {
+      "test": "beam-type294",
+      "exit": 0,
+      "ms": 314
+    },
+    {
+      "test": "beam-network165",
+      "exit": 0,
+      "ms": 57
+    },
+    {
+      "test": "bay-record246",
+      "exit": 0,
+      "ms": 478
+    },
+    {
+      "test": "beam-type294-ui",
+      "exit": 0,
+      "ms": 2494
+    },
+    {
+      "test": "auto-transfer",
+      "exit": 0,
+      "ms": 1910
+    },
+    {
+      "test": "unified-members175",
+      "exit": 0,
+      "ms": 396
+    },
+    {
+      "test": "support-cantilever173",
+      "exit": 0,
+      "ms": 308
+    },
+    {
+      "test": "drawing-support197",
+      "exit": 0,
+      "ms": 408
+    },
+    {
+      "test": "slab-transfer177",
+      "exit": 0,
+      "ms": 333
+    },
+    {
+      "test": "slab-load223",
+      "exit": 0,
+      "ms": 349
+    },
+    {
+      "test": "slab-centres175",
+      "exit": 0,
+      "ms": 621
+    },
+    {
+      "test": "report-adoption254",
+      "exit": 0,
+      "ms": 422
+    },
+    {
+      "test": "report-slab-preflight276",
+      "exit": 0,
+      "ms": 1260
+    },
+    {
+      "test": "check-native279",
+      "exit": 0,
+      "ms": 620
+    },
+    {
+      "test": "check-ui279",
+      "exit": 0,
+      "ms": 463
+    },
+    {
+      "test": "summary-app282",
+      "exit": 0,
+      "ms": 552
+    },
+    {
+      "test": "representative-restore295",
+      "exit": 0,
+      "ms": 58
+    },
+    {
+      "test": "local-rebar285",
+      "exit": 0,
+      "ms": 1218
+    }
+  ],
+  "passed": 52,
+  "failed": 0,
+  "baselineComparisons": [
+    {
+      "fixture": "rectangle",
+      "modelAndABLoadsReportVectorsAndWorkbookPlanUnchanged": true,
+      "sha256": "e0c2fc1d09970f40db056044fe75fe69233360705c05641039572bc9e9ed775b"
+    },
+    {
+      "fixture": "triangle",
+      "modelAndABLoadsReportVectorsAndWorkbookPlanUnchanged": true,
+      "sha256": "efd33925ca052115ab24568befac9a28bade75c38a6b1ef28ec74f03956ddc95"
+    },
+    {
+      "fixture": "secondary",
+      "modelAndABLoadsReportVectorsAndWorkbookPlanUnchanged": true,
+      "sha256": "8287b161ba43d8a099bb3572aa27dd134b7ace7bde72c7bf28965966b49fcdab"
+    }
+  ],
+  "preservation": {
+    "baseline": "3f84ffa0a11bd948d7be362b41257aeb2e6c7773",
+    "protectedFiles": [
+      {
+        "path": "FramingStudio/Excel/ExcelBridge.exe",
+        "sha256": "6b6cb8662338a9f4a5cefea4814fbec1ec5fb6c4b9b05df4e21660fe7a4dd36a"
+      },
+      {
+        "path": "FramingStudio/Excel/Foundation_Design_Checking_v8.xlsm",
+        "sha256": "5ac9bd9f306a48766dc8e3b74394a70f838dba1a1915a8ed9390d797ff50d947"
+      },
+      {
+        "path": "FramingStudio/Excel/ReportImages/horizontal-load-path.png",
+        "sha256": "08a71210e4050bc2c5375d7ca0d06995540754a4f2a4e472c32a11f484fd770f"
+      },
+      {
+        "path": "FramingStudio/Excel/ReportImages/vertical-load-path.png",
+        "sha256": "9c50b2115b6a1cfc21b759b8c05cea71193a0c8f7142bedf5a5e63df0c1afabd"
+      },
+      {
+        "path": "FramingStudio/Excel/Section A RC - Section B v106 Loading.xlsm",
+        "sha256": "3c8871a10b77766eecda627cf04aa741216e00caa35ca831f87953a760b199e9"
+      },
+      {
+        "path": "FramingStudio/Excel/Section A RC - Section B v107 Full Loads.xlsm",
+        "sha256": "fd8f180637f68ff8743e2f0d7ede2259993cce9ac973e707f5d16c83b19f8be0"
+      },
+      {
+        "path": "FramingStudio/Excel/Section A RC - Section B v108 Area Loads.xlsm",
+        "sha256": "f056f9b568b3442696444584048b9ba8c11558d2b5d23ef1dddc75554078eb42"
+      },
+      {
+        "path": "FramingStudio/Excel/Section A RC - Section B v109 Compact Copy.xlsm",
+        "sha256": "30f8e3fb744b21b03f9e2b0eb175c4494d9ce6e2d58263cd40bcf1e0aa4db9a5"
+      },
+      {
+        "path": "FramingStudio/Excel/Steel Beam design V095.xlsm",
+        "sha256": "eed7a449b1f32dc5eda3ea23723f09f3623f8f5272ab915360822d0a130a0971"
+      },
+      {
+        "path": "FramingStudio/Excel/deflection_core_wall_BD_layered.xlsm",
+        "sha256": "c784181bc032584c3454fcfd9f22965ef54089bd427a9483bd74345b416baba2"
+      },
+      {
+        "path": "FramingStudio/Excel/overall_checking_BD_copy_ruled.xlsm",
+        "sha256": "9c7008656287c9664df08f459f3728601d9dccd0ba7c10f4304dc121d30460d5"
+      },
+      {
+        "path": "FramingStudio/Excel/templates.json",
+        "sha256": "f2227072fb7a3ea4fb9e57a2ec0c7dbb64860ae4c567456287d602c0cd6236d8"
+      },
+      {
+        "path": "FramingStudio/source/DeflectionCopy.bas",
+        "sha256": "3b9aa8f7bddc7695d3ea3d94b74b28cc2c2281790e9ffa356b2ad099eccb82cc"
+      },
+      {
+        "path": "FramingStudio/source/ExcelBridge.cs",
+        "sha256": "f8e5f204bc19a945027062ab853e58133015553780039ab549f447b04893f517"
+      },
+      {
+        "path": "FramingStudio/source/LayeredDeflection.bas",
+        "sha256": "ecb2af9b3a6296c772311b3c1a9c5cf6384440c01b99816eea2558b44b73bda1"
+      },
+      {
+        "path": "FramingStudio/source/RC107/FullLoads73.bas",
+        "sha256": "c80b3e17a61477491b9243adfe2465aeb9d9d998b38aa89879f64e7f26346e12"
+      },
+      {
+        "path": "FramingStudio/source/RC108/CopyLayout89.bas",
+        "sha256": "1086a8b8394c81b1c573cedc7a616a514417b63eadee95da4fa5c238dca2355d"
+      },
+      {
+        "path": "FramingStudio/source/RC108/FullLoads73.bas",
+        "sha256": "e3f2a5f641ea196fbf8c2dba175503caa990ded670ee53895b90095bdfcebccf"
+      },
+      {
+        "path": "FramingStudio/source/RC109/CopyLayout89.bas",
+        "sha256": "cfc9f9fcd3991c4b5977d756b1e537afa1239524341f7ad76a67d59c6dff2ed4"
+      },
+      {
+        "path": "FramingStudio/source/RC109/FullLoads73.bas",
+        "sha256": "a5eb777f723154f4ba0696226749bdebb2b71558ac2effd97f0faa67a084a35b"
+      },
+      {
+        "path": "FramingStudio/source/RC265/BeamTopUp.bas",
+        "sha256": "3ccecfb4fb3bad0071c3a45d5a2614b21bee95336c395a02e3f60fa6ddfb2f1e"
+      },
+      {
+        "path": "FramingStudio/source/RC265/CBBeamTopUp99.bas",
+        "sha256": "1ab0d6decdd7f88726af555b2fb605182f2474f8007fb818cc9482c62f40ff2f"
+      },
+      {
+        "path": "FramingStudio/source/RC265/CSAuto101.bas",
+        "sha256": "376678ead074bf411bad714fb1fac3e91e127107ad5634c64d23138458952330"
+      },
+      {
+        "path": "FramingStudio/source/RC265/FullLoads73.bas",
+        "sha256": "fbe81f68c5ffdde1e8028bcc7b1cbd53369e99acd0b611fe8c7a5d235cd21e00"
+      },
+      {
+        "path": "FramingStudio/source/RC265/MBBeamTopUp.bas",
+        "sha256": "e3e8b0dfc8c90b0870c151ccf3915f6b285ee0d2f05fcc18474c1062e398325b"
+      },
+      {
+        "path": "FramingStudio/source/RC265/Review85.bas",
+        "sha256": "40bb7737bf799a85a9457d2d09e3a4a0627842282db79d6bc073977553690722"
+      },
+      {
+        "path": "FramingStudio/source/RC265/SBBeamTopUp.bas",
+        "sha256": "af4ee274308d68e9021175c296099c0df074cb91055dbb974a803681c7a1d012"
+      },
+      {
+        "path": "FramingStudio/source/excel-vba115/CBCopy99.bas",
+        "sha256": "8e603271ce11aaa4b8a0fc1f67ab6a2163d6ff7741e3d51c1ba15b4f108a324f"
+      },
+      {
+        "path": "FramingStudio/source/excel-vba115/Cantilever99.bas",
+        "sha256": "5ce93b5f0bc3fbbc874c1d8b979f923d2e9afcf9a528aa022349f375f0ff55be"
+      },
+      {
+        "path": "FramingStudio/source/excel-vba115/CopyLayout89.bas",
+        "sha256": "13cc79af719abba41100948cbe8b823a07b8db64d48c228d6c82b01ca8a19761"
+      },
+      {
+        "path": "FramingStudio/source/excel-vba115/FullLoads73.bas",
+        "sha256": "8dea532d7e2ade904abce6a4e758a665c386c4738261a9f9b3411bb725640f9c"
+      },
+      {
+        "path": "FramingStudio/source/report-compose.js",
+        "sha256": "4038b99c52f11a95dfcfb18efb653a85be0218169fe18b77073dcdde85e71758"
+      },
+      {
+        "path": "FramingStudio/source/report-content.js",
+        "sha256": "f423439d01fea2ce8a1f3f53961655995b74b4c868f259c46f04929aed17b2b4"
+      },
+      {
+        "path": "FramingStudio/source/report-extras.js",
+        "sha256": "bd3f3c980406fe9b2c6eafc889d39173f2db30d189a4746d7945aab53a19e83f"
+      },
+      {
+        "path": "FramingStudio/source/report-paper.js",
+        "sha256": "46eefbda2ddad503811f2fd07ce3a07cbf00847e995fec461ee380b5a71e9e90"
+      },
+      {
+        "path": "FramingStudio/source/reports.js",
+        "sha256": "77f1272fab54fcdab9027e1070abddf5fae3846d2f982a3ea208f1e7d37906a5"
+      },
+      {
+        "path": "FramingStudio/source/tests/deflection210-ui.cjs",
+        "sha256": "4481b40fd7a7cba4680f901b99115930894ffb6767a4683facc60276dae46e34"
+      },
+      {
+        "path": "FramingStudio/source/tests/deflection210.cjs",
+        "sha256": "fdeebfa4834554945286247ce150be2710952c738087ccba9ca5f247fa72c9fd"
+      },
+      {
+        "path": "FramingStudio/source/tests/report-adoption254.cjs",
+        "sha256": "72c5d0594f98ee699d94d61c4c1758f6ef251d105d9cbe925d38b2d0804b9c99"
+      },
+      {
+        "path": "FramingStudio/source/tests/report-cache-identity278.py",
+        "sha256": "ed0c0c88bd6475d754aa8d5613af4365132d75cac0c9d69a1770d6cce3b78269"
+      },
+      {
+        "path": "FramingStudio/source/tests/report-cache277.cjs",
+        "sha256": "4fe48ace8a0eae07741e67a20edf414448c432d6ca5095624b36f0b8d903deb5"
+      },
+      {
+        "path": "FramingStudio/source/tests/report-calculation252.cs",
+        "sha256": "469ea99b8bb699c562d579b0cef0ea84d33ec259a8ff0a392c866d44ed2ba3e5"
+      },
+      {
+        "path": "FramingStudio/source/tests/report-equivalence253.py",
+        "sha256": "0a1d8e6cdaa8cef662f9e01e89dd9e6582312b7d313cd2d104a62fc6e6cbc8f9"
+      },
+      {
+        "path": "FramingStudio/source/tests/report-equivalence254.py",
+        "sha256": "b6f67cf158da23e0222e7185c0cca288969d2f7e3370ce53bea2da1e613175c6"
+      },
+      {
+        "path": "FramingStudio/source/tests/report-format278.py",
+        "sha256": "27803fbbd6ef41423326922bbef863cedcc8f65f0dd744c550e79b122bd17e61"
+      },
+      {
+        "path": "FramingStudio/source/tests/report-handoff248.cjs",
+        "sha256": "7f04c8f5aebf789b4122f72a97d4c49f6d3af738f7a498bb203ff8ee1448bba7"
+      },
+      {
+        "path": "FramingStudio/source/tests/report-scroll296-ui.cjs",
+        "sha256": "12f9775d7640783b33a38d0a395d8d0b6413474e1bac8a6145afabf17f99aec2"
+      },
+      {
+        "path": "FramingStudio/source/tests/report-slab-preflight276.cjs",
+        "sha256": "bf538691d828e205bf1a5356e0c56c32cdaf4ba11c9cf70b46c29d92b712db8e"
+      },
+      {
+        "path": "FramingStudio/source/tests/report-template251.py",
+        "sha256": "13b1b167461bea54102b4f079f3185f17afc20612b74c21b6b0bac633a15dce7"
+      },
+      {
+        "path": "FramingStudio/source/tests/report-ui-scale302-ui.cjs",
+        "sha256": "8522e988c246ff68fb30c6f649b9d3dcd677c78201b13c286db10714e5a64e87"
+      }
+    ],
+    "protectedFilesUnchanged": true,
+    "embeddedSourcesMatch": 71,
+    "syncWebNoOp": true,
+    "version": {
+      "version": "E2.318",
+      "edition": "斜梁版"
+    }
+  },
+  "build": {
+    "desktopCompilePassed": true,
+    "fileVersion": "2.318.0.0",
+    "nativeExcelBridgeRebuilt": false
+  },
+  "preview": {
+    "url": "http://127.0.0.1:8783/",
+    "matchesLocal": true,
+    "cacheControl": "no-store",
+    "userTabForcedReload": false
+  },
+  "visualReview": [
+    "Direct diagonal without building outline",
+    "Explicit triangular region with secondary beam",
+    "Single NO SLAB label and clipped cross within connected polygon",
+    "Slab marks inside remaining triangle",
+    "SVG and print content equality"
+  ],
+  "notRerun": [
+    "Native Excel COM verification",
+    "Native Section A/B PDF generation",
+    "Windows desktop GUI launch"
+  ],
+  "files": [
+    {
+      "path": "FramingStudio/FramingStudio.exe",
+      "sha256": "9c44eb0d846ed54fa4a2abf273ec819c1795abe921cbed22de0bc2fcab32b275"
+    },
+    {
+      "path": "FramingStudio/assets/index.html",
+      "sha256": "928282bfd6441c0f9283540f23d5fbd4dd00e4086d2a26142ec43caa5df78bab"
+    },
+    {
+      "path": "FramingStudio/source/FramingStudio.cs",
+      "sha256": "1c50bb0b3de80b470b7ebf3a7bb976a2cfafef5aeba9b82ba6261919816dbd6c"
+    },
+    {
+      "path": "FramingStudio/source/app.js",
+      "sha256": "77bb40ba26714fd094144ac6fa158318706ea925e8ac2d3db45839d1e52972e2"
+    },
+    {
+      "path": "FramingStudio/source/app.manifest",
+      "sha256": "d1815ac1c24783af8dc4dc87ac743d1adf8eff708fa4bd8c085b9168aeff41c5"
+    },
+    {
+      "path": "FramingStudio/source/beam-layout116.js",
+      "sha256": "e51884e3100641cbd34d4a3c8222983149e4c272fbe3402fde837e8a8279d3be"
+    },
+    {
+      "path": "FramingStudio/source/diagonal-ui315.js",
+      "sha256": "bcc6db82f5ef6923ee08ec230d0d73dc7b96f30d227e5866aaf0304a3c62c3ae"
+    },
+    {
+      "path": "FramingStudio/source/diagonal315.js",
+      "sha256": "5facd9c281bc9411c5efcb1788333cdc003647fa213f7a4feb3b3e1ba9dc7b56"
+    },
+    {
+      "path": "FramingStudio/source/drawing.js",
+      "sha256": "56fce48d582196bb60ec0bbd642348e60bcf6fd47220709330280b0b33e51c42"
+    },
+    {
+      "path": "FramingStudio/source/engine.js",
+      "sha256": "b26ca7bc8dd6494272530e9980b30953554f20720f2210d34a1f0488d63557c1"
+    },
+    {
+      "path": "FramingStudio/source/framing-symbols98.js",
+      "sha256": "1c69805f99a1a79d2d9a5b65e5444e81eb571d32dbeac76c140e8fc307de9d45"
+    },
+    {
+      "path": "FramingStudio/version.json",
+      "sha256": "ce62dbea2ec9c53fc6b77eecfbbe9643af06eeb3c201394e657856fd6530540e"
+    },
+    {
+      "path": "FramingStudio/source/tests/diagonal318.cjs",
+      "sha256": "e41c386ce196c13937e84a7633a39f4da84a6cef484d7b88426485e005dc04d4"
+    },
+    {
+      "path": "FramingStudio/source/tests/diagonal318-ui.cjs",
+      "sha256": "b1468c51e79a209dd8afaf946e6b35e2d3f4c84a11836b732525097e1423aa16"
+    }
+  ]
+}

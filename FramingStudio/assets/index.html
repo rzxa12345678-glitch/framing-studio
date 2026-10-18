@@ -8747,7 +8747,7 @@ const ReviewLayout191=(()=>{
   if(['pointercancel','lostpointercapture'].includes(e?.type)||box.f!==floor||box.key!==key||box.tab!==tab){schedule();return true;}
   let hits;
   if(box.moved)hits=selectableMembers().filter(h=>Drawing.boxSelect321(box.a,box.z,h.rects));
-  else{const pad=selectionKinds().includes('SLAB')?0:5/plot.scale;hits=selectableMembers().reverse().filter(h=>h.rects.some(r=>r.points315?Diagonal315.inside(box.a,r.points315):box.a[0]>=r.x0-pad&&box.a[0]<=r.x1+pad&&box.a[1]>=r.y0-pad&&box.a[1]<=r.y1+pad)).slice(0,1);}
+  else{const pad=selectionKinds().includes('SLAB')?0:5/plot.scale;hits=selectableMembers().reverse().filter(h=>h.rects.some(r=>r.points315?Diagonal315.inside(box.a,r.points315)||pad>0&&Drawing.boxSelect321([box.a[0]+pad,box.a[1]+pad],[box.a[0]-pad,box.a[1]-pad],[r]):box.a[0]>=r.x0-pad&&box.a[0]<=r.x1+pad&&box.a[1]>=r.y0-pad&&box.a[1]<=r.y1+pad)).slice(0,1);}
   chooseMembers([...box.previous,...hits]);side();schedule();return true;
  }
  function drawMemberSelection(ctx){

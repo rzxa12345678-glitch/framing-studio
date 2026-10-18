@@ -1,0 +1,64 @@
+{
+  "version": "E2.323",
+  "baseline": "7403ecd2a9cbd3bd44a2aa5f11e83853927536f3",
+  "unrelatedJS": 71,
+  "existingCSS": 6,
+  "nativeExcel": 12,
+  "originalCalculations": true,
+  "originalReportMarkup": true,
+  "synchronized": 43,
+  "scripts": 44,
+  "windowsExeSha256": "75a750027ba3650dc8cb511fbb6486c2f2d16d418596a2cc1e3734a41937b7dd",
+  "results": [
+    {
+      "file": "source/tests/summary-sidebar323-ui.cjs",
+      "exitCode": 0,
+      "ms": 6760
+    },
+    {
+      "file": "source/tests/summary-app282.cjs",
+      "exitCode": 0,
+      "ms": 589
+    },
+    {
+      "file": "source/tests/summary-sections205.cjs",
+      "exitCode": 0,
+      "ms": 739
+    },
+    {
+      "file": "source/tests/summary-deflection211.cjs",
+      "exitCode": 0,
+      "ms": 1075
+    },
+    {
+      "file": "source/tests/report-ui-scale302-ui.cjs",
+      "exitCode": 0,
+      "ms": 30948
+    },
+    {
+      "file": "source/tests/report-scroll296-ui.cjs",
+      "exitCode": 0,
+      "ms": 4238
+    },
+    {
+      "file": "source/tests/report-handoff248.cjs",
+      "exitCode": 0,
+      "ms": 451
+    },
+    {
+      "file": "source/tests/local-rebar285-ui.cjs",
+      "exitCode": 0,
+      "ms": 681
+    },
+    {
+      "file": "source/tests/wall-follow322-ui.cjs",
+      "exitCode": 0,
+      "ms": 2292
+    },
+    {
+      "file": "source/tests/wall-follow322-baseline.cjs",
+      "exitCode": 0,
+      "ms": 3938
+    }
+  ]
+}

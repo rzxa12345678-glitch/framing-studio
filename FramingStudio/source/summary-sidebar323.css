@@ -1,0 +1,10 @@
+/* Summary Check view controls are UI filters, separate from coloured model-input fields. */
+@media screen {
+ :where(html[data-ui-shell287="true"]) #side .summary-issues131 [data-audit-filter131]{background:var(--ui-surface,#fff)!important;border-color:var(--ui-border,#d7e3e8)!important;color:var(--ui-text,#1b3342);width:100%;min-width:0}
+ :where(html[data-ui-shell287="true"]) #side .summary-combinations323{margin-top:8px;max-width:100%;overflow:auto}
+ :where(html[data-ui-shell287="true"]) #side .summary-combinations323 table{min-width:0!important;table-layout:fixed}
+ :where(html[data-ui-shell287="true"]) #side .summary-combinations323 th,
+ :where(html[data-ui-shell287="true"]) #side .summary-combinations323 td{white-space:normal;overflow-wrap:anywhere;vertical-align:middle}
+ :where(html[data-ui-shell287="true"]) #side .summary-combinations323 th:first-child{width:30px}
+ :where(html[data-ui-shell287="true"]) #side .summary-combinations323 th:last-child{width:54px}
+}

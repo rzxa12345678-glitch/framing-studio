@@ -249,6 +249,21 @@ const Drawing=(()=>{
    ctx.translate(e.x,e.y);ctx.rotate(e.angle);ctx.fillStyle='rgba(255,255,255,.94)';ctx.fillRect(-w/2,-h/2,w,h);ctx.strokeStyle='#ccd9df';ctx.lineWidth=.6;ctx.strokeRect(-w/2,-h/2,w,h);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#123e54';ctx.font='bold 11px Segoe UI';ctx.fillText(e.mark,0,-7);ctx.font='11px Segoe UI';ctx.fillText(e.size,0,7);ctx.restore();drawn.push(e);
   }return drawn;
  }
- return {markSizes,loadAreaLabel,elevationHeight,plan,three,elevation,elevationData,svg,palette,pick,info};
+ // Selection geometry only: left-to-right is a window; right-to-left is crossing.
+ function boxSelect321(from,to,regions){
+  const eps=1e-8;if(!Array.isArray(regions)||!regions.length||![...from,...to].every(Number.isFinite))return false;
+  const x0=Math.min(from[0],to[0]),x1=Math.max(from[0],to[0]),y0=Math.min(from[1],to[1]),y1=Math.max(from[1],to[1]),box=[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
+  const polys=regions.map(r=>{if(Array.isArray(r))return r;if(r.points315)return r.points315;const a=r.x0??r.x-r.w/2,b=r.x1??r.x+r.w/2,c=r.y0??r.y-r.d/2,d=r.y1??r.y+r.d/2;return [[a,c],[b,c],[b,d],[a,d]];});
+  if(polys.some(p=>p.length<3||p.some(q=>q.length!==2||!q.every(Number.isFinite))))return false;
+  const inBox=q=>q[0]>=x0-eps&&q[0]<=x1+eps&&q[1]>=y0-eps&&q[1]<=y1+eps;
+  if(to[0]>=from[0])return polys.every(p=>p.every(inBox));
+  const cross=(a,b,p)=>(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]);
+  const on=(p,a,b)=>Math.abs(cross(a,b,p))<=eps*Math.max(1,Math.hypot(b[0]-a[0],b[1]-a[1]))&&p[0]>=Math.min(a[0],b[0])-eps&&p[0]<=Math.max(a[0],b[0])+eps&&p[1]>=Math.min(a[1],b[1])-eps&&p[1]<=Math.max(a[1],b[1])+eps;
+  function inside(q,p){let yes=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const a=p[j],b=p[i];if(on(q,a,b))return true;if((a[1]>q[1])!==(b[1]>q[1])&&q[0]<(b[0]-a[0])*(q[1]-a[1])/(b[1]-a[1])+a[0])yes=!yes;}return yes;}
+  const intersects=(a,b,c,d)=>on(a,c,d)||on(b,c,d)||on(c,a,b)||on(d,a,b)||(cross(a,b,c)>0)!==(cross(a,b,d)>0)&&(cross(c,d,a)>0)!==(cross(c,d,b)>0);
+  return polys.some(p=>p.some(inBox)||box.some(q=>inside(q,p))||p.some((a,i)=>box.some((b,j)=>intersects(a,p[(i+1)%p.length],b,box[(j+1)%4]))));
+ }
+ function drawSelectionBox321(ctx,plot,from,to){const crossing=to[0]<from[0];ctx.save();ctx.strokeStyle=crossing?'#248a48':'#008fc7';ctx.fillStyle=crossing?'rgba(36,138,72,.10)':'rgba(0,143,199,.10)';ctx.lineWidth=2;ctx.setLineDash(crossing?[5,3]:[]);const x=plot.ox+Math.min(from[0],to[0])*plot.scale,y=plot.oy+Math.min(from[1],to[1])*plot.scale,w=Math.abs(to[0]-from[0])*plot.scale,h=Math.abs(to[1]-from[1])*plot.scale;ctx.fillRect(x,y,w,h);ctx.strokeRect(x,y,w,h);ctx.restore();}
+ return {markSizes,loadAreaLabel,elevationHeight,plan,three,elevation,elevationData,svg,palette,pick,info,boxSelect321,drawSelectionBox321};
 })();
 if(typeof module!=='undefined')module.exports=Drawing;

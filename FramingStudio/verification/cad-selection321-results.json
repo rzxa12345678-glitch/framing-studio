@@ -1,0 +1,94 @@
+{
+  "baseline": "3f84ffa0a11bd948d7be362b41257aeb2e6c7773",
+  "scope": "CAD selection UI on E2.316; native host version retained",
+  "calculationModulesPreserved": 67,
+  "cssFilesPreserved": 6,
+  "nativeExcelFilesPreserved": 12,
+  "originalRenderersAndSVGUnchanged": true,
+  "allOtherHTMLAndPrintPreserved": true,
+  "synchronizedModules": 42,
+  "inlineScriptsParsed": 44,
+  "htmlSHA256": "b33836a7037fd280a7dca159adceac73679cf6ac652478590e835e81ffd48de1",
+  "tests": [
+    {
+      "name": "cad-selection321",
+      "exit": 0,
+      "ms": 37
+    },
+    {
+      "name": "cad-selection321-ui",
+      "exit": 0,
+      "ms": 6321
+    },
+    {
+      "name": "selection195",
+      "exit": 0,
+      "ms": 387
+    },
+    {
+      "name": "selection195-ui",
+      "exit": 0,
+      "ms": 3696
+    },
+    {
+      "name": "review-layout191",
+      "exit": 0,
+      "ms": 965
+    },
+    {
+      "name": "review-layout191-ui",
+      "exit": 0,
+      "ms": 2571
+    },
+    {
+      "name": "review193",
+      "exit": 0,
+      "ms": 388
+    },
+    {
+      "name": "review193-ui",
+      "exit": 0,
+      "ms": 3290
+    },
+    {
+      "name": "column-delete289-ui",
+      "exit": 0,
+      "ms": 1898
+    },
+    {
+      "name": "wall-copy292-ui",
+      "exit": 0,
+      "ms": 2406
+    },
+    {
+      "name": "diagonal315",
+      "exit": 0,
+      "ms": 6028
+    },
+    {
+      "name": "diagonal315-ui",
+      "exit": 0,
+      "ms": 3196
+    },
+    {
+      "name": "slab-thickness-table",
+      "exit": 0,
+      "ms": 2310
+    },
+    {
+      "name": "beam-type294-ui",
+      "exit": 0,
+      "ms": 2395
+    },
+    {
+      "name": "report-ui-scale302-ui",
+      "exit": 0,
+      "ms": 29891
+    },
+    {
+      "name": "report-scroll296-ui",
+      "exit": 0,
+      "ms": 3701
+    }
+  ]
+}

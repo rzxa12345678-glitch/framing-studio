@@ -1,0 +1,485 @@
+{
+  "version": "E2.316",
+  "edition": "斜梁版",
+  "baseline": "5c7fa9724b12cdb090e22c6bb0b23a457d51d861",
+  "verifiedAt": "2026-10-18T02:54:24.958541+00:00",
+  "existingRegressionSuites": [
+    {
+      "test": "wall-beam-junction301",
+      "exit": 0,
+      "ms": 3243
+    },
+    {
+      "test": "wall-boundary302",
+      "exit": 0,
+      "ms": 215
+    },
+    {
+      "test": "wall-beam-snap301",
+      "exit": 0,
+      "ms": 3502
+    },
+    {
+      "test": "cb-tip303",
+      "exit": 0,
+      "ms": 272
+    },
+    {
+      "test": "irregular-secondary305",
+      "exit": 0,
+      "ms": 257
+    },
+    {
+      "test": "secondary-width304",
+      "exit": 0,
+      "ms": 544
+    },
+    {
+      "test": "concave-transfer306",
+      "exit": 0,
+      "ms": 329
+    },
+    {
+      "test": "secondary-fullspan307",
+      "exit": 0,
+      "ms": 453
+    },
+    {
+      "test": "column-transform308",
+      "exit": 0,
+      "ms": 273
+    },
+    {
+      "test": "no-column-grid313",
+      "exit": 0,
+      "ms": 262
+    },
+    {
+      "test": "column-controls311",
+      "exit": 0,
+      "ms": 362
+    },
+    {
+      "test": "column-position257",
+      "exit": 0,
+      "ms": 282
+    },
+    {
+      "test": "no-column-section314",
+      "exit": 0,
+      "ms": 410
+    },
+    {
+      "test": "column-spacing258",
+      "exit": 0,
+      "ms": 377
+    },
+    {
+      "test": "copy-column196",
+      "exit": 0,
+      "ms": 599
+    },
+    {
+      "test": "column-tributary263",
+      "exit": 0,
+      "ms": 526
+    },
+    {
+      "test": "column-representatives271",
+      "exit": 0,
+      "ms": 358
+    },
+    {
+      "test": "copy-column-adjacent",
+      "exit": 0,
+      "ms": 1865
+    },
+    {
+      "test": "column-delete289-ui",
+      "exit": 0,
+      "ms": 2140
+    },
+    {
+      "test": "axis-insert291",
+      "exit": 0,
+      "ms": 293
+    },
+    {
+      "test": "column-reference-selection",
+      "exit": 0,
+      "ms": 2069
+    },
+    {
+      "test": "wall-copy292",
+      "exit": 0,
+      "ms": 251
+    },
+    {
+      "test": "wall-copy292-ui",
+      "exit": 0,
+      "ms": 2609
+    },
+    {
+      "test": "axis-insert291-ui",
+      "exit": 0,
+      "ms": 3385
+    },
+    {
+      "test": "cb-column-follow298",
+      "exit": 0,
+      "ms": 262
+    },
+    {
+      "test": "mb-column-follow299",
+      "exit": 0,
+      "ms": 55
+    },
+    {
+      "test": "secondary-bay-follow300",
+      "exit": 0,
+      "ms": 53
+    },
+    {
+      "test": "geometry-consistency-local",
+      "exit": 0,
+      "ms": 224
+    },
+    {
+      "test": "wall-column-allocation",
+      "exit": 0,
+      "ms": 293
+    },
+    {
+      "test": "beam-type294",
+      "exit": 0,
+      "ms": 300
+    },
+    {
+      "test": "beam-network165",
+      "exit": 0,
+      "ms": 55
+    },
+    {
+      "test": "bay-record246",
+      "exit": 0,
+      "ms": 453
+    },
+    {
+      "test": "beam-type294-ui",
+      "exit": 0,
+      "ms": 2434
+    },
+    {
+      "test": "auto-transfer",
+      "exit": 0,
+      "ms": 1821
+    },
+    {
+      "test": "unified-members175",
+      "exit": 0,
+      "ms": 359
+    },
+    {
+      "test": "support-cantilever173",
+      "exit": 0,
+      "ms": 314
+    },
+    {
+      "test": "slab-transfer177",
+      "exit": 0,
+      "ms": 312
+    },
+    {
+      "test": "drawing-support197",
+      "exit": 0,
+      "ms": 411
+    },
+    {
+      "test": "slab-load223",
+      "exit": 0,
+      "ms": 326
+    },
+    {
+      "test": "slab-centres175",
+      "exit": 0,
+      "ms": 586
+    },
+    {
+      "test": "report-adoption254",
+      "exit": 0,
+      "ms": 438
+    },
+    {
+      "test": "report-slab-preflight276",
+      "exit": 0,
+      "ms": 1316
+    },
+    {
+      "test": "check-native279",
+      "exit": 0,
+      "ms": 647
+    },
+    {
+      "test": "check-ui279",
+      "exit": 0,
+      "ms": 509
+    },
+    {
+      "test": "summary-app282",
+      "exit": 0,
+      "ms": 570
+    },
+    {
+      "test": "representative-restore295",
+      "exit": 0,
+      "ms": 51
+    },
+    {
+      "test": "local-rebar285",
+      "exit": 0,
+      "ms": 1247
+    }
+  ],
+  "additionalTests": [
+    "diagonal315.cjs: analytical reactions, native UDL equivalence, simple-span/cantilever deflection, one-way longest span, conservation, manual span, missing supports, SB subdivision, existing Excel inputs, frozen layout, polygon deletion and column area ownership",
+    "diagonal315-ui.cjs: real Chrome diagonal/SB drawing, slab selection, span save/reset, load plot, 3D, Save Project/reopen; no page errors",
+    "deflection210.cjs: original uniform/point-load analytical solutions"
+  ],
+  "nativeExcel": {
+    "ok": true,
+    "members": [
+      "SP01",
+      "SP02",
+      "SP03",
+      "S0"
+    ],
+    "compared": 517,
+    "differences": [],
+    "sourceHash": "30f8e3fb744b21b03f9e2b0eb175c4494d9ce6e2d58263cd40bcf1e0aa4db9a5",
+    "finalInputMatchesVerifiedJob": true,
+    "nativePdfRegenerated": false
+  },
+  "protectedFiles": [
+    {
+      "path": "FramingStudio/Excel/ExcelBridge.exe",
+      "sha256": "6b6cb8662338a9f4a5cefea4814fbec1ec5fb6c4b9b05df4e21660fe7a4dd36a"
+    },
+    {
+      "path": "FramingStudio/Excel/Foundation_Design_Checking_v8.xlsm",
+      "sha256": "5ac9bd9f306a48766dc8e3b74394a70f838dba1a1915a8ed9390d797ff50d947"
+    },
+    {
+      "path": "FramingStudio/Excel/ReportImages/horizontal-load-path.png",
+      "sha256": "08a71210e4050bc2c5375d7ca0d06995540754a4f2a4e472c32a11f484fd770f"
+    },
+    {
+      "path": "FramingStudio/Excel/ReportImages/vertical-load-path.png",
+      "sha256": "9c50b2115b6a1cfc21b759b8c05cea71193a0c8f7142bedf5a5e63df0c1afabd"
+    },
+    {
+      "path": "FramingStudio/Excel/Section A RC - Section B v106 Loading.xlsm",
+      "sha256": "3c8871a10b77766eecda627cf04aa741216e00caa35ca831f87953a760b199e9"
+    },
+    {
+      "path": "FramingStudio/Excel/Section A RC - Section B v107 Full Loads.xlsm",
+      "sha256": "fd8f180637f68ff8743e2f0d7ede2259993cce9ac973e707f5d16c83b19f8be0"
+    },
+    {
+      "path": "FramingStudio/Excel/Section A RC - Section B v108 Area Loads.xlsm",
+      "sha256": "f056f9b568b3442696444584048b9ba8c11558d2b5d23ef1dddc75554078eb42"
+    },
+    {
+      "path": "FramingStudio/Excel/Section A RC - Section B v109 Compact Copy.xlsm",
+      "sha256": "30f8e3fb744b21b03f9e2b0eb175c4494d9ce6e2d58263cd40bcf1e0aa4db9a5"
+    },
+    {
+      "path": "FramingStudio/Excel/Steel Beam design V095.xlsm",
+      "sha256": "eed7a449b1f32dc5eda3ea23723f09f3623f8f5272ab915360822d0a130a0971"
+    },
+    {
+      "path": "FramingStudio/Excel/deflection_core_wall_BD_layered.xlsm",
+      "sha256": "c784181bc032584c3454fcfd9f22965ef54089bd427a9483bd74345b416baba2"
+    },
+    {
+      "path": "FramingStudio/Excel/overall_checking_BD_copy_ruled.xlsm",
+      "sha256": "9c7008656287c9664df08f459f3728601d9dccd0ba7c10f4304dc121d30460d5"
+    },
+    {
+      "path": "FramingStudio/Excel/templates.json",
+      "sha256": "f2227072fb7a3ea4fb9e57a2ec0c7dbb64860ae4c567456287d602c0cd6236d8"
+    },
+    {
+      "path": "FramingStudio/source/DeflectionCopy.bas",
+      "sha256": "3b9aa8f7bddc7695d3ea3d94b74b28cc2c2281790e9ffa356b2ad099eccb82cc"
+    },
+    {
+      "path": "FramingStudio/source/ExcelBridge.cs",
+      "sha256": "f8e5f204bc19a945027062ab853e58133015553780039ab549f447b04893f517"
+    },
+    {
+      "path": "FramingStudio/source/LayeredDeflection.bas",
+      "sha256": "ecb2af9b3a6296c772311b3c1a9c5cf6384440c01b99816eea2558b44b73bda1"
+    },
+    {
+      "path": "FramingStudio/source/RC107/FullLoads73.bas",
+      "sha256": "c80b3e17a61477491b9243adfe2465aeb9d9d998b38aa89879f64e7f26346e12"
+    },
+    {
+      "path": "FramingStudio/source/RC108/CopyLayout89.bas",
+      "sha256": "1086a8b8394c81b1c573cedc7a616a514417b63eadee95da4fa5c238dca2355d"
+    },
+    {
+      "path": "FramingStudio/source/RC108/FullLoads73.bas",
+      "sha256": "e3f2a5f641ea196fbf8c2dba175503caa990ded670ee53895b90095bdfcebccf"
+    },
+    {
+      "path": "FramingStudio/source/RC109/CopyLayout89.bas",
+      "sha256": "cfc9f9fcd3991c4b5977d756b1e537afa1239524341f7ad76a67d59c6dff2ed4"
+    },
+    {
+      "path": "FramingStudio/source/RC109/FullLoads73.bas",
+      "sha256": "a5eb777f723154f4ba0696226749bdebb2b71558ac2effd97f0faa67a084a35b"
+    },
+    {
+      "path": "FramingStudio/source/RC265/BeamTopUp.bas",
+      "sha256": "3ccecfb4fb3bad0071c3a45d5a2614b21bee95336c395a02e3f60fa6ddfb2f1e"
+    },
+    {
+      "path": "FramingStudio/source/RC265/CBBeamTopUp99.bas",
+      "sha256": "1ab0d6decdd7f88726af555b2fb605182f2474f8007fb818cc9482c62f40ff2f"
+    },
+    {
+      "path": "FramingStudio/source/RC265/CSAuto101.bas",
+      "sha256": "376678ead074bf411bad714fb1fac3e91e127107ad5634c64d23138458952330"
+    },
+    {
+      "path": "FramingStudio/source/RC265/FullLoads73.bas",
+      "sha256": "fbe81f68c5ffdde1e8028bcc7b1cbd53369e99acd0b611fe8c7a5d235cd21e00"
+    },
+    {
+      "path": "FramingStudio/source/RC265/MBBeamTopUp.bas",
+      "sha256": "e3e8b0dfc8c90b0870c151ccf3915f6b285ee0d2f05fcc18474c1062e398325b"
+    },
+    {
+      "path": "FramingStudio/source/RC265/Review85.bas",
+      "sha256": "40bb7737bf799a85a9457d2d09e3a4a0627842282db79d6bc073977553690722"
+    },
+    {
+      "path": "FramingStudio/source/RC265/SBBeamTopUp.bas",
+      "sha256": "af4ee274308d68e9021175c296099c0df074cb91055dbb974a803681c7a1d012"
+    },
+    {
+      "path": "FramingStudio/source/excel-vba115/CBCopy99.bas",
+      "sha256": "8e603271ce11aaa4b8a0fc1f67ab6a2163d6ff7741e3d51c1ba15b4f108a324f"
+    },
+    {
+      "path": "FramingStudio/source/excel-vba115/Cantilever99.bas",
+      "sha256": "5ce93b5f0bc3fbbc874c1d8b979f923d2e9afcf9a528aa022349f375f0ff55be"
+    },
+    {
+      "path": "FramingStudio/source/excel-vba115/CopyLayout89.bas",
+      "sha256": "13cc79af719abba41100948cbe8b823a07b8db64d48c228d6c82b01ca8a19761"
+    },
+    {
+      "path": "FramingStudio/source/excel-vba115/FullLoads73.bas",
+      "sha256": "8dea532d7e2ade904abce6a4e758a665c386c4738261a9f9b3411bb725640f9c"
+    },
+    {
+      "path": "FramingStudio/source/report-compose.js",
+      "sha256": "4038b99c52f11a95dfcfb18efb653a85be0218169fe18b77073dcdde85e71758"
+    },
+    {
+      "path": "FramingStudio/source/report-content.js",
+      "sha256": "f423439d01fea2ce8a1f3f53961655995b74b4c868f259c46f04929aed17b2b4"
+    },
+    {
+      "path": "FramingStudio/source/report-extras.js",
+      "sha256": "bd3f3c980406fe9b2c6eafc889d39173f2db30d189a4746d7945aab53a19e83f"
+    },
+    {
+      "path": "FramingStudio/source/report-paper.js",
+      "sha256": "46eefbda2ddad503811f2fd07ce3a07cbf00847e995fec461ee380b5a71e9e90"
+    },
+    {
+      "path": "FramingStudio/source/reports.js",
+      "sha256": "77f1272fab54fcdab9027e1070abddf5fae3846d2f982a3ea208f1e7d37906a5"
+    },
+    {
+      "path": "FramingStudio/source/tests/deflection210-ui.cjs",
+      "sha256": "4481b40fd7a7cba4680f901b99115930894ffb6767a4683facc60276dae46e34"
+    },
+    {
+      "path": "FramingStudio/source/tests/deflection210.cjs",
+      "sha256": "fdeebfa4834554945286247ce150be2710952c738087ccba9ca5f247fa72c9fd"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-adoption254.cjs",
+      "sha256": "72c5d0594f98ee699d94d61c4c1758f6ef251d105d9cbe925d38b2d0804b9c99"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-cache-identity278.py",
+      "sha256": "ed0c0c88bd6475d754aa8d5613af4365132d75cac0c9d69a1770d6cce3b78269"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-cache277.cjs",
+      "sha256": "4fe48ace8a0eae07741e67a20edf414448c432d6ca5095624b36f0b8d903deb5"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-calculation252.cs",
+      "sha256": "469ea99b8bb699c562d579b0cef0ea84d33ec259a8ff0a392c866d44ed2ba3e5"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-equivalence253.py",
+      "sha256": "0a1d8e6cdaa8cef662f9e01e89dd9e6582312b7d313cd2d104a62fc6e6cbc8f9"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-equivalence254.py",
+      "sha256": "b6f67cf158da23e0222e7185c0cca288969d2f7e3370ce53bea2da1e613175c6"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-format278.py",
+      "sha256": "27803fbbd6ef41423326922bbef863cedcc8f65f0dd744c550e79b122bd17e61"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-handoff248.cjs",
+      "sha256": "7f04c8f5aebf789b4122f72a97d4c49f6d3af738f7a498bb203ff8ee1448bba7"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-scroll296-ui.cjs",
+      "sha256": "12f9775d7640783b33a38d0a395d8d0b6413474e1bac8a6145afabf17f99aec2"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-slab-preflight276.cjs",
+      "sha256": "bf538691d828e205bf1a5356e0c56c32cdaf4ba11c9cf70b46c29d92b712db8e"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-template251.py",
+      "sha256": "13b1b167461bea54102b4f079f3185f17afc20612b74c21b6b0bac633a15dce7"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-ui-scale302-ui.cjs",
+      "sha256": "8522e988c246ff68fb30c6f649b9d3dcd677c78201b13c286db10714e5a64e87"
+    }
+  ],
+  "embeddedSourcesMatch": 71,
+  "parsedJavaScriptBlocks": 44,
+  "parsedJsonPayloads": 1,
+  "windowsBuild": {
+    "desktopOnly": true,
+    "fileVersion": "2.316.0.0",
+    "excelBridgeRecompiled": false
+  },
+  "preview": {
+    "url": "http://127.0.0.1:8783/",
+    "matchesBuiltHtml": true,
+    "cacheControlNoStore": true,
+    "forcedReload": false
+  },
+  "limitations": [
+    "Opt-in convex outline; existing building cells/openings still define removed areas.",
+    "One-way slab design envelope is not a two-way plate or connection/torsional analysis.",
+    "Excel receives equivalent piecewise UDLs preserving force, first moment and governing ULS M/V; the intermediate curve is an equivalent representation.",
+    "Native Excel numerical verification ran; native A/B PDF generation and Windows app GUI launch were not rerun.",
+    "PR #24 E2.315 beam operation feedback remains separate."
+  ]
+}

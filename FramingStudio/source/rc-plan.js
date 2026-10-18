@@ -47,7 +47,7 @@ const RCPlan=(()=>{
     else if(k==='CB'){row=manual++;add(row,[id(r),'Cantilever Beam',l.L,c.d*1000,'Cantilever',c.b*1000,0,0,0,0,0,0,0]);}
     else if(k==='TB'){row=tb++;const a=sheetCells['Section A Transfer Beam'];for(const [col,value]of Object.entries({A:id(r),B:l.L,C:c.d*1000,T:c.b,U:support}))a[col+row]=value;const u=row+23;for(const [col,value]of Object.entries({C:l.L,D:1,E:0,F:0,G:0}))a[col+u]=value;}
     if(beamKinds262.includes(k)){
-     fullLoads.push({id:id(r),kind:k,L:l.L,loads:[{type:'LINE',start:0,end:l.L,g:l.udlDead,q:l.udlLive,label:'Full-span DL / LL (incl. assigned self-weight)'},...(l.lines||[]).map(x=>({...x,type:'LINE'})),...(l.points||[]).map(x=>({type:'POINT',start:x.x,end:x.x,g:x.g,q:x.q,label:x.label||'集中荷载'}))],expected:{M:r.actions.M,V:r.actions.V,RA:r.actions.left,RB:r.actions.right,dead:r.actions.totalDead,live:r.actions.totalLive}});
+     fullLoads.push({id:id(r),kind:k,L:l.L,loads:[{type:'LINE',start:0,end:l.L,g:l.udlDead,q:l.udlLive,label:'Full-span DL / LL (incl. assigned self-weight)'},...DiagonalLoads315.nativeLines(l.L,l.udlDead,l.udlLive,l.points||[],k==='CB',l.lines||[]).map(x=>({...x,type:'LINE'})),...(l.points||[]).map(x=>({type:'POINT',start:x.x,end:x.x,g:x.g,q:x.q,label:x.label||'集中荷载'}))],expected:{M:r.actions.M,V:r.actions.V,RA:r.actions.left,RB:r.actions.right,dead:r.actions.totalDead,live:r.actions.totalLive}});
     }
     if(k==='COL'){
      const a=r.columnA,sc=sheetCells['Section A Column Loading'];for(const key of ['B4','B9','B10'])sc[key]=key==='B4'?id(r):a.cells[key];

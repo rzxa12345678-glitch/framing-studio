@@ -21,7 +21,7 @@ const ColumnAreas103=(()=>{
  // Resolve well-bounded rectangular half-bays first; less constrained columns
  // receive the remaining area. Equal-priority candidates retain an exact
  // equal-distance split, never a column-order or identifier tie breaker.
- const rectangle=r=>[[r.x0,r.y0],[r.x1,r.y0],[r.x1,r.y1],[r.x0,r.y1]];
+ const rectangle=r=>r.points315||[[r.x0,r.y0],[r.x1,r.y0],[r.x1,r.y1],[r.x0,r.y1]];
  const polygonArea=ps=>Math.abs(ps.reduce((s,q,i)=>{const r=ps[(i+1)%ps.length];return s+q[0]*r[1]-r[0]*q[1];},0))/2;
  const bounds=ps=>({x0:Math.min(...ps.map(q=>q[0])),x1:Math.max(...ps.map(q=>q[0])),y0:Math.min(...ps.map(q=>q[1])),y1:Math.max(...ps.map(q=>q[1]))});
  function tidy(ps){
@@ -34,8 +34,8 @@ const ColumnAreas103=(()=>{
   for(let i=0;i<ps.length;i++){const u=ps[i],v=ps[(i+1)%ps.length],du=nx*u[0]+ny*u[1]-k,dv=nx*v[0]+ny*v[1]-k,inU=du<=0,inV=dv<=0;if(inU)out.push(u);if(inU!==inV){const t=du/(du-dv);out.push([u[0]+t*(v[0]-u[0]),u[1]+t*(v[1]-u[1])]);}}
   return tidy(out);
  }
- function clipPolygon(ps,r){return half(half(half(half(ps,-1,0,-r.x0),1,0,r.x1),0,-1,-r.y0),0,1,r.y1);}
- function subtractPolygon(ps,r){if(!ps.length)return [];const b=bounds(ps);if(!R.intersect(b,r))return [ps];return R.subtract(b,r).map(q=>clipPolygon(ps,q)).filter(q=>q.length);}
+ function clipPolygon(ps,r){if(r.points315)return Diagonal315.clip(ps,r.points315);return half(half(half(half(ps,-1,0,-r.x0),1,0,r.x1),0,-1,-r.y0),0,1,r.y1);}
+ function subtractPolygon(ps,r){if(r.points315)return Diagonal315.subtract(ps,r.points315);if(!ps.length)return [];const b=bounds(ps);if(!R.intersect(b,r))return [ps];return R.subtract(b,r).map(q=>clipPolygon(ps,q)).filter(q=>q.length);}
  const pieces=s=>[...(s.rects||[]).map(rectangle),...(s.polygons||[]).map(q=>q.points)];
  function format(ps){
   const rects=[],polygons=[];let total=0;for(const q of ps){const aa=polygonArea(q);if(aa<eps)continue;total+=aa;const b=bounds(q);if(Math.abs(aa-area(b))<eps)rects.push(b);else polygons.push({points:q});}
@@ -54,7 +54,7 @@ const ColumnAreas103=(()=>{
  }
  function wallShapes(p,m){
   if(wallPartitions158.has(m))return wallPartitions158.get(m);
-  const solid=R.difference(R.union(m.ts.filter(t=>t.state===1)),m.slabVoids||[]),building=m.ts.filter(t=>t.state!==0);
+  const solid=R.difference(R.union(m.ts.filter(t=>t.state===1)),(m.slabVoids||[]).filter(r=>!m.diagonal315||!r.points315)),building=m.ts.filter(t=>t.state!==0);
   if(!building.length||!m.walls.length){wallPartitions158.set(m,[]);return [];}
   const limit=bounds(building.flatMap(rectangle)),cols=active(m).map(c=>({point:point(p,m,c),box:supportBox(c)})),groups=[];
   const touches=(w,v)=>[0,1].every(i=>Math.max(Math.min(a(w)[i],z(w)[i]),Math.min(a(v)[i],z(v)[i]))<=Math.min(Math.max(a(w)[i],z(w)[i]),Math.max(a(v)[i],z(v)[i]))+eps);
@@ -87,7 +87,7 @@ const ColumnAreas103=(()=>{
   }
   // Different wall groups divide any shared candidate area once, independently
   // of input order. Connected wall legs are already unioned into a single group.
-  const answer=groups.map(g=>{let ps=g.rects.map(rectangle);for(const other of groups){if(other===g)continue;const dx=other.point[0]-g.point[0],dy=other.point[1]-g.point[1],k=(other.point[0]**2+other.point[1]**2-g.point[0]**2-g.point[1]**2)/2;for(const r of other.rects)ps=ps.flatMap(poly=>{const hit=clipPolygon(poly,r);if(!hit.length)return [poly];const out=subtractPolygon(poly,r),keep=half(hit,dx,dy,k);if(keep.length)out.push(keep);return out;});}return {...g,...format(ps),errors:[...new Set(g.errors)],method:'wall-half-bay'};});
+  const answer=groups.map(g=>{let ps=g.rects.map(rectangle);for(const other of groups){if(other===g)continue;const dx=other.point[0]-g.point[0],dy=other.point[1]-g.point[1],k=(other.point[0]**2+other.point[1]**2-g.point[0]**2-g.point[1]**2)/2;for(const r of other.rects)ps=ps.flatMap(poly=>{const hit=clipPolygon(poly,r);if(!hit.length)return [poly];const out=subtractPolygon(poly,r),keep=half(hit,dx,dy,k);if(keep.length)out.push(keep);return out;});}if(m.diagonal315)ps=Diagonal315.clipShapes(ps,m);return {...g,...format(ps),errors:[...new Set(g.errors)],method:'wall-half-bay'};});
   wallPartitions158.set(m,answer);return answer;
  }
  // A geometric tributary includes support footprints. Recover a saved drawn
@@ -127,7 +127,7 @@ const ColumnAreas103=(()=>{
  }
  function partition(p,m){
   if(partitions.has(m))return partitions.get(m);
-  const solid=R.difference(R.union(m.ts.filter(t=>t.state===1).map(t=>({x0:t.x0,x1:t.x1,y0:t.y0,y1:t.y1}))),m.slabVoids||[]),building=m.ts.filter(t=>t.state!==0),map=new Map();
+  const solid=R.difference(R.union(m.ts.filter(t=>t.state===1).map(t=>({x0:t.x0,x1:t.x1,y0:t.y0,y1:t.y1}))),(m.slabVoids||[]).filter(r=>!m.diagonal315||!r.points315)),building=m.ts.filter(t=>t.state!==0),map=new Map();
   if(!solid.length||!building.length){partitions.set(m,map);return map;}
   const buildingBounds={x0:Math.min(...building.map(t=>t.x0)),x1:Math.max(...building.map(t=>t.x1)),y0:Math.min(...building.map(t=>t.y0)),y1:Math.max(...building.map(t=>t.y1))},raw=active(m).map(c=>rawFootprint(p,m,c,solid,buildingBounds));
   for(const c of raw){
@@ -141,16 +141,16 @@ const ColumnAreas103=(()=>{
     let shared=false;ps=ps.flatMap(poly=>{const hit=clipPolygon(poly,q.box);if(!hit.length)return [poly];shared=true;const out=subtractPolygon(poly,q.box),keep=coincident||order>eps?[]:half(hit,dx,dy,k);if(keep.length)out.push(keep);return out;});
     if(coincident&&shared)errors.push('柱 '+c.column.id+' 与 '+q.column.id+' 的参考点重合；重合范围未分配，请核对柱位置');
    }
-   const s=format(ps),oldArea=c.rects.reduce((n,r)=>n+area(r),0);map.set(c.column,{...s,box:c.box,partitioned:oldArea-s.area>eps,errors,method:'geometric-half-bay'});
+   if(m.diagonal315)ps=Diagonal315.clipShapes(ps,m);const s=format(ps),oldArea=c.rects.reduce((n,r)=>n+area(r),0);map.set(c.column,{...s,box:c.box,partitioned:oldArea-s.area>eps,errors,method:'geometric-half-bay'});
   }
-  const walls=wallShapes(p,m),check=checkAllocation(solid,[...map.values()],walls);
+  const walls=wallShapes(p,m),check=checkAllocation(solid,[...map.values()],walls,m);
   if(raw.length&&check.solidArea>eps&&check.columnArea<eps)check.errors.push('本层所有柱受荷面积为零，墙柱分界待核对');
   for(const c of raw){const shape=map.get(c.column);if(c.rects.length&&shape.area<eps)shape.errors.push('柱 '+c.column.id+' 受荷面积为零，墙柱分界待核对');shape.errors=[...new Set([...shape.errors,...check.errors])];}
   allocationChecks.set(m,check);partitions.set(m,map);return map;
  }
  // Verify the union, not only the sum: a gap and an overlap can cancel in
  // totals. This check is cached with the immutable floor model.
- function checkAllocation(solid,columns,walls){
+ function checkAllocation(solid,columns,walls,m){if(m?.diagonal315)return Diagonal315.allocationAudit(solid,columns,walls,m);
   let free=solid.map(rectangle);const sum=ps=>ps.reduce((s,q)=>s+polygonArea(q),0),solidArea=solid.reduce((s,r)=>s+area(r),0);
   const columnArea=columns.reduce((s,q)=>s+q.area,0),wallArea=walls.reduce((s,q)=>s+q.area,0),errors=walls.flatMap(q=>q.errors||[]);let inside=0;
   for(const shape of [...columns,...walls])for(const poly of pieces(shape)){

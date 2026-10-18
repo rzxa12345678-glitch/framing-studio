@@ -1,4 +1,4 @@
-# E2.316 — In-page confirmations with Windows EXE verification
+# E2.317 — In-page confirmations with Windows EXE verification
 
 Replace application-level native confirm/prompt calls with an accessible in-page dialog shared by browser and WebView2: type deletion, Opening deletion, pure-auto column reset, new/open project replacement, recovery and new type names. Cancel is focused by default; Escape cancels; duplicate requests fail closed; name validation remains visible. Confirmed operations retain the original transactions and undo.
 
@@ -15,6 +15,18 @@ Batch and per-row beam-size edits show a blocking busy indicator before the exis
 Verified using the current HKIE 2025 Q5 model: five 25 m TBs changed from 3500 to 3400 mm (visible completion: 7.5 s), 3600 mm rejected by the existing 3500 mm structural-zone limit, then one undo restored the complete saved model exactly. Old/new transaction runs produced identical model and generated geometry; this release improves feedback, not calculation speed.
 
 Calculation/loading engines, Excel templates and native bridge, Section A/B report modules and embedded report code are unchanged. Native Excel reports were not regenerated for this UI-only update.
+
+# E2.316 — 斜梁版：斜梁、三角形单向板与实际区域传荷
+
+- 区域页可输入或点选凸多边形外轮廓；新增斜梁绘制、真实截面选取及 3D 显示。旧矩形模型默认沿用原计算。
+- 板统一按 one-way slab；三角形板取所选方向的最长支承跨度，套用既有板验算、自动选筋及 Excel 单元格。手动跨度不得小于该最大值，且不改变实际传荷面积。
+- 实际板净区域按单向条带分配反力；梁端站位沿梁自身长度计算，处理渐变线荷载、反力、M/V 和短期弹性挠度。梁顶 SDL/LL 与完整梁自重分别计入一次。
+- 支持三角形区域内手动及自动 SB。主梁／墙分格、自动布置保存、删除板区、项目保存重开与独立柱受荷面积均纳入验证。缺失或歧义支承、重叠梁、局部不完整次梁选区保持待确认。
+- 多荷载区板验算采用各项最大面荷载包络，传荷按实际区域。原 Excel 渐变荷载输入以保持合力、一阶矩和控制 ULS M/V 的分段 UDL 适配，保留原生差异阻断。
+
+验证：新增计算和真实界面测试通过；47 组既有回归通过。三块三角形／梯形板及一根次梁的原生 Excel 核对成功，517 个数值无差异。未在本轮重新生成原生 A/B PDF；原报告渲染源文件、Excel 模板、VBA 及桥接程序按 Git 基线进行逐字节保护检查。详细记录随发布包提供。
+
+基于正式 E2.314；未合并独立的 PR #24（E2.315 梁尺寸操作反馈）。显示名称为“斜梁版”。
 
 # E2.297 — Preserve explicit beam types and resolve physical end supports
 

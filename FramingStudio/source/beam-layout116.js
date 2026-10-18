@@ -62,12 +62,12 @@ const BeamLayout116=(()=>{
  }
  function setThickness(p,key,changes){
   if(!p.types[key])throw Error('Framing 不存在');const values=new Map();
-  for(const {slab,value}of changes){if(!slab?.rects?.length||!Number.isFinite(value)||value<200||value>20000)throw Error('樓板厚度須為 200–20000 mm，不可留空');values.set(SlabGeometry120.signature(slab),value);}
+  for(const {slab,value}of changes){if(!(slab?.rects?.length||slab?.polygons315?.length)||!Number.isFinite(value)||value<200||value>20000)throw Error('樓板厚度須為 200–20000 mm，不可留空');values.set(SlabGeometry120.signature(slab),value);}
   if(!values.size)return 0;const t=p.types[key];t.slabSizes=[...(t.slabSizes||[]).filter(s=>!values.has(s.signature)),...[...values].map(([signature,value])=>({signature,value}))];return values.size;
  }
  function drawDirections(p,m,f,ctx,plot){
   const arrows=[],xy=(x,y)=>[plot.ox+x*plot.scale,plot.oy+y*plot.scale];ctx.save();ctx.setLineDash([]);
-  for(const s of m.slabs){const r=[...s.rects].sort((a,b)=>(b.x1-b.x0)*(b.y1-b.y0)-(a.x1-a.x0)*(a.y1-a.y0))[0];if(!r)continue;const dir=Loading.slabDirection(p,f,Loading.token('SLAB',s),s,m),a=xy((r.x0+r.x1)/2,(r.y0+r.y1)/2),len=Math.min(13,(dir==='X'?r.x1-r.x0:r.y1-r.y0)*plot.scale*.25);if(!dir){ctx.font='12px sans-serif';ctx.fillStyle='#a35b17';ctx.textAlign='center';ctx.fillText('X / Y ?',a[0],a[1]);continue;}if(len<3)continue;ctx.strokeStyle='#21709a';ctx.lineWidth=1.7;ctx.beginPath();for(const sign of [-1,1]){const x=a[0]+(dir==='X'?len*sign:0),y=a[1]+(dir==='Y'?len*sign:0);ctx.moveTo(...a);ctx.lineTo(x,y);ctx.moveTo(x-(dir==='X'?4*sign:4),y-(dir==='Y'?4*sign:4));ctx.lineTo(x,y);ctx.lineTo(x-(dir==='X'?4*sign:-4),y-(dir==='Y'?4*sign:-4));}ctx.stroke();arrows.push({id:s.id,dir,rect:r});}
+  for(const s of m.slabs){const poly=s.polygons315?.slice().sort((a,b)=>Diagonal315.area(b)-Diagonal315.area(a))[0],r=poly?Diagonal315.bounds([poly]):[...s.rects].sort((a,b)=>(b.x1-b.x0)*(b.y1-b.y0)-(a.x1-a.x0)*(a.y1-a.y0))[0];if(!r)continue;const dir=Loading.slabDirection(p,f,Loading.token('SLAB',s),s,m),a=poly?xy(...poly.reduce((a,q)=>[a[0]+q[0]/poly.length,a[1]+q[1]/poly.length],[0,0])):xy((r.x0+r.x1)/2,(r.y0+r.y1)/2),len=Math.min(13,(dir==='X'?r.x1-r.x0:r.y1-r.y0)*plot.scale*.25);if(!dir){ctx.font='12px sans-serif';ctx.fillStyle='#a35b17';ctx.textAlign='center';ctx.fillText('X / Y ?',a[0],a[1]);continue;}if(len<3)continue;ctx.strokeStyle='#21709a';ctx.lineWidth=1.7;ctx.beginPath();for(const sign of [-1,1]){const x=a[0]+(dir==='X'?len*sign:0),y=a[1]+(dir==='Y'?len*sign:0);ctx.moveTo(...a);ctx.lineTo(x,y);ctx.moveTo(x-(dir==='X'?4*sign:4),y-(dir==='Y'?4*sign:4));ctx.lineTo(x,y);ctx.lineTo(x-(dir==='X'?4*sign:-4),y-(dir==='Y'?4*sign:-4));}ctx.stroke();arrows.push({id:s.id,dir,rect:r});}
   ctx.restore();return arrows;
  }
  function drawThicknessLabels(m,ctx,plot){

@@ -1,6 +1,6 @@
 // Rebuild annotation anchors from current slab geometry, never cached member IDs.
 const SlabMarks83=(()=>{
- function layout(p,f,s,m,scale){const token=Loading.token('SLAB',s),settings=Loading.input(p,f,token),parts=[];
+ function layout(p,f,s,m,scale){if(s.polygon315){const ps=[...s.polygons315].sort((a,b)=>Diagonal315.area(b)-Diagonal315.area(a)),q=ps[0],at=q.reduce((n,p)=>[n[0]+p[0]/q.length,n[1]+p[1]/q.length],[0,0]);return [{x:at[0],y:at[1],dir:s.direction116,part:s,narrow:false}];}const token=Loading.token('SLAB',s),settings=Loading.input(p,f,token),parts=[];
   for(const r of s.rects||[s]){const xx=[r.x0,r.x1],yy=[r.y0,r.y1];if(!s.netBoundary120&&!s.rectangular)for(const b of [...m.beams,...m.walls]){const a=b.rawA||b.a,z=b.rawZ||b.z;if(Math.abs(a[1]-z[1])<1e-6&&Math.max(a[0],z[0])>r.x0&&Math.min(a[0],z[0])<r.x1&&a[1]>r.y0&&a[1]<r.y1)yy.push(a[1]);if(Math.abs(a[0]-z[0])<1e-6&&Math.max(a[1],z[1])>r.y0&&Math.min(a[1],z[1])<r.y1&&a[0]>r.x0&&a[0]<r.x1)xx.push(a[0]);}
    const xs=[...new Set(xx)].sort((a,b)=>a-b),ys=[...new Set(yy)].sort((a,b)=>a-b);for(let i=1;i<xs.length;i++)for(let j=1;j<ys.length;j++)parts.push({x0:xs[i-1],x1:xs[i],y0:ys[j-1],y1:ys[j],rectangular:true});
   }

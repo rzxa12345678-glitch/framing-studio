@@ -1,12 +1,12 @@
 const BeamLoadUI=(()=>{
  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=x=>typeof x==='number'&&Number.isFinite(x)?x.toFixed(2):'',drafts=new Map();let active=null;
- const rounded=r=>r.auto&&r.spanAdjusted130?{...r}:BeamLoads.normalized(r);
+ const rounded=r=>r.parts315||DiagonalLoads315.varying(r)||r.auto&&r.spanAdjusted130?{...r}:BeamLoads.normalized(r);
  // Presentation only: stored distances remain measured from the original A end.
  function orientation(c){const a=c.rawA||c.a,z=c.rawZ||c.z,axis=Math.abs(z[0]-a[0])>=Math.abs(z[1]-a[1])?0:1,reverse=z[axis]<a[axis];return {reverse,start:reverse?'B':'A',end:reverse?'A':'B',startSide:axis?'上端':'左端',endSide:axis?'下端':'右端'};}
  // Read-only sectional equilibrium of the displayed ULS loads. Coordinates run
  // left-to-right (top-to-bottom in plan); positive M is sagging, dM/dx = V.
  // Do not integrate rounded reaction labels: that would leave a residual at B.
- function diagram207(L,rows,{reverse=false,cb=false,fixedEnd=null,service=false}={}){
+ function diagram207(L,rows,{reverse=false,cb=false,fixedEnd=null,service=false}={}){if(rows.some(r=>Number.isFinite(r.gEnd315)||Number.isFinite(r.qEnd315)))return DiagonalLoads315.diagram(L,rows,{reverse,cb,fixedEnd,service});
   if(!Number.isFinite(L)||L<=0||cb&&!['a','z'].includes(fixedEnd))throw Error('跨度／固定端待確認');
   const points=[],lines=[],position=x=>reverse?L-x:x;
   for(const r of rows){const f=service?r:BeamLoads.factored(r),v=f.g+f.q;
@@ -34,8 +34,8 @@ const BeamLoadUI=(()=>{
   const d=diagram207(L,rows,{...support,service:true}),I=B*D**3/12,EI=E*1e6*I;
   if(!Number.isFinite(EI)||EI<=0)throw Error('梁剛度 EI 無效');
   let theta=0,y=0;
-  const pieces=d.segments.map(s=>{const length=s.b.x-s.a.x,q=(s.a.after-s.b.before)/length,m=s.a.M,v=s.a.after;
-   const part={a:s.a.x,b:s.b.x,at(t){return {theta:part.theta+m*t+v*t*t/2-q*t**3/6,y:part.y+part.theta*t+m*t*t/2+v*t**3/6-q*t**4/24};},theta,y};
+  const pieces=d.segments.map(s=>{const length=s.b.x-s.a.x,q=d.linear315?s.q0:(s.a.after-s.b.before)/length,k=d.linear315?s.k:0,m=s.a.M,v=s.a.after;
+   const part={a:s.a.x,b:s.b.x,at(t){return {theta:part.theta+m*t+v*t*t/2-q*t**3/6-k*t**4/24,y:part.y+part.theta*t+m*t*t/2+v*t**3/6-q*t**4/24-k*t**5/120};},theta,y};
    const end=part.at(length);theta=end.theta;y=end.y;return part;});
   const C1=d.cb?(d.fixedLeft?0:-theta):-y/L,C2=d.cb&&!d.fixedLeft?-y-C1*L:0;
   function at(x){x=Math.max(0,Math.min(L,x));const p=pieces.find(s=>x<=s.b)||pieces.at(-1),r=p.at(x-p.a),delta=-(r.y+C1*x+C2)/EI*1000,slope=-(r.theta+C1)/EI;
@@ -75,7 +75,7 @@ const BeamLoadUI=(()=>{
   try{
    if(!row.actions||!l)throw Error((row.loadErrors||[]).join('；')||'荷載／支承待確認');
    const cb=l.support==='Cantilever',fixedEnd=l.fixedEnd,o=orientation(c),{fcu,E}=material210(p,c),flip=cb&&fixedEnd==='z';
-   const rows=[{start:0,end:l.L,g:l.udlDead,q:l.udlLive},...(l.lines||[]).map(r=>flip?{...r,start:l.L-r.end,end:l.L-r.start}:r),...(l.points||[]).map(r=>flip?{...r,x:l.L-r.x}:r)];
+   const rows=[{start:0,end:l.L,g:l.udlDead,q:l.udlLive},...(l.lines||[]).map(r=>flip?(Number.isFinite(r.gEnd315)||Number.isFinite(r.qEnd315)?DiagonalLoads315.reverse(r,l.L):{...r,start:l.L-r.end,end:l.L-r.start}):r),...(l.points||[]).map(r=>flip?{...r,x:l.L-r.x}:r)];
    const v=deflection210(l.L,rows,{B:c.b,D:c.d,E,cb,fixedEnd,reverse:o.reverse});
    return {state:'available',max:Math.abs(v.peak.delta),x:v.peak.x,L:v.L,B:v.B,D:v.D,I:v.I,E,fcu,start:o.start,startSide:o.startSide,model:cb?'固定端懸臂':'簡支梁',fixedEnd:cb?(fixedEnd==='a'?'A':'B'):null,warnings:[...(row.loadErrors||[])]};
   }catch(e){return {state:'pending',reason:e.message};}
@@ -110,7 +110,7 @@ const BeamLoadUI=(()=>{
   for(const svg of host.querySelectorAll('[data-plot207]')){const shear=svg.dataset.plot207==='V',a=Number(svg.dataset.left),b=Number(svg.dataset.right),xx=a+(b-a)*x/data.L,yy=Number(svg.dataset.base)+(shear?-1:1)*(svg.dataset.plot207==='D'?d.deflection210.at(x).delta:shear?val:s.M)*Number(svg.dataset.scale);svg.querySelector('.bl-cursor207').setAttribute('d','M'+xx+',26V174');svg.querySelector('.bl-dot207').setAttribute('cx',xx);svg.querySelector('.bl-dot207').setAttribute('cy',yy);}
  }
  function stationField209(d,host,x){const input=host.querySelector('[data-station-number209]'),error=host.querySelector('[data-station-error209]');const value=d.stationDraft209??String(x);if(input.value!==value)input.value=value;input.setAttribute('aria-invalid',String(!!d.stationError209));error.textContent=d.stationError209||'';error.hidden=!d.stationError209;}
- function displayRows(rows){const out=[];for(const row of rows){let r={...row};if(r.surface126&&r.x==null){let index;do{index=out.findIndex(q=>q.surface126&&q.x==null&&q.auto===r.auto&&q.label===r.label&&['g','q','sw','dl','sdl','ug183','uq183'].every(k=>q[k]===r[k]||Number.isFinite(q[k])&&Number.isFinite(r[k])&&Math.abs(q[k]-r[k])<1e-9)&&(Math.abs(q.end-r.start)<1e-8||Math.abs(q.start-r.end)<1e-8));if(index>=0){const q=out.splice(index,1)[0];r={...r,start:Math.min(q.start,r.start),end:Math.max(q.end,r.end),merged129:(q.merged129||1)+(r.merged129||1)};}}while(index>=0);}out.push(r);}return out;}
+ function displayRows(rows){if(rows.some(r=>r.polygonLoad315))rows=DiagonalLoads315.display(rows);const out=[];for(const row of rows){let r={...row};if(r.surface126&&r.x==null){let index;do{index=out.findIndex(q=>q.surface126&&q.x==null&&q.auto===r.auto&&q.label===r.label&&['g','q','sw','dl','sdl','ug183','uq183'].every(k=>q[k]===r[k]||Number.isFinite(q[k])&&Number.isFinite(r[k])&&Math.abs(q[k]-r[k])<1e-9)&&(Math.abs(q.end-r.start)<1e-8||Math.abs(q.start-r.end)<1e-8));if(index>=0){const q=out.splice(index,1)[0];r={...r,start:Math.min(q.start,r.start),end:Math.max(q.end,r.end),merged129:(q.merged129||1)+(r.merged129||1)};}}while(index>=0);}out.push(r);}return out;}
  function entry(h){
   const key=h.floor+'|'+h.selected.token,L=Loading.beamSpan(h.selected.member,h.data).value,stamp=JSON.stringify(BeamLoads.draft(h.data,0));let d=drafts.get(key);
   if(!d||d.stamp!==stamp){d={key,stamp,L,value:BeamLoads.draft(h.data,L)};drafts.set(key,d);}
@@ -139,7 +139,7 @@ const BeamLoadUI=(()=>{
   const measure=document.createElement('canvas').getContext('2d');measure.font='12px '+getComputedStyle(svg).fontFamily;
   const wrapText=(value,width)=>{const lines=[];let line='';for(const token of value.match(/\d+(?:\.\d+)?\s*(?:kN\/m|kN|mm|m)\b|[A-Za-z0-9_.]+|[^\s]|\s+/g)||[]){if(line&&measure.measureText(line+token).width>width){lines.push(line.trim());line='';}line+=token;}if(line)lines.push(line);return lines;};
   const guideTop=y;
-  for(const r of shown){const point=r.x!=null,color=r.auto?'#829fa9':'#176b80',name=r.surface126?'梁頂 SDL / LL':String(r.label||'荷载'),u=BeamLoads.factored(r),unit=point?'kN':'kN/m',loadText='Factored: '+precise207(u.g)+' / '+precise207(u.q)+' '+unit,lines=[...wrapText(name,right-left),...(r.selfWeight185?wrapText('1.4 × 24.5 × '+d.h.selected.member.b+' × '+d.h.selected.member.d+' = '+precise207(u.g)+' kN/m',right-left):[]),...(measure.measureText(loadText).width<=right-left?[loadText]:['Factored DL: '+precise207(u.g)+' '+unit,'Factored LL: '+precise207(u.q)+' '+unit])];parts.push('<g class="bl-load129" data-start="'+(point?r.x:r.start)+'" data-end="'+(point?r.x:r.end)+'" data-merged="'+(r.merged129||1)+'">');for(const line of lines){parts.push(text(left,y,line));y+=17;}
+  for(const r of shown){if(r.parts315){const ps=r.parts315,color=r.auto?'#829fa9':'#176b80',values=ps.flatMap(p=>[1.4*p.g+1.6*p.q,1.4*(p.gEnd315??p.g)+1.6*(p.qEnd315??p.q)]),max=Math.max(1,...values);parts.push('<g class="bl-load129" data-polygon315="true" data-start="'+r.start+'" data-end="'+r.end+'">'+text(left,y,r.label||'板荷载'));y+=18;parts.push(text(left,y,'ULS '+precise207(Math.min(...values))+'–'+precise207(Math.max(...values))+' kN/m'));y+=50;for(const p of ps){const u=1.4*p.g+1.6*p.q,v=1.4*(p.gEnd315??p.g)+1.6*(p.qEnd315??p.q);parts.push('<path d="M'+x(p.start)+','+(y-32*u/max)+'L'+x(p.end)+','+(y-32*v/max)+'" stroke="'+color+'" fill="none"/>');}const count=Math.max(1,Math.floor(Math.abs(x(r.end)-x(r.start))/30));for(let i=0;i<=count;i++){const s=r.start+(r.end-r.start)*i/count,p=ps.find(p=>s>=p.start-1e-8&&s<=p.end+1e-8);if(!p)continue;const t=(s-p.start)/(p.end-p.start),v=1.4*(p.g+((p.gEnd315??p.g)-p.g)*t)+1.6*(p.q+((p.qEnd315??p.q)-p.q)*t);if(v>1e-8)parts.push('<path d="M'+x(s)+','+(y-32*v/max)+'V'+y+'m-3,-5l3,5l3,-5" stroke="'+color+'" fill="none"/>');}parts.push(text((left+right)/2,y+18,fmt(Math.min(station(r.start),station(r.end)))+'–'+fmt(Math.max(station(r.start),station(r.end)))+' m','middle')+'</g>');y+=40;continue;}const point=r.x!=null,color=r.auto?'#829fa9':'#176b80',name=r.surface126?'梁頂 SDL / LL':String(r.label||'荷载'),u=BeamLoads.factored(r),unit=point?'kN':'kN/m',loadText='Factored: '+precise207(u.g)+' / '+precise207(u.q)+' '+unit,lines=[...wrapText(name,right-left),...(r.selfWeight185?wrapText('1.4 × 24.5 × '+d.h.selected.member.b+' × '+d.h.selected.member.d+' = '+precise207(u.g)+' kN/m',right-left):[]),...(measure.measureText(loadText).width<=right-left?[loadText]:['Factored DL: '+precise207(u.g)+' '+unit,'Factored LL: '+precise207(u.q)+' '+unit])];parts.push('<g class="bl-load129" data-start="'+(point?r.x:r.start)+'" data-end="'+(point?r.x:r.end)+'" data-merged="'+(r.merged129||1)+'">');for(const line of lines){parts.push(text(left,y,line));y+=17;}
    const a=point?r.x:r.start,b=point?r.x:r.end,lo=Math.min(station(a),station(b)),hi=Math.max(station(a),station(b));
    if(point)parts.push(arrow(x(a),y,color));else{parts.push('<path class="bl-length129" d="M'+x(a)+','+y+'H'+x(b)+'" stroke="'+color+'"/>');const n=Math.max(1,Math.floor(Math.abs(x(b)-x(a))/28));for(let i=0;i<=n;i++)parts.push(arrow(x(a+(b-a)*i/n),y,color));}
    const labelX=point?(x(a)+x(b))/2:Math.max(left+48,Math.min(right-48,(x(a)+x(b))/2)),anchor=lo<.1&&point?'start':hi>d.L-.1&&point?'end':'middle';parts.push(text(labelX,y+35,point?fmt(lo)+' m':fmt(lo)+'–'+fmt(hi)+' m',anchor));parts.push('</g>');y+=52;
@@ -150,7 +150,7 @@ const BeamLoadUI=(()=>{
   if(mode==='manual'&&!d.value.rows.length)error.push('手動模式請至少填寫一項荷載');
   const spanError=Loading.beamSpan(d.h.selected.member,d.h.data).error;if(spanError)error.push(spanError);if(mode==='extra')error.push(...BeamLoads.errors(d.value.rows,d.L));
   if(mode==='manual'&&Loading.supportSummary(d.h.p,d.h.result,d.h.floor,c).some(s=>/未确认|待确认|失效|未找到/.test(s.text)))error.push('实际支承未完整');
-  if(!error.length&&(!cb||fe))try{const points=list.filter(r=>r.x!=null).map(r=>({...r,x:cb&&fe==='z'?d.L-r.x:r.x})),lines=list.filter(r=>r.x==null).map(r=>cb&&fe==='z'?{...r,start:d.L-r.end,end:d.L-r.start}:r);reaction=Loading.actions(d.L,0,0,points,cb,lines,{});}catch(e){error.push(e.message);}
+  if(!error.length&&(!cb||fe))try{const points=list.filter(r=>r.x!=null).map(r=>({...r,x:cb&&fe==='z'?d.L-r.x:r.x})),lines=list.filter(r=>r.x==null).map(r=>cb&&fe==='z'?DiagonalLoads315.reverse(r,d.L):r);reaction=Loading.actions(d.L,0,0,points,cb,lines,{});}catch(e){error.push(e.message);}
   const beamY=y;let reactionBottom=beamY+68;y+=58;if(reaction){const ends={A:cb&&fe==='z'?'right':'left',B:cb&&fe==='z'?'left':'right'};
    for(const end of [orientation129.start,orientation129.end]){const key=ends[end],value=reaction[key],xx=x(end==='A'?0:d.L),anchor=end===orientation129.start?'start':'end',labelX=xx+(anchor==='start'?14:-14),isFixed=!cb||(end==='A'?fe==='a':fe==='z');
     if(!isFixed)continue;const up=value>=0,tip=up?beamY+17:beamY+41,tail=up?beamY+41:beamY+17;

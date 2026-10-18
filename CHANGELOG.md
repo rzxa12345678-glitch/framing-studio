@@ -1,3 +1,9 @@
+# E2.319 — Offline column-layout proposals
+
+06 Columns now offers bounded offline candidate search, preview and explicit one-transaction apply. It respects actual section footprints, X/Y spacing, Opening/exclusion/wall/outside boundaries and shared-Framing interfaces. Existing manual/input/beam-connected columns, upper reference columns and real deletion records remain protected. Proposed layouts that alter existing beams are excluded before display; stale drafts require regeneration. No web service or AI is required. This geometry assistant does not replace structural design checks.
+
+Passed 13 synthetic regression groups and the current HKIE Q5 model group, plus 18 isolated Windows EXE UI/native-response checks. Current F03 retains its 24 beam-connected columns; incompatible alternatives are excluded. Original browser tab refreshed after backup, preview checked, exported model byte-identical before/after. E2.318 app/source/model separately preserved. Original calculation equations, Excel templates/bridge and A/B report formats unchanged. See verification/E2.319-column-schemes.md.
+
 # E2.318 — Separate plan fill and 3D slab visibility
 
 04 Region plan always shows the existing pale-yellow building/slab extent. Its checked plan-fill control explains that this page is fixed; other plan pages retain the user's independent optional fill preference. A separate 3D slab-body checkbox controls 3D rendering, with matching pale-yellow/green legend swatches. Opening and outside colours remain unchanged, including diagonal outlines.

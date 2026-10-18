@@ -1,6 +1,6 @@
 // E2.104: columns and column defaults are shared by a framing, independent of other framings.
 const FloorColumns101=(()=>{
- const fields=['mode','columns','columnSizes','columnAxisPositions','columnPlacements','suppressedColumns','transferColumns','autoBeamSnapshot'];
+ const fields=['mode','columns','columnSizes','columnAxisPositions','columnPlacements','suppressedColumns','transferColumns','autoBeamSnapshot','columnSchemeDeleted319'];
  function record(p,key,f){if(!p.types[key])throw Error('Framing 已不存在');const t=p.types[key];t.columnDefaults101??={cb:p.defaults.cb,cd:p.defaults.cd};return t;}
  function view(p,key,f){const t=p.types[key];return {...p,defaults:{...p.defaults,...t.columnDefaults101}};}
  function mutate(p,key,f,fn){record(p,key,f);const q=view(p,key,f),t={...p.types[key],beams:Engine.clone(p.types[key].beams)};for(const k of fields)t[k]=Engine.clone(t[k]??(k==='mode'?'manual':[]));q.types={...p.types,[key]:t};if(p.types[key].autoBeamSnapshot===undefined)delete t.autoBeamSnapshot;Engine.bindMainColumns164(q,key,Engine.model(p,key));const out=fn(q);Engine.validate(q);p.types[key].beams=Engine.clone(t.beams);for(const k of fields){if(k==='autoBeamSnapshot'&&t[k]===undefined)delete p.types[key][k];else p.types[key][k]=Engine.clone(t[k]??[]);}return out;}

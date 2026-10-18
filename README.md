@@ -1,5 +1,8 @@
 # Framing Studio
 
+E2.319: Offline column-layout proposals in 06 Columns, with preview, explicit apply and protected manual/deleted/beam-connected columns. See FramingStudio/docs/離線柱位方案.md and FramingStudio/verification/E2.319-column-schemes.md.
+
+
 E2.318: Region plan always shows building extent; plan fill and 3D slab bodies have independent controls. See FramingStudio/verification/E2.318-slab-display.md.
 
 E2.317: In-page confirmations for browser and Windows EXE, including native dirty-close/overwrite choices; corrected save acknowledgement and desktop Help. EXE-first validation and report preservation are documented in verification/E2.317-confirmations.md.

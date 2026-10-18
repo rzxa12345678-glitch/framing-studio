@@ -119,3 +119,7 @@ Show local beam RC promptly when the load basis is unchanged, without marking
 the whole-building/report output fresh. The user-confirmed native verification
 scope remains selected Check/A/B members; label its explicit command
 "更新至EXCEL並核對" and the restore command "恢復 App 自動選筋".
+
+## EXE-first confirmations and verification
+
+User instruction 2026-10-18: the Windows EXE is the primary exam application; the browser preview is a development convenience. All application confirmation and text-prompt panels must be rendered inside the application page, shared by browser and WebView2. Test the packaged EXE as well as the preview, including native menu shortcuts, save cancellation/overwrite, dirty close and backup recovery. Do not automatically accept dialogs in tests. Native file choosers remain OS dialogs; fatal startup notifications can remain native when no page is available. Preserve calculation and Section A/B reports.

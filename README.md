@@ -1,5 +1,7 @@
 # Framing Studio
 
+E2.316: In-page confirmations for browser and Windows EXE, including native dirty-close/overwrite choices; corrected save acknowledgement and desktop Help. EXE-first validation and report preservation are documented in verification/E2.316-confirmations.md.
+
 E2.315: Beam-size edits now show a busy indicator before work, block duplicate input, and retain completion count/time or validation failure. Calculation and Section A/B report behavior are unchanged.
 
 E2.292：在「牆」頁單選或框選牆，按「複製至上層」，保留實際位置、厚度及貼邊方向。相同牆略過；與柱或平行牆衝突時整批不套用。支援共用 Framing、一次撤銷、備份及存檔重開；保留 E2.291 軸線插入及 Section A／B 抄。

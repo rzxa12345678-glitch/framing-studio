@@ -1,3 +1,13 @@
+# E2.316 — In-page confirmations with Windows EXE verification
+
+Replace application-level native confirm/prompt calls with an accessible in-page dialog shared by browser and WebView2: type deletion, Opening deletion, pure-auto column reset, new/open project replacement, recovery and new type names. Cancel is focused by default; Escape cancels; duplicate requests fail closed; name validation remains visible. Confirmed operations retain the original transactions and undo.
+
+The EXE uses the same panel for dirty closing and export-file overwrite confirmation. Save acknowledgement clears dirty state only after a matching project is actually written. Restored backups are included in dirty-close checks. Native Help opens the existing in-page help instead of a missing text file. Test mode no longer automatically accepts native script dialogs. Windows file selection remains a system file picker; startup errors without a working page remain native notifications.
+
+Actual packaged WebView2 testing: 27 isolated checks passed, then 28 passed with the current HKIE Q5 model, including cancel/confirm, delete/undo, new type, replacement cancellation, native project write, stale save acknowledgement and native close-choice messaging. Browser recovery and F04 deletion cancellation passed; before/after project exports are exactly equal. Native Excel/report generation was not rerun. Visible Windows picker cancellation, overwrite and title-bar-close interaction await the requested visible-window test permission; the message bridge was tested in the EXE.
+
+Calculation engines, original Excel templates/worker logic, Section A/B report content and embedded report code are unchanged. E2.315 beam update feedback is retained.
+
 # E2.315 — Beam-size update feedback
 
 Batch and per-row beam-size edits show a blocking busy indicator before the existing synchronous transaction begins. Queued input cannot submit the edit twice. Completion leaves a persistent member count and elapsed time; rejected edits retain their inputs and show the original validation reason. Successful batches remain one undo operation.

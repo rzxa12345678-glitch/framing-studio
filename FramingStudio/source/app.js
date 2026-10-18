@@ -1,3 +1,30 @@
+// Shared in-page confirmations for browser and Windows WebView2.
+const StudioDialogs316=(()=>{
+ let active=null;
+ function request({title='請確認',message='',choices=[['cancel','取消'],['ok','確認']],input=null,validate=null}={}){
+  if(active)return Promise.resolve(null);
+  const focus=document.activeElement,dialog=document.createElement('dialog');dialog.id='studio-confirm316';dialog.setAttribute('aria-labelledby','studio-confirm-title316');
+  dialog.style.cssText='width:min(480px,calc(100vw - 36px));max-height:85vh;overflow:auto;border:1px solid #b7d4df;border-radius:12px;padding:24px;color:#193d50;background:white;box-shadow:0 16px 60px #193d5040';
+  const heading=document.createElement('h2');heading.id='studio-confirm-title316';heading.textContent=title;dialog.append(heading);
+  const body=document.createElement('p');body.textContent=message;body.style.whiteSpace='pre-wrap';dialog.append(body);
+  let field;if(input!==null){const label=document.createElement('label');label.textContent='名稱';field=document.createElement('input');field.id='studio-confirm-input316';field.type='text';field.value=input;field.maxLength=21;label.append(field);dialog.append(label);}
+  const error=document.createElement('p');error.setAttribute('role','alert');error.style.color='#b42318';dialog.append(error);
+  const row=document.createElement('div');row.className='row';dialog.append(row);document.body.append(dialog);
+  return new Promise(resolve=>{
+   let done=false;const finish=value=>{if(done)return;done=true;active=null;dialog.close();dialog.remove();if(focus?.isConnected)focus.focus({preventScroll:true});resolve(value);};
+   active=dialog;dialog.addEventListener('keydown',e=>e.stopPropagation());dialog.addEventListener('cancel',e=>{e.preventDefault();finish(null);});dialog.addEventListener('close',()=>finish(null));
+   for(const [value,text]of choices){const b=document.createElement('button');b.type='button';b.textContent=text;b.dataset.confirm316=value;if(value==='ok')b.className='primary';b.onclick=()=>{if(value==='ok'&&field){const problem=validate?.(field.value.trim());if(problem){error.textContent=problem;field.focus();return;}}finish(value==='cancel'?null:field&&value==='ok'?field.value.trim():value);};row.append(b);}
+   field?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();row.querySelector('[data-confirm316="ok"]')?.click();}});
+   dialog.showModal();if(field){field.focus();field.select();}else row.querySelector('button')?.focus();
+  });
+ }
+ const confirm=async(message,title='請確認')=>(await request({title,message}))==='ok';
+ const prompt=(message,input='',validate=null)=>request({title:'新增 Framing 類型',message,input,validate});
+ const notice=(message,title='提示')=>request({title,message,choices:[['ok','知道了']]});
+ return {request,confirm,prompt,notice,isOpen:()=>!!active};
+})();
+window.StudioDialogs316=StudioDialogs316;
+
 (()=>{
  const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const seed=JSON.parse($('seed').textContent);let p=Engine.clone(seed),result,tab='loading',key=Object.keys(p.types)[0],mode='plan',floor=1,scope='single',localCount=5,localFrom=1,localTo=5,panX=0,panY=0,viewTool='rotate',zoom=1,yaw=-.65,el=.5,start=null,selected=null,history=[],dirty=false,paint=false,drag=null,lastTile='',renderPending=false,toastTimer;
@@ -137,7 +164,7 @@
   if(action==='delete-no-column'){transact(()=>{t.noColumnZones.splice(i,1);selected=null;});return true;}
   if(action==='add-no-column'){const r=Object.fromEntries(['x0','y0','x1','y1'].map(k=>[k,number('zone-'+k)]));transact(()=>(t.noColumnZones??=[]).push(r));return true;}
   if(action==='delete-auto-column'){transact(()=>Engine.removeMember(p,key,{kind:'COL',id:b.dataset.i}));return true;}
-  if(action==='pure-auto'){if(!confirm('清除当前 Framing 的手动补柱、删柱、手动柱位置和自动柱尺寸／Transfer 标记，恢复纯自动布柱？可撤销。'))return true;transact(()=>{t.columns=t.columns.filter(c=>!c.autoAdded);t.suppressedColumns=[];t.columnSizes=[];t.transferColumns=[];delete t.columnPlacements;delete t.columnAxisPositions;delete t.alignmentMinSpacing;});return true;}
+  if(action==='pure-auto'){StudioDialogs316.confirm('清除当前 Framing 的手动补柱、删柱、手动柱位置和自动柱尺寸／Transfer 标记，恢复纯自动布柱？可撤销。').then(ok=>{if(!ok)return;transact(()=>{t.columns=t.columns.filter(c=>!c.autoAdded);t.suppressedColumns=[];t.columnSizes=[];t.transferColumns=[];delete t.columnPlacements;delete t.columnAxisPositions;delete t.alignmentMinSpacing;});});return true;}
   if(action==='addcolumn'){const x=number('col-add-x'),y=number('col-add-y');transact(()=>Engine.addColumn(p,key,x,y));return true;}
  }catch(e){toast(e.message);return true;}return false;}
 
@@ -343,18 +370,18 @@
    else {const c=p.types[key][action][i];if(action==='beams'&&f==='kind'){const oldBeam=Engine.floorModel(result,floor,key).beams.find(b=>b.id===c.id&&b.kind===c.kind);if(oldBeam){const edited=Engine.editSize(p,key,{id:c.id,kind:c.kind},{kind:v,b:c.b,d:c.d});moveBeamInputs(oldBeam,edited,key);}else c.kind=v;}else if(action==='columns'&&['x','y'].includes(f)){const saved=(p.types[key].columnPlacements||[]).find(v=>v.key==='id:'+c.id),pos=saved?[saved.x,saved.y]:Engine.resolve(p,c,key);p.types[key].columnPlacements=(p.types[key].columnPlacements||[]).filter(v=>v.key!=='id:'+c.id);delete c.alignmentReference;delete c.ax;delete c.ay;c.x=pos[0];c.y=pos[1];c.dx=c.dy=0;c[f]=v;}else if(['x1','y1','x2','y2'].includes(f)){const end=f[1]==='1'?'a':'z',pos=Engine.resolve(p,c[end],key);c[end]={x:pos[0],y:pos[1]};c[end][f[0]]=v;if(action==='beams'){c.positionMode175='fixed';delete c.fixedA175;delete c.fixedZ175;delete c.columnSupports164;}}else{if(action==='columns'&&f==='id')for(const row of [...p.types[key].columnPlacements||[],...p.types[key].columnAxisPositions||[]])if(row.key==='id:'+c.id)row.key='id:'+v;c[f]=v;}}
   });
  });
- $('side').addEventListener('click',e=>{
+ $('side').addEventListener('click',async e=>{
   const b=e.target.closest('button');if(!b)return;const a=b.dataset.action,i=+b.dataset.i,t=p.types[key];if(b.dataset.noColumnMode313){noColumnMode313=b.dataset.noColumnMode313;zoneDrag=null;start=null;selectOnly=false;refresh();return;}if(a==='auto-columns311'){transact(()=>FloorColumns101.update311(p,key,floor,FloorColumns101.follows311(p.types[key]),true));return;}if(a==='draw-columns311'){$('drawtool').click();return;}if(a?.startsWith('insertaxis')){if(!axisInsert291.open&&InputFeedback172.ready())openAxisInsert291(a.slice(-1),i);return;}if(levelAction(a)||overallAction(a,b)||elevationAction(a,b)||sbAreaAction(a,b)||gridAction(a,b))return;
   if(b.id==='paint'||b.id==='erase'){erase=b.id==='erase';selectOnly=false;start=selected=null;refresh();return;}
 
   if(a==='layout-draw116'){selectOnly=false;sbAreaDrawing=false;start=null;refresh();return;}
   if(a==='endline'){sbAreaDrawing=false;zoneDrag=null;start=null;if(['beamLayout','columnMove'].includes(tab))selectOnly=true;refresh();return;}
   if(a==='delopening'){
-   if(!confirm('删除 '+key+' 的 OP'+(i+1)+' 及其四周沿边墙段，恢复楼板范围？\n其他位置的墙保留；可点击“撤销”恢复。'))return;
+   if(!await StudioDialogs316.confirm('删除 '+key+' 的 OP'+(i+1)+' 及其四周沿边墙段，恢复楼板范围？\n其他位置的墙保留；可点击“撤销”恢复。'))return;
    if(transact(()=>Engine.removeOpening(p,key,i))){start=selected=null;refresh();toast('Opening 和沿边墙段已删除，可撤销恢复');}return;
   }
   if(a==='print'||a==='svg'){try{ReviewLayout191.checkPaper(p,Engine.floorModel(result,floor,key),printScale,{size:printPaper.startsWith('A3')?'A3':'A4',portrait:printPaper.endsWith('portrait'),floor},result);const svg=Drawing.svg(p,Engine.floorModel(result,floor,key),printScale,labels,visible,{size:printPaper.startsWith('A3')?'A3':'A4',portrait:printPaper.endsWith('portrait'),grid:printGrid,floor,drawingOffsets191:ReviewLayout191.offsets(p,key),cbSupports192:true});if(a==='svg')download(key+'_'+printPaper+'_1-'+printScale+'.svg',svg,'image/svg+xml');else{$('ex-print-style')?.remove();$('drawing-print-style')?.remove();const st=document.createElement('style');st.id='drawing-print-style';const dims=printPaper==='A3-portrait'?[297,420]:printPaper==='A3-landscape'?[420,297]:[297,210];st.textContent='@page graph-sheet{size:'+dims[0]+'mm '+dims[1]+'mm;margin:0}@media print{body>#printpage:has(>svg){page:graph-sheet;width:'+dims[0]+'mm!important;height:'+dims[1]+'mm!important}#printpage>svg{width:'+dims[0]+'mm!important;height:'+dims[1]+'mm!important}}';document.head.append(st);$('printpage').innerHTML=svg;window.print();}}catch(err){toast(err.message);}return;}
-  if(a==='newtype'){const k=prompt('新类型名称（例如 F06）','F'+String(Object.keys(p.types).length+1).padStart(2,'0'));if(!k)return;transact(()=>{if(p.types[k])throw Error('类型已存在');p.types[k]={axes:Engine.clone(Engine.axisData(p,key)),mode:'manual',building:Engine.clone(t.building),opening:{},columns:[],walls:[],beams:[],suppressed:[]};});return;}
+  if(a==='newtype'){const k=await StudioDialogs316.prompt('輸入以 F 開頭的新類型名稱，例如 F06。','F'+String(Object.keys(p.types).length+1).padStart(2,'0'),name=>!/^F[0-9A-Za-z_-]{1,20}$/.test(name)?'請輸入以 F 開頭的名稱（2–21 字）。':p.types[name]?'類型已存在':null);if(!k)return;transact(()=>{if(p.types[k])throw Error('类型已存在');p.types[k]={axes:Engine.clone(Engine.axisData(p,key)),mode:'manual',building:Engine.clone(t.building),opening:{},columns:[],walls:[],beams:[],suppressed:[]};});return;}
   if(a==='addgroup'){draftGroups();if(groupDraft.length>=100){toast('最多 100 组');return;}const last=groupDraft.at(-1)||{h:3.3,type:key,sh:600,min:0};groupDraft.push({...last,start:null,end:'顶层',fire241:2});groupDirty=true;groupError249='請填齊新增組的樓層範圍；完整後會自動套用。';refresh();toast('已添加空白樓層組，填齊後自動套用');return;}
   if(a==='delgroup'){draftGroups();if(groupDraft.length===1){toast('至少保留一组');return;}groupDraft.splice(i,1);groupDirty=true;if(!applyGroups({automatic:true}))refresh();return;}
   if(a==='applygroups'){if(!applyGroups())refresh();return;}
@@ -386,10 +413,10 @@
   if(!Object.hasOwn(p.types,source)){fail('來源類型已不存在，請重新選取。');return;}
   if(transact(()=>{p.types[k]=Engine.clone(p.types[source]);p.types[k].axes=Engine.clone(Engine.axisData(p,source));},err=>fail(err.message))){copyTypeDialog.close();if(calculationView())tab='axes';setType(k);toast('已將 '+source+' 複製為 '+k+'；可在「02 樓層」指定使用，可撤銷。');}
  };
- $('deletetype').onclick=()=>{
+ $('deletetype').onclick=async()=>{
   const removed=key;
   try{Engine.removeType(Engine.clone(p),removed);}catch(e){toast(e.message);if(p.groups.some(g=>g.type===removed)&&Object.keys(p.types).length>1){tab='floors';refresh();}return;}
-  if(!confirm('删除 '+removed+' 及其建筑范围、Opening、墙、柱和手动梁？\n删除后可以点击“撤销”恢复。'))return;
+  if(!await StudioDialogs316.confirm('删除 '+removed+' 及其建筑范围、Opening、墙、柱和手动梁？\n删除后可以点击“撤销”恢复。'))return;
   if(transact(()=>Engine.removeType(p,removed))){setType(result.floors[Math.min(floor,p.total)-1].type);toast('已删除 '+removed+'，可点击“撤销”恢复');}
  };
  $('selecttool').onclick=()=>{if(measureTool?.active)measureTool.stop();sbAreaDrawing=false;zoneDrag=null;selectOnly=true;start=null;if(!columnPage308()&&!memberSelectionTab())selected=null;refresh();};$('drawtool').onclick=()=>{if(tab==='columnMove')return;if(measureTool?.active)measureTool.stop();sbAreaDrawing=false;zoneDrag=null;selectOnly=false;start=selected=null;refresh();};
@@ -417,25 +444,25 @@
  $('components').onchange=e=>{if(e.target.dataset.markSize167)markSize167[e.target.dataset.markSize167]=e.target.checked;else if(e.target.id==='load-beam-reference129')loadBeamReference129=e.target.checked;else if(e.target.id==='show-slab-directions119'){setSlabDirections119(e.target.checked);}else if(e.target.id==='show-column-grid')showColumnGrid=e.target.checked;else if(e.target.id==='show-no-column'){showNoColumn=e.target.checked;noColumnVisibility192[tab]=showNoColumn;}else if(e.target.id==='labels')labels=e.target.checked;else visible[e.target.dataset.kind]=e.target.checked;schedule();};
  $('plus').onclick=()=>{zoom=Math.min(4,zoom*1.2);schedule();};$('minus').onclick=()=>{zoom=Math.max(.4,zoom/1.2);schedule();};$('viewrotate').onclick=()=>{viewTool='rotate';drag=null;refresh();};$('viewpan').onclick=()=>{viewTool='pan';drag=null;refresh();};$('fit').onclick=()=>{panX=panY=0;zoom=1;yaw=-.65;el=.5;schedule();};
  $('undo').onclick=()=>{if(groupDirty){groupDirty=false;groupDraft=null;refresh();toast('已取消未应用的楼层分组修改');return;}if(!history.length)return;p=history.pop();result=Engine.generate(p);dirty=true;start=selected=null;persist();refresh();};
- $('save').onclick=()=>{if(!InputFeedback172.ready()){toast('请先修正标红的输入，再保存项目');return false;}if(memberPending()&&!applyMemberEdit())return false;if(!applyGroups())return false;download((p.name.replace(/[\\/:*?"<>|]/g,'_')||'Framing')+'.framing.json',JSON.stringify(p,null,2),'application/json');dirty=false;$('savestatus').textContent='项目下载已发起 · 请保留文件';};
+ $('save').onclick=()=>{if(!InputFeedback172.ready()){toast('请先修正标红的输入，再保存项目');return false;}if(memberPending()&&!applyMemberEdit())return false;if(!applyGroups())return false;download((p.name.replace(/[\\/:*?"<>|]/g,'_')||'Framing')+'.framing.json',JSON.stringify(p,null,2),'application/json');if(!window.chrome?.webview?.postMessage)dirty=false;$('savestatus').textContent='项目下载已发起 · 请保留文件';};
 
  $('newproject').onclick=()=>{$('newname').value='新项目';$('newfloors').value='1';$('newerror').textContent='';$('newwarning').textContent=(dirty||groupDirty)?'当前项目有未保存的修改，请先保存。':'如需保留当前项目，请先保存项目文件。';$('newdialog').showModal();$('newname').focus();};
  $('newcancel').onclick=()=>$('newdialog').close();
  $('newsave').onclick=()=>{if($('save').onclick()===false)return;$('newwarning').textContent='当前项目下载已发起，请确认文件已保存，再点“新建空白项目”。';};
- $('newcreate').onclick=()=>{
+ $('newcreate').onclick=async()=>{
   try{
    const name=$('newname').value.trim(),total=Number($('newfloors').value);
    if(!name||name.length>150)throw Error('请填写 1–150 字的项目名称');
    if(!Number.isInteger(total)||total<1||total>500)throw Error('总层数须为 1–500 的整数');
    const next={format:'framing-app',version:1,name,total,groups:[{end:'顶层',h:3.3,type:'F01',sh:600,min:0}],axes:{x:[{id:'1',gap:0},{id:'2',gap:6}],y:[{id:'A',gap:0},{id:'B',gap:6}]},types:{F01:{mode:'manual',autoBeams101:false,building:{},opening:{},columns:[],walls:[],beams:[],suppressed:[]}},defaults:Engine.clone(seed.defaults)};
    const built=Engine.generate(next);
-   if((dirty||groupDirty)&&!confirm('当前项目有未保存的修改。继续新建？可取消后先保存。'))return;
+   if((dirty||groupDirty||window.hasPendingFramingInputs203?.())&&!await StudioDialogs316.confirm('当前项目有未保存的修改。继续新建？可取消后先保存。'))return;
    groupDirty=false;groupDraft=null;history=[Engine.clone(p)];p=next;result=built;key='F01';floor=1;tab='axes';mode='plan';scope='single';panX=panY=0;viewTool='rotate';localCount=5;localFrom=1;localTo=Math.min(5,p.total);zoom=1;yaw=-.65;el=.5;start=selected=inspected=drag=null;paint=false;lastTile='';selectOnly=true;layer='building';erase=false;dirty=true;
    exploration.resetProject();beamLayoutUI?.reset();$('newdialog').close();persist();refresh();toast('已新建空白项目：请先设置轴线，再到“区域”绘制建筑范围；可撤销');
   }catch(e){$('newerror').textContent=e.message;}
  };
 
- $('open').onclick=()=>$('file').click();$('file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>10*1024*1024)throw Error('项目文件不能超过 10 MB');const next=JSON.parse(await file.text());Engine.validate(next);const built=Engine.generate(next);LoadData.reconcile(next,built,Loading.token);if((dirty||groupDirty)&&!confirm('打开项目将替换当前编辑内容。是否继续？建议先保存。'))return;groupDirty=false;groupDraft=null;history.push(Engine.clone(p));p=next;result=built;panX=panY=0;viewTool='rotate';key=Object.keys(p.types)[0];floor=1;localFrom=1;localTo=Math.min(5,p.total);start=selected=null;dirty=false;persist();refresh();toast('已打开项目，所有输入可继续编辑');}catch(err){toast('无法打开：'+err.message);}finally{e.target.value='';}};
+ $('open').onclick=()=>$('file').click();$('file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>10*1024*1024)throw Error('项目文件不能超过 10 MB');const next=JSON.parse(await file.text());Engine.validate(next);const built=Engine.generate(next);LoadData.reconcile(next,built,Loading.token);if((dirty||groupDirty||window.hasPendingFramingInputs203?.())&&!await StudioDialogs316.confirm('打开项目将替换当前编辑内容。是否继续？建议先保存。'))return;groupDirty=false;groupDraft=null;history.push(Engine.clone(p));p=next;result=built;panX=panY=0;viewTool='rotate';key=Object.keys(p.types)[0];floor=1;localFrom=1;localTo=Math.min(5,p.total);start=selected=null;dirty=false;persist();refresh();toast('已打开项目，所有输入可继续编辑');}catch(err){toast('无法打开：'+err.message);}finally{e.target.value='';}};
  $('help').onclick=()=>$('helpdialog').showModal();$('helpclose').onclick=()=>$('helpdialog').close();
  function pointEvent(e){const r=$('canvas').getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top];}
  function setSlabDirections119(value){showSlabDirections119=!!value;try{localStorage.setItem('framing-slab-directions119',String(showSlabDirections119));}catch{}for(const id of ['show-slab-directions119','bl116-show-directions']){const el=$(id);if(el)el.checked=showSlabDirections119;}schedule();}
@@ -606,6 +633,8 @@
  canvas.addEventListener('lostpointercapture',finishPointer);canvas.addEventListener('auxclick',e=>{if(e.button===1)e.preventDefault();});canvas.addEventListener('pointerup',finishPointer);canvas.addEventListener('pointercancel',finishPointer);canvas.addEventListener('wheel',e=>{if(tab==='elevation')return;e.preventDefault();exploration.finishArea(true);hideInfo();zoom=Math.max(.4,Math.min(4,zoom*Math.exp(-e.deltaY*.001)));schedule();},{passive:false});
  window.addEventListener('keyup',e=>{if(e.code==='Space'||e.key===' ')spaceHeld=false;});window.addEventListener('blur',()=>{memberDrag=null;columnDrag=null;schedule();spaceHeld=false;drag=null;zoneDrag=null;});
  window.addEventListener('keydown',e=>{if((e.code==='Space'||e.key===' ')&&!['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)&&!e.target.isContentEditable){spaceHeld=true;e.preventDefault();}if(e.key==='Delete'&&!e.isComposing&&!['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)&&!e.target.isContentEditable){if(deleteSelection())e.preventDefault();}if(e.key==='Escape'){beamLayoutUI?.reset();if(sbAreaDrawing)selectOnly=true;sbAreaDrawing=false;zoneDrag=null;gridPreview=null;exploration.finishArea(true);exploration.clearSelection();start=selected=inspected=null;refresh();}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();$('save').click();}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!['INPUT','TEXTAREA'].includes(e.target.tagName)){e.preventDefault();$('undo').click();}});
+ window.savedFramingProject316=content=>{try{if(JSON.stringify(JSON.parse(content))===JSON.stringify(p)){dirty=false;return true;}}catch{}return false;};
+ window.hasUnsavedFramingProject316=()=>dirty;
  window.hasPendingFramingInputs203=()=>groupDirty||memberPending()||!!document.getElementById('lg-editor')||!!document.querySelector('[aria-invalid="true"]');
  window.addEventListener('beforeunload',e=>{if(dirty||groupDirty){e.preventDefault();e.returnValue='';}});
  exploration=ExplorerUI({get:()=>({p,result,floor,key}),repaint:schedule,framing:v=>{if(!p.types[v])return;mode='plan';setType(v);},focusMember:(token,f)=>{const m=Loading.members(p,result,f).find(x=>x.token===token);if(!m)return;floor=f;key=result.floors[f-1].type;mode='plan';tab='checks';selectOnly=true;start=inspected=null;selected={kind:m.kind,id:m.member.id,...(m.kind==='SLAB'?{slabId:m.id}:{})};refresh();},transact,toast,download,refresh,tab:v=>{tab=v;refresh();},floor:v=>{floor=v;key=result.floors[v-1].type;mode='plan';start=selected=null;}});
@@ -622,6 +651,6 @@
  measureTool=Measure189.create({canvas,get:()=>({p,result,floor,key,mode,tab,plot,spaceHeld,model:result?(tab==='review'?ReviewLayout191.model(Engine.floorModel(result,floor,key),ReviewLayout191.offsets(p,key)):Engine.floorModel(result,floor,key)):null}),redraw:schedule,enter:()=>{selectOnly=true;start=null;drag=null;memberDrag=null;columnDrag=null;sbAreaDrawing=false;zoneDrag=null;beamLayoutUI?.reset();hideInfo();},leave:refresh});
  reviewLayout=ReviewLayout191.create({canvas,get:()=>({p,result,floor,key,tab,mode,plot,spaceHeld,visible,measuring:!!measureTool?.active,model:Engine.floorModel(result,floor,key)}),update:fn=>{const old=Engine.clone(p);try{fn();history.push(old);if(history.length>50)history.shift();dirty=true;persist();refresh();}catch(e){p=old;toast(e.message);refresh();}},refresh,redraw:schedule,toast});
  result=Engine.generate(p);refresh();new ResizeObserver(schedule).observe(canvas.parentElement);DisplayQuality.watch(schedule);
- try{const stored=localStorage.getItem('framing-studio-explorer-e2');if(stored&&stored!==JSON.stringify(p)){setTimeout(()=>{if(dirty||groupDirty)return;if(confirm('发现上次离线编辑的自动备份，要恢复吗？')){try{const next=Engine.validate(JSON.parse(stored));result=Engine.generate(next);LoadData.reconcile(next,result,Loading.token);p=next;key=Object.keys(p.types)[0];dirty=true;refresh();toast('已恢复自动备份，请保存项目文件');}catch(e){toast('备份无法恢复：'+e.message);}}},100);}}catch{}
+ try{const stored=localStorage.getItem('framing-studio-explorer-e2');if(stored&&stored!==JSON.stringify(p)){setTimeout(async()=>{if(dirty||groupDirty)return;if(await StudioDialogs316.confirm('发现上次离线编辑的自动备份，要恢复吗？')){try{const next=Engine.validate(JSON.parse(stored));result=Engine.generate(next);LoadData.reconcile(next,result,Loading.token);p=next;key=Object.keys(p.types)[0];dirty=true;refresh();toast('已恢复自动备份，请保存项目文件');}catch(e){toast('备份无法恢复：'+e.message);}}},100);}}catch{}
 window.ExcelProject=()=>({project:Engine.clone(p),floor,key});
 })();

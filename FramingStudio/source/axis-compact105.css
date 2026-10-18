@@ -12,3 +12,6 @@
 #side .axis-compact105 td button{width:25px;min-height:27px;padding:2px;font-size:12px}
 #side .axis-compact105 .row{margin:6px 0 10px;gap:6px}
 #side .axis-compact105 .row button{padding:5px 9px;font-size:12px}
+.axis-compact105 input[data-f="gap"]{appearance:textfield;-moz-appearance:textfield}
+.axis-compact105 input[data-f="gap"]::-webkit-inner-spin-button,
+.axis-compact105 input[data-f="gap"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}

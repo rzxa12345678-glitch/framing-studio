@@ -16,7 +16,7 @@ const RightInputPreview=(()=>{
    side.querySelectorAll(':scope > .table-wrap').forEach(e=>e.remove());
 
 
-   const notes=[...side.children].filter(e=>e.classList.contains('notice')&&!e.querySelector('button'));
+   const notes=[...side.children].filter(e=>e.classList.contains('notice')&&!e.querySelector('button,input'));
    notes.forEach(n=>n.remove());
   }
   if(tab==='beams'){
@@ -38,7 +38,7 @@ const RightInputPreview=(()=>{
  document.addEventListener('input',e=>{if(e.target.matches?.('#side input:not([readonly]),#side select,#side textarea')){manual.add(fieldKey(e.target));e.target.dataset.inputState='manual';queueMicrotask(()=>{if(e.target.isConnected)e.target.dataset.inputState='manual'})}},true);
  document.addEventListener('change',e=>{if(e.target.dataset.previewWall){const value=e.target.value,[key,id]=e.target.dataset.previewWall.split('|');StudioHost.transact(()=>{const w=StudioHost.get().p.types[key].walls.find(w=>w.id===id);if(!w)throw Error('墙已不存在');w.axisPosition=value;});}},true);
  document.addEventListener('DOMContentLoaded',()=>{for(const type of ['input','change'])document.addEventListener(type,e=>{if(e.target.closest?.('#side')&&manual.has(fieldKey(e.target)))e.target.dataset.inputState='manual'});});
- document.addEventListener('DOMContentLoaded',()=>{const nav=document.getElementById('nav'),beam=nav.querySelector('[data-tab="beams"]'),loading=nav.querySelector('[data-tab="loading"]');beam.before(loading);[...nav.querySelectorAll('button[data-tab]')].forEach((b,i)=>{const s=b.querySelector('span');if(s)s.textContent=String(nav.querySelector('[data-tab="parameters"]')?i:i+1).padStart(2,'0')});});
+ document.addEventListener('DOMContentLoaded',()=>{const nav=document.getElementById('nav'),beam=nav.querySelector('[data-tab="beams"]'),loading=nav.querySelector('[data-tab="loading"]');beam.before(loading);[...nav.querySelectorAll('button[data-tab]')].forEach((b,i)=>{const s=b.querySelector('span');if(s)s.textContent=String(nav.querySelector('[data-tab="parameters"]')?i:i+1).padStart(2,'0');b.title=b.textContent.trim()});});
 
  return {decorate};
 })();

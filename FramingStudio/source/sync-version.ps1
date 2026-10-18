@@ -9,6 +9,11 @@ $htmlText=[IO.File]::ReadAllText($htmlPath)
 $htmlText=[regex]::Replace($htmlText,'<title>Framing Studio[^<]*</title>',('<title>Framing Studio · '+$releaseVersion.version+'</title>'))
 $htmlText=[regex]::Replace($htmlText,'探索版 · E2\.\d+',('探索版 · '+$releaseVersion.version))
 $htmlText=[regex]::Replace($htmlText,'(<div class="nav-bottom">)E2\.\d+',('$1'+$releaseVersion.version))
+if($releaseVersion.edition){
+ $editionLabel=[System.Net.WebUtility]::HtmlEncode([string]$releaseVersion.edition)
+ $htmlText=[regex]::Replace($htmlText,'<title>Framing Studio[^<]*</title>',('<title>Framing Studio · '+$releaseVersion.version+' · '+$editionLabel+'</title>'))
+ $htmlText=[regex]::Replace($htmlText,'探索版 · E2\.\d+(?: · 斜梁版)?',('探索版 · '+$releaseVersion.version+' · '+$editionLabel))
+}
 $versionFiles[$htmlPath]=$htmlText
 $hostPath=Join-Path $PSScriptRoot 'FramingStudio.cs'
 $hostText=[IO.File]::ReadAllText($hostPath)

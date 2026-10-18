@@ -119,3 +119,15 @@ Show local beam RC promptly when the load basis is unchanged, without marking
 the whole-building/report output fresh. The user-confirmed native verification
 scope remains selected Check/A/B members; label its explicit command
 "更新至EXCEL並核對" and the restore command "恢復 App 自動選筋".
+
+## One-way slabs and the slanted-beam edition (E2.316)
+
+User clarification on 2026-10-18: slabs remain one-way slabs. For a triangular
+or slanted polygon panel, use the longest supported strip span in its selected
+X/Y direction with the existing slab design and native Excel input/verification
+path. A manually specified design span must not be shorter than that maximum.
+Transfer loads to beams separately using the actual polygon and each strip's
+support reactions. Adding SBs partitions the physical panels before either
+calculation. Do not replace the actual load area with the design envelope.
+The release display name is 斜梁版. Preserve existing rectangular calculations
+and all original Section A/B report content, format, Excel formulas and VBA.

@@ -2,8 +2,8 @@
 const SlabGeometry120=(()=>{
  const engine=()=>typeof Engine!=='undefined'?Engine:require('./engine.js'),regions=()=>typeof LoadRegions83!=='undefined'?LoadRegions83:require('./load-regions.js');
  const eps=1e-6,clone=x=>JSON.parse(JSON.stringify(x)),nice=n=>Math.round(n*1e6)/1e6;
- const token=s=>'SLAB|'+JSON.stringify(s.rects.map(r=>[r.x0,r.x1,r.y0,r.y1].map(nice)));
- const signature=s=>s.rects.map(r=>[r.x0,r.x1,r.y0,r.y1].map(v=>v.toFixed(6)).join(',')).sort().join('|');
+ const token=s=>s.polygon315?Diagonal315.token(s):'SLAB|'+JSON.stringify(s.rects.map(r=>[r.x0,r.x1,r.y0,r.y1].map(nice)));
+ const signature=s=>s.polygon315?Diagonal315.token(s):s.rects.map(r=>[r.x0,r.x1,r.y0,r.y1].map(v=>v.toFixed(6)).join(',')).sort().join('|');
  const box=r=>({x0:r.x-r.w/2,x1:r.x+r.w/2,y0:r.y-r.d/2,y1:r.y+r.d/2});
  const intersect=(a,b)=>Math.max(0,Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0))*Math.max(0,Math.min(a.y1,b.y1)-Math.max(a.y0,b.y0));
  function concrete(beams,walls,columns){return [...beams,...walls].map(m=>box(engine().rect(m))).concat(columns.filter(c=>c.status!=='上层柱').map(c=>box(engine().columnRect(c))));}
@@ -11,7 +11,7 @@ const SlabGeometry120=(()=>{
  // may be treated as a rectangular design panel; real voids and internal islands cannot.
  const designCache=new WeakMap();
  function designRectangle(c,model){
-  if(c.rectangular)return true;if(!model||!c.netBoundary120)return false;
+  if(c.polygon315)return false;if(c.rectangular)return true;if(!model||!c.netBoundary120)return false;
   let cache=designCache.get(model);if(!cache)designCache.set(model,cache=new WeakMap());if(cache.has(c))return cache.get(c);
   const R=regions(),bounds={x0:c.x0,x1:c.x1,y0:c.y0,y1:c.y1},missing=R.difference([bounds],c.rects),columns=model.columns.filter(v=>v.status!=='上层柱').map(v=>box(engine().columnRect(v)));
   const floor=R.union((model.ts||[]).filter(t=>t.state===1).map(t=>({x0:t.x0,x1:t.x1,y0:t.y0,y1:t.y1})));

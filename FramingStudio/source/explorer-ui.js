@@ -220,7 +220,7 @@ function ExplorerUI(host){
  }
  document.addEventListener('input',e=>{if(['ex-slab-span131','ex-slab-width131'].includes(e.target.id)){$('ex-slab-span-mode').value='manual';updateSlabSpan131();}});
  document.addEventListener('change',e=>{if(e.target.id==='ex-slab-sw131'){$('ex-slab-span-mode').value='manual';updateSlabSpan131();}});
- function slabInputs(h,includeSupports=true){const m=h.selected,o=h.data,cs=o.slabType==='CS',dir=Loading.slabDirection(h.p,h.floor,m.token,m.member),labels={left:'左',right:'右',top:'上',bottom:'下'};
+ function slabInputs(h,includeSupports=true){if(h.selected.member.polygon315)return DiagonalUI315.slabInputs(h,!includeSupports);const m=h.selected,o=h.data,cs=o.slabType==='CS',dir=Loading.slabDirection(h.p,h.floor,m.token,m.member),labels={left:'左',right:'右',top:'上',bottom:'下'};
   let html='<label class="field">板类型<select id="ex-slab-type"><option value="SLAB" '+(!cs?'selected':'')+'>普通单向板 · 两侧传荷</option><option value="CS" '+(cs?'selected':'')+'>CS · Cantilever Slab 悬臂板</option></select></label>';
   if(cs)html+='<label class="field">CS 固定边（平面图方向）<select id="ex-cs-edge"><option value="">请选择固定边</option>'+Object.entries(labels).map(([k,v])=>'<option value="'+k+'" '+(o.csFixedEdge===k?'selected':'')+'>'+v+'边</option>').join('')+'</select></label><p>CS · '+(dir?'跨向 '+dir+'；悬挑长度 '+num(dir==='X'?m.member.x1-m.member.x0:m.member.y1-m.member.y0)+' m；荷载全部传到'+labels[o.csFixedEdge]+'边。':'请选择固定边后计算。')+'</p><p class="muted">指定边按完全固定、对边自由的单向悬臂模型计算，顶部主筋受拉。B 自重自动＋SDL＋LL；A 使用 Loading 的 DL。根部弯矩另列；承托梁抗扭、墙及节点抗弯须另行验算。</p>';
 

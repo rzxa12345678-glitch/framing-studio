@@ -21,16 +21,52 @@ const InputContinuity326=(()=>{
   return {active,key:key(active),value:active?.value,draft:drafts.has(active),start:active?.selectionStart,end:active?.selectionEnd,direction:active?.selectionDirection,
    anchor:r&&r.top>=bounds.top&&r.bottom<=bounds.bottom?r.top:null,scroll,errors,folds:[...root.querySelectorAll('details')].map(e=>e.open)};
  }
+ // Keep the active control and its ancestor chain connected. Number inputs do
+ // not expose selectionStart/End, so detach/refocus cannot preserve selection.
+ function renderConnected328(root,s,render){
+  if(!s?.key||!s.active?.matches('input,textarea'))return render();
+  const descriptor=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');
+  const own=Object.getOwnPropertyDescriptor(root,'innerHTML');
+  function attrs(old,fresh){for(const a of [...old.attributes])if(!fresh.hasAttribute(a.name))old.removeAttribute(a.name);for(const a of fresh.attributes)if(old.getAttribute(a.name)!==a.value)old.setAttribute(a.name,a.value);}
+  function patch(old,fresh,target){
+   if(old===s.active){
+    attrs(old,fresh);
+    if(!s.draft&&old.value!==fresh.value)old.value=fresh.value;
+    return;
+   }
+   const branch=[...old.children].find(n=>n===s.active||n.contains(s.active));
+   const next=[...fresh.children].find(n=>n===target||n.contains(target));
+   if(!branch||!next||branch.tagName!==next.tagName)throw Error('active path changed');
+   // Reconcile deepest first, then insert siblings around the connected branch.
+   patch(branch,next,target);if(old!==root)attrs(old,fresh);
+   const before=[],after=[];let passed=false;
+   for(const n of [...fresh.childNodes]){if(n===next){passed=true;continue;}(passed?after:before).push(n);}
+   for(const n of [...old.childNodes])if(n!==branch)n.remove();
+   for(const n of before)old.insertBefore(n,branch);
+   for(const n of after)old.append(n);
+  }
+  Object.defineProperty(root,'innerHTML',{configurable:true,get(){return descriptor.get.call(this);},set(html){
+   const fresh=document.createElement(root.tagName);descriptor.set.call(fresh,html);const target=find(fresh,s.key);
+   if(target&&target.tagName===s.active.tagName&&target.type===s.active.type&&s.active.isConnected){
+    // Validate the path before making any change; structural navigation falls back.
+    let a=s.active,b=target,valid=true;
+    while(a!==root&&b!==fresh){if(a.tagName!==b.tagName){valid=false;break;}a=a.parentElement;b=b.parentElement;}
+    if(valid&&a===root&&b===fresh){patch(root,fresh,target);return;}
+   }
+   descriptor.set.call(root,html);
+  }});
+  try{return render();}finally{if(own)Object.defineProperty(root,'innerHTML',own);else delete root.innerHTML;}
+ }
  function paint(root,context,render,preserveErrors=false){
-  const same=contexts.get(root)===context,s=same?snapshot(root):null;contexts.set(root,context);render();if(!s)return;
+  const same=contexts.get(root)===context,s=same?snapshot(root):null;contexts.set(root,context);renderConnected328(root,s,render);if(!s)return;
   [...root.querySelectorAll('details')].forEach((e,i)=>{if(i<s.folds.length)e.open=s.folds[i];});
   for(const err of preserveErrors?s.errors:[]){rejected.delete(err.source);const e=find(root,err.key);if(!e||!err.note||e.hasAttribute('aria-invalid'))continue;e.value=err.value;e.dataset.feedback172=err.id;e.setAttribute('aria-invalid','true');e.setAttribute('aria-describedby',err.desc||err.id);e.after(err.note);}
   const e=find(root,s.key);
   // An explicit modal or a deliberately focused different control wins.
   const focused=document.activeElement,mayRestore=!focused||focused===document.body||focused===s.active;
   if(e&&!e.disabled&&mayRestore){
-   if(s.draft&&'value'in e){e.value=s.value;drafts.add(e);}
-   e.focus({preventScroll:true});
+   if(s.draft&&'value'in e){if(e.value!==s.value)e.value=s.value;drafts.add(e);}
+   if(document.activeElement!==e)e.focus({preventScroll:true});
    if(s.start!=null)try{e.setSelectionRange(s.start,s.end,s.direction);}catch{}
   }
   for(const [node,x,y]of s.scroll)if(node.isConnected){node.scrollLeft=x;node.scrollTop=y;}
@@ -54,6 +90,38 @@ const InputContinuity326=(()=>{
  for(const type of ['pointerup','pointercancel'])document.addEventListener(type,()=>{pointer=false;schedule();},true);
  window.addEventListener('blur',()=>{pointer=false;schedule();});
  return {run,rejected:e=>rejected.add(e)};
+})();
+
+// Copy one physical grid line without replacing a Framing's other axes.
+const AxisCopy328=(()=>{
+ function copy(p,source,dim,index){
+  if(!p.types[source]||!['x','y'].includes(dim))throw Error('軸線來源無效');
+  const line=Engine.axes(p,dim,source)[index];if(!line)throw Error('軸線已不存在');
+  const draft=Engine.clone(p),changed=[],skipped=[];
+  for(const key of Object.keys(draft.types)){
+   if(key===source)continue;
+   const axes=Engine.axes(draft,dim,key),named=axes.find(a=>a.id===line.id),at=axes.find(a=>Math.abs(a.v-line.v)<1e-6);
+   if(named){if(Math.abs(named.v-line.v)<1e-6){skipped.push(key);continue;}throw Error(key+'：同名軸線 '+line.id+' 位於 '+named.v+' m，與來源 '+line.v+' m 不同；整批未複製。');}
+   if(at)throw Error(key+'：'+line.v+' m 已有軸線 '+at.id+'；整批未複製。');
+   if(axes.length>=20)throw Error(key+'：每方向最多 20 條軸線；整批未複製。');
+   if(axes.some(a=>Math.abs(a.v-line.v)<.001-1e-9))throw Error(key+'：與原軸線距離不足 0.001 m；整批未複製。');
+   const i=axes.findIndex(a=>a.v>line.v);
+   if(i>0)Engine.insertAxis291(draft,key,dim,i,line.id,line.v);
+   else {
+    const grid=Engine.ownAxes(draft,key),ar=grid[dim];
+    if(i===-1)ar.push({id:line.id,gap:line.v-axes.at(-1).v});
+    else {
+     ar[0].gap=axes[0].v-line.v;ar.unshift({id:line.id,gap:0});grid.origin={...grid.origin,[dim]:line.v};
+     for(const layer of ['building','opening']){const out={};for(const [cell,value]of Object.entries(draft.types[key][layer]||{})){const q=cell.split(',').map(Number);q[dim==='x'?0:1]++;out[q.join(',')]=value;}draft.types[key][layer]=out;}
+    }
+   }
+   changed.push(key);
+  }
+  for(const key of changed)p.types[key]=draft.types[key];
+  if(changed.length&&draft.localHeights96)p.localHeights96=draft.localHeights96;
+  return {line,changed,skipped};
+ }
+ return {copy};
 })();
 
 // Shared in-page confirmations for browser and Windows WebView2.
@@ -334,7 +402,7 @@ window.StudioDialogs316=StudioDialogs316;
 
   }else if(tab==='axes'){
    html='<h2>轴线 · '+esc(key)+'</h2><div class="muted">轴距和坐标以 m 输入。轴线上的墙柱跟随轴线移动，自由坐标保持不变。</div>';
-   for(const d of ['x','y']){const a=Engine.axes(p,d,key);html+=`<section class="axis-compact105" data-axis-direction="${d}"><h3>${d.toUpperCase()} 方向 · ${a.length} 条</h3>`+'<div class="row">'+button('＋ 轴线','addaxis'+d)+'</div>'+table(['删除','轴名','距前轴 m','坐标 m','插入'],Engine.axisData(p,key)[d].map((v,i)=>[button('×','delaxis'+d,i),input(v.id,'axis'+d,i,'id','text'),i?input(v.gap,'axis'+d,i,'gap'):'0',a[i].v.toFixed(3),i?'<button type="button" data-action="insertaxis'+d+'" data-i="'+i+'" aria-label="在 '+esc(a[i-1].id)+' 與 '+esc(v.id)+' 之間插入 '+d.toUpperCase()+' 軸線" '+(a.length>=20?'disabled':'')+'>插入</button>':'—']))+'</section>';}
+   for(const d of ['x','y']){const a=Engine.axes(p,d,key);html+=`<section class="axis-compact105" data-axis-direction="${d}"><h3>${d.toUpperCase()} 方向 · ${a.length} 条</h3>`+'<div class="row">'+button('＋ 轴线','addaxis'+d)+'</div>'+table(['删除','轴名','距前轴 m','坐标 m','複製','插入'],Engine.axisData(p,key)[d].map((v,i)=>[button('×','delaxis'+d,i),input(v.id,'axis'+d,i,'id','text'),i?input(v.gap,'axis'+d,i,'gap'):'0',a[i].v.toFixed(3),'<button type="button" data-action="copyaxis'+d+'" data-i="'+i+'" aria-label="將 '+esc(v.id)+' 複製到全部 Framing">全部 Framing</button>',i?'<button type="button" data-action="insertaxis'+d+'" data-i="'+i+'" aria-label="在 '+esc(a[i-1].id)+' 與 '+esc(v.id)+' 之間插入 '+d.toUpperCase()+' 軸線" '+(a.length>=20?'disabled':'')+'>插入</button>':'—']))+'</section>';}
    html+='<p class="muted">按「插入」可在該行與上一行之間新增軸線；填寫軸名及絕對坐標 m，自動拆分軸距，所有原軸線坐標保持不變。建築範圍、Opening 及局部 Area 同步對應，可撤銷。</p>';
    html+='<div class="notice">点每行前面的 × 删除轴线，可撤销。中间轴删除后合并相邻跨度，关联构件保留为实际坐标；两侧区域不同的边界轴需先调整区域。删除首轴保留其他轴的原坐标，保持各楼层对齐；删除边轴会缩小当前类型的建筑范围。每方向至少保留 2 条。</div>';
 
@@ -360,7 +428,7 @@ window.StudioDialogs316=StudioDialogs316;
   }
 
   if(tab==='walls')html=memberSelectionPanel()+html+GeometryIssuesLocal.panel(p,result,key);
-  if(['regions','columns'].includes(tab)&&selected?.kind==='ZONE'&&t.noColumnZones?.[selected.index])html='<div class="notice"><b>已选禁柱区 '+(selected.index+1)+'</b><p>重叠处再次点击切换；Delete 删除；可撤销。</p>'+button('删除所选禁柱区','delete-no-column',selected.index)+'</div>'+html;$('side').innerHTML=InputColours.decorate(html,p);RightInputPreview.decorate(tab,{p,result,key,floor});if(tab==='beamLayout')beamLayoutUI.restore();if(tab==='checks')BeamRebar116.decorate({p,result,floor,key,selected,memberResult:(f,t)=>exploration.getMemberResult227(p,f,t)});
+  if(['regions','columns'].includes(tab)&&selected?.kind==='ZONE'&&t.noColumnZones?.[selected.index])html='<div class="notice"><b>已选禁柱区 '+(selected.index+1)+'</b><p>重叠处再次点击切换；Delete 删除；可撤销。</p>'+button('删除所选禁柱区','delete-no-column',selected.index)+'</div>'+html;const sideMarkup328=document.createElement('aside');sideMarkup328.innerHTML=InputColours.decorate(html,p);RightInputPreview.decorate(tab,{p,result,key,floor},sideMarkup328);for(const select of sideMarkup328.querySelectorAll('select'))for(const option of select.options)option.toggleAttribute('selected',option.selected);$('side').innerHTML=sideMarkup328.innerHTML;if(tab==='beamLayout')beamLayoutUI.restore();if(tab==='checks')BeamRebar116.decorate({p,result,floor,key,selected,memberResult:(f,t)=>exploration.getMemberResult227(p,f,t)});
  }
  function calculationView(){return ['checks','loading','deflection'].includes(tab);}
  function syncSlabDisplay318(){const fixed=tab==='regions'&&mode==='plan',fill=$('components').querySelector('[data-kind=SLAB]');fill.checked=fixed||visible.SLAB;fill.disabled=fixed;fill.parentElement.title=fixed?'04 區域固定顯示建築範圍底色；其他平面頁面沿用你的填色設定。':'只控制其他平面頁面的樓板填色，不影響 3D 板體或計算。';$('slab-region-hint318').hidden=!fixed;$('slab-body318').checked=slabBody318;}
@@ -434,7 +502,7 @@ window.StudioDialogs316=StudioDialogs316;
   });
  });
  $('side').addEventListener('click',async e=>{
-  const b=e.target.closest('button');if(!b)return;const a=b.dataset.action,i=+b.dataset.i,t=p.types[key];if(b.dataset.noColumnMode313){noColumnMode313=b.dataset.noColumnMode313;zoneDrag=null;start=null;selectOnly=false;refresh();return;}if(a==='auto-columns311'){transact(()=>FloorColumns101.update311(p,key,floor,FloorColumns101.follows311(p.types[key]),true));return;}if(a==='draw-columns311'){$('drawtool').click();return;}if(a?.startsWith('insertaxis')){if(!axisInsert291.open&&InputFeedback172.ready())openAxisInsert291(a.slice(-1),i);return;}if(levelAction(a)||overallAction(a,b)||elevationAction(a,b)||sbAreaAction(a,b)||gridAction(a,b))return;
+  const b=e.target.closest('button');if(!b)return;const a=b.dataset.action,i=+b.dataset.i,t=p.types[key];if(b.dataset.noColumnMode313){noColumnMode313=b.dataset.noColumnMode313;zoneDrag=null;start=null;selectOnly=false;refresh();return;}if(a==='auto-columns311'){transact(()=>FloorColumns101.update311(p,key,floor,FloorColumns101.follows311(p.types[key]),true));return;}if(a==='draw-columns311'){$('drawtool').click();return;}if(a?.startsWith('copyaxis')){if(!InputFeedback172.ready())return;let out;if(transact(()=>{out=AxisCopy328.copy(p,key,a.slice(-1),i);},null,false,true))toast('軸線 '+out.line.id+'：已複製到 '+out.changed.length+' 個 Framing，略過 '+out.skipped.length+' 個相同軸線；可撤銷。');return;}if(a?.startsWith('insertaxis')){if(!axisInsert291.open&&InputFeedback172.ready())openAxisInsert291(a.slice(-1),i);return;}if(levelAction(a)||overallAction(a,b)||elevationAction(a,b)||sbAreaAction(a,b)||gridAction(a,b))return;
   if(b.id==='paint'||b.id==='erase'){DiagonalUI315.cancel319();erase=b.id==='erase';selectOnly=false;start=selected=null;refresh();return;}
 
   if(a==='layout-draw116'){selectOnly=false;sbAreaDrawing=false;start=null;refresh();return;}

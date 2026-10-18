@@ -1,3 +1,11 @@
+# E2.315 — Beam-size update feedback
+
+Batch and per-row beam-size edits show a blocking busy indicator before the existing synchronous transaction begins. Queued input cannot submit the edit twice. Completion leaves a persistent member count and elapsed time; rejected edits retain their inputs and show the original validation reason. Successful batches remain one undo operation.
+
+Verified using the current HKIE 2025 Q5 model: five 25 m TBs changed from 3500 to 3400 mm (visible completion: 7.5 s), 3600 mm rejected by the existing 3500 mm structural-zone limit, then one undo restored the complete saved model exactly. Old/new transaction runs produced identical model and generated geometry; this release improves feedback, not calculation speed.
+
+Calculation/loading engines, Excel templates and native bridge, Section A/B report modules and embedded report code are unchanged. Native Excel reports were not regenerated for this UI-only update.
+
 # E2.297 — Preserve explicit beam types and resolve physical end supports
 
 E2.297 修复手动梁类型被自动识别覆盖，以及贴边梁端支承漏判。

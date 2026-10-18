@@ -519,9 +519,13 @@
  function memberPending(){return memberEditor&&JSON.stringify(memberDraft())!==JSON.stringify(memberEditor.baseline);}
  function moveBeamInputs(oldBeam,edited,targetKey){if(oldBeam&&edited&&Loading.token(oldBeam.kind,oldBeam)!==Loading.token(edited.kind,edited)){const oldToken=Loading.token(oldBeam.kind,oldBeam),newToken=Loading.token(edited.kind,edited);for(const f of result.floors.filter(f=>f.type===targetKey))for(const name of ['members','selected','reportA','reportB']){const map=p.explorer?.[name],a=f.n+'|'+oldToken,b=f.n+'|'+newToken;if(map&&Object.hasOwn(map,a)){if(Object.hasOwn(map,b)&&JSON.stringify(map[b])!==JSON.stringify(map[a]))throw Error('目标类型已有独立输入，请先检查构件 Loading / Check');map[b]=map[a];delete map[a];}}}}
  function applyBeamTableEdits(changes){
+  if(tab!=='beamLayout'||BeamUpdate315.busy()||!changes.length)return false;
+  return BeamUpdate315.run(key,changes.length,()=>applyBeamTableEditsNow315(changes));
+ }
+ function applyBeamTableEditsNow315(changes){
   if(tab!=='beamLayout')return false;const before=Engine.floorModel(result,floor,key),chosen=selectedMembers(),allowed=new Set(chosen.map(memberToken)),keep=before.beams.filter(b=>allowed.has(memberToken(b))).map(b=>Engine.sig(b.rawA,b.rawZ));
-  const edits=changes.filter(({beam,size})=>size.kind!==beam.kind||size.b===null||Math.abs(size.b-beam.b*1000)>1e-6||Object.hasOwn(size,'d'));if(!edits.length)return false;
-  const previous=result;let after;
+  const edits=changes.filter(({beam,size})=>size.kind!==beam.kind||size.b===null||Math.abs(size.b-beam.b*1000)>1e-6||Object.hasOwn(size,'d'));if(!edits.length)return {ok:true,count:0};
+  const previous=result;let after,failure;
   const ok=transact(()=>{
    for(const {beam,size}of edits){if(!allowed.has(memberToken(beam)))throw Error('只能修改目前分頁選中的梁');if(!['MB','SB','TB','CB'].includes(size.kind)||size.b!==null&&(!Number.isFinite(size.b)||size.b<1||size.b>20000))throw Error('梁闊須為 1–20000 mm；類型須為 MB、SB、TB 或 CB');}
    Engine.freezeAutoBeams(p,key,before);
@@ -531,8 +535,8 @@
    for(const f of after.floors.filter(f=>f.type===key))for(const {beam,size}of edits){if(!Object.hasOwn(size,'d')||size.d===null)continue;const next=Engine.floorModel(after,f.n).beams.find(b=>Engine.sig(b.rawA,b.rawZ)===Engine.sig(beam.rawA,beam.rawZ));if(next&&size.d>next.structuralDepthMm+1e-6)throw Error(next.id+' 梁深超過 '+FloorLevels.name(p,f.n)+' Structural Zone 上限 '+next.structuralDepthMm+' mm；未套用');}
    for(const beam of before.beams)if(!current.beams.some(b=>Engine.sig(b.rawA,b.rawZ)===Engine.sig(beam.rawA,beam.rawZ)))throw Error('修改令梁重疊或無法生成；請調整闊度或類型');
    for(const f of previous.floors.filter(f=>f.type===key))for(const {beam}of edits){const sig=Engine.sig(beam.rawA,beam.rawZ),old=Engine.floorModel(previous,f.n).beams.find(b=>Engine.sig(b.rawA,b.rawZ)===sig),next=Engine.floorModel(after,f.n).beams.find(b=>Engine.sig(b.rawA,b.rawZ)===sig);if(!old||!next)continue;const a=f.n+'|'+Loading.token(old.kind,old),b=f.n+'|'+Loading.token(next.kind,next);if(a===b)continue;for(const name of ['members','selected','reportA','reportB']){const map=p.explorer?.[name];if(map&&Object.hasOwn(map,a)){if(Object.hasOwn(map,b)&&JSON.stringify(map[b])!==JSON.stringify(map[a]))throw Error('目標類型已有獨立輸入，請先檢查 Loading / Check');map[b]=map[a];delete map[a];}}}
-  });
-  if(ok){chooseMembers(Engine.floorModel(result,floor,key).beams.filter(b=>keep.includes(Engine.sig(b.rawA,b.rawZ))).map(b=>({id:b.id,kind:b.kind,f:floor})));refresh();toast('已更新 '+edits.length+' 根梁 · '+key+' 共用樓層同步；可撤銷');}return ok;
+  },error=>{failure=error.message;});
+  if(ok){chooseMembers(Engine.floorModel(result,floor,key).beams.filter(b=>keep.includes(Engine.sig(b.rawA,b.rawZ))).map(b=>({id:b.id,kind:b.kind,f:floor})));refresh();}return {ok,count:edits.length,error:failure};
  }
  function applyMemberEdit(resetDimensions=false){
   const editor=memberEditor;if(!editor){memberStatus('请重新右键选择要修改的构件。',true);return false;}

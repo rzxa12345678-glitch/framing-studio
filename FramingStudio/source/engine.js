@@ -1,6 +1,7 @@
 /* Framing App A1. Geometry in metres; section inputs in millimetres. No external dependencies. */
 const Engine=(()=>{
  const slabGeometry=typeof SlabGeometry120!=='undefined'?SlabGeometry120:require('./slab-geometry120.js');
+ const wallFollow322=typeof WallFollow322!=='undefined'?WallFollow322:require('./wall-follow322.js');
  const eps=1e-6, clone=x=>JSON.parse(JSON.stringify(x)), near=(a,b)=>Math.abs(a-b)<eps;
  const unique=a=>[...new Set(a.map(x=>+x.toFixed(6)))].sort((a,b)=>a-b);
  function axisData(p,key){return (typeof key==='string'?p.types[key]:key)?.axes||p.axes;}
@@ -628,34 +629,18 @@ const Engine=(()=>{
   const hits=walls.filter(w=>{
    if(h===near(w.a[1],w.z[1]))return false;
    if(q[cross]<Math.min(w.a[cross],w.z[cross])-eps||q[cross]>Math.max(w.a[cross],w.z[cross])+eps)return false;
-   return link?link.id===w.id&&link.signature===sig(w.rawA,w.rawZ):near(raw[axis],w.rawA[axis]);
+   return link?(link.members322||[link]).some(m=>m.id===w.id&&m.signature===sig(w.rawA,w.rawZ)):near(raw[axis],w.rawA[axis]);
   });
-  if(hits.length!==1)return null;
-  const w=hits[0],side=Math.sign(other[axis]-w.a[axis]);if(!side)return null;
-  return w.a[axis]+side*w.b/2;
+  if(!hits.length)return null;
+  const faces=hits.map(w=>{const side=Math.sign(other[axis]-w.a[axis]);return side?w.a[axis]+side*w.b/2:null;});
+  return faces.every(v=>v!==null&&near(v,faces[0]))?faces[0]:null;
  }
  function followWallEnds302(b,walls){
   const axis=near(b.rawA[1],b.rawZ[1])?0:1,a=[...b.a],z=[...b.z];
   for(const end of ['a','z']){const v=wallEnd302(b,end,walls);if(v!==null)(end==='a'?a:z)[axis]=v;}
   return (z[axis]-a[axis])*(b.rawZ[axis]-b.rawA[axis])>eps?{a,z}:{a:b.a,z:b.z};
  }
- function bindWallChanges302(p,before){
-  for(const [key,t]of Object.entries(p.types)){
-   if(!before.types[key])continue;
-   const shape=q=>JSON.stringify([q.types[key].walls,q.types[key].building,q.types[key].opening,axisData(q,key)]);
-   if(shape(p)===shape(before))continue;
-   const old=model(before,key),records=[...t.beams,...t.autoBeamSnapshot?.main||[],...t.autoBeamSnapshot?.primary||[],...t.autoBeamSnapshot?.secondary||[]];
-   for(const record of records){
-    if(record.positionMode175==='fixed')continue;
-    const b=old.beams.find(b=>b.id===record.id&&(b.baseKind||b.kind)===record.kind);if(!b)continue;
-    const h=near(b.rawA[1],b.rawZ[1]);
-    for(const end of ['a','z']){
-     const hits=old.walls.filter(w=>h!==near(w.a[1],w.z[1])&&on(b[end],w));
-     if(hits.length===1){const w=hits[0];(record.wallSupports302??={})[end]={id:w.id,signature:sig(w.rawA,w.rawZ),raw:clone(end==='a'?b.rawA:b.rawZ)};}
-    }
-   }
-  }
- }
+ function bindWallChanges302(p,before){return wallFollow322.bind(p,before);}
  function mainBeamWidth(columns,a,z,fallback){
   const h=near(a[1],z[1]),ends=columns.filter(c=>c.status!=='上层柱'&&[a,z].some(q=>Math.abs(columnRect(c).x-q[0])<=c.b/2+eps&&Math.abs(columnRect(c).y-q[1])<=c.d/2+eps));
   return ends.length?Math.min(...ends.map(c=>h?c.d:c.b)):fallback;
@@ -700,12 +685,12 @@ const Engine=(()=>{
   }
   return changed;
  }
- function baseModel(p,key,localRects=[],referenceModel=null){p=scoped(p,key);
+ function baseModel(p,key,localRects=[],referenceModel=null,wallPlacements322=null){p=scoped(p,key);
   const t=p.types[key],ts=tiles(p,t).map(tile=>tile.state!==0&&localRects.some(r=>LocalHeights96.overlap(tile,r)>1e-7)?{...tile,state:2}:tile),gs=p.groups.filter(g=>g.type===key),sh=(gs[0]?structuralHeight(gs[0]):600)/1000,sbDepth=(t.beamDepth??600)/1000,min=0,df={...p.defaults,...t.columnDefaults101,sb:secondaryWidth(p,key)},issues=[],walls=[],columns=[],beams=[],panels=[];
   const issue=(id,msg)=>issues.push({type:key,id,msg});
   const layout=t.beamLayout116,autoMain=!t.autoBeamSnapshot?.main&&(layout?.main??(t.autoBeams101!==false)),autoSecondary=!t.autoBeamSnapshot?.secondary&&(layout?.secondary??(t.autoBeams101!==false)),mainDirection=layout?.mainDirection||'XY';
   if(referenceModel)walls.push(...clone(referenceModel.walls));
-  for(const c of (referenceModel?[]:t.walls.filter(c=>c.on))){const a=resolve(p,c.a),z=resolve(p,c.z),b=c.b/1000,pos=align(ts,a,z,b,true,c.axisPosition??"auto");if(!pos){issue(c.id,'墙不在有效边界或贴边方向改变，请分段');continue;}const box=rect({...pos,b});if(!rectAllowed(ts,box.x,box.y,box.w,box.d,true))issue(c.id,'手動牆身越出建築範圍（厚度 '+c.b+' mm）；已保留指定偏置，請改為自動向內貼齊或調整牆位');walls.push({...c,...pos,b,rawA:a,rawZ:z,kind:'WALL'});}
+  for(const c of (referenceModel?[]:t.walls.filter(c=>c.on))){const a=resolve(p,c.a),z=resolve(p,c.z),b=c.b/1000,follow=wallPlacements322?.get(c.id),pos=follow?follow.pos:align(ts,a,z,b,true,c.axisPosition??"auto");if(!pos){issue(c.id,'墙不在有效边界或贴边方向改变，请分段');continue;}const box=rect({...pos,b});if(!rectAllowed(ts,box.x,box.y,box.w,box.d,true))issue(c.id,'手動牆身越出建築範圍（厚度 '+c.b+' mm）；已保留指定偏置，請改為自動向內貼齊或調整牆位');walls.push({...c,...pos,b,rawA:a,rawZ:z,kind:'WALL',...(follow?{wallFollow322:follow.meta}:{})});}
   const wr=walls.map(rect);
   if(referenceModel){columns.push(...clone(referenceModel.columns));}else{
   let input=t.columns.filter(c=>c.on).map(c=>({...c,x:resolve(p,c)[0],y:resolve(p,c)[1],b:(c.bMode201==='default'?df.cb:c.b)/1000,d:(c.dMode201==='default'?df.cd:c.d)/1000}));
@@ -946,7 +931,7 @@ const Engine=(()=>{
   return models;
  }
 
- function model(p,key){return alignedModels(p,floors(p))[key];}
+ function model(p,key){const fs=floors(p);return wallFollow322.build(p,{models:alignedModels(p,fs),floorModels:{},issues:[],floors:fs},baseModel).models[key];}
 
  function setRegion(p,key,tileKey,layer,enabled){
   if(!['building','opening'].includes(layer)||typeof enabled!=='boolean')throw Error('区域操作无效');
@@ -1011,7 +996,7 @@ const Engine=(()=>{
    result.floorModels[f.n]={...m,beams};
   }
  }
- function generate(p){for(const t of Object.values(p.types)){if(t.alignmentMinSpacing!=null){t.minColumnSpacing=Math.max(t.minColumnSpacing||0,t.alignmentMinSpacing);delete t.alignmentMinSpacing;}}validate(p);for(const t of Object.values(p.types))if(t.beamDepth==null)t.beamDepth=600;const fs=floors(p),models=alignedModels(p,fs),floorModels=typeof FloorColumns101!=='undefined'?FloorColumns101.models(p,fs):{},issues=[];const result={models,floorModels,issues,floors:fs};const final=typeof LocalHeights96!=="undefined"?LocalHeights96.build(p,result,baseModel):result;for(const f of fs)final.issues.push(...floorModel(final,f.n).issues.map(q=>({...q,floor:f.n})));applyAutoTransferBeams(p,final);nameTransferBeams(final);
+ function generate(p){for(const t of Object.values(p.types)){if(t.alignmentMinSpacing!=null){t.minColumnSpacing=Math.max(t.minColumnSpacing||0,t.alignmentMinSpacing);delete t.alignmentMinSpacing;}}validate(p);for(const t of Object.values(p.types))if(t.beamDepth==null)t.beamDepth=600;const fs=floors(p),models=alignedModels(p,fs),floorModels=typeof FloorColumns101!=='undefined'?FloorColumns101.models(p,fs):{},issues=[];const result={models,floorModels,issues,floors:fs};wallFollow322.build(p,result,baseModel);const final=typeof LocalHeights96!=="undefined"?LocalHeights96.build(p,result,baseModel):result;for(const f of fs)final.issues.push(...floorModel(final,f.n).issues.map(q=>({...q,floor:f.n})));applyAutoTransferBeams(p,final);nameTransferBeams(final);
   for(let i=1;i<fs.length;i++){
    const up=floorModel(final,fs[i].n),dn=floorModel(final,fs[i-1].n),supports=[...dn.walls,...dn.beams.filter(b=>b.kind==='TB')];
    for(const c of up.columns.filter(c=>c.status!=='上层柱')){const matches=dn.columns.filter(d=>d.status!=='上层柱'&&overlap(columnRect(c),columnRect(d))),point=columnLoadPoint(c),beam=transferBeamAt(p,dn,fs[i-1].n,point);if(matches.length!==1&&(matches.length||!dn.walls.some(w=>on(point,w))&&beam?.kind!=='TB'))final.issues.push({type:up.key,floor:fs[i].n,id:c.id,msg:fs[i].n+'/F 上層柱與下層支承關係待確認；請核對柱、牆及 TB'});}
@@ -1179,6 +1164,6 @@ const Engine=(()=>{
   return {lo:floor,hi:floor};
  }
  function floorModel(result,f,key){const n=typeof f==="object"?f.n:f,k=key??result?.floors[n-1]?.type;return result?.floorModels?.[n]?.key===k?result.floorModels[n]:result?.models[k];}
- return {columnReferenceAxes289,bindWallChanges302,beamDrawPath301,insertAxis291,removeColumns289,editBeamSizes245,editBeamWidths244,beamFire241,beamMinimum241,assertBeamWidth241,assertSlab241,validateDimensionChanges241,secondaryWidth,promoteColumnBeams194,columnLoadPoint,transferBeamAt,beamSpaceConflict,bindMainColumns164,freezeAutoBeams,baseModel,floorModel,columnDirections,columnPositionKey,columnPositionRecord,setColumnPosition,mainBeamWidth,wallPosition,columnReference,addSecondaryArea,secondaryAreaRule,columnAxes,columnGridDraft,noColumn,addColumn,setColumnMode,structuralHeight,applyClearances,clone,columnRect,columnZoneConflict314,setRegion,setTransferColumn,axisData,ownAxes,axes,resolve,validate,floors,tiles,rectAllowed,align,rect,overlap,on,sig,model,generate,removeAxis,removeType,openingGroups,removeOpening,viewRange,removeBeam,removeMember,removeMembers,editSize};
+ return {columnReferenceAxes289,bindWallChanges302,beamDrawPath301,insertAxis291,removeColumns289,editBeamSizes245,editBeamWidths244,beamFire241,beamMinimum241,assertBeamWidth241,assertSlab241,validateDimensionChanges241,secondaryWidth,promoteColumnBeams194,columnLoadPoint,transferBeamAt,beamSpaceConflict,bindMainColumns164,freezeAutoBeams,baseModel,floorModel,columnDirections,columnPositionKey,columnPositionRecord,setColumnPosition,mainBeamWidth,wallPosition,wallPlacement322:wallFollow322.placement,wallSupport322:wallFollow322.support,columnReference,addSecondaryArea,secondaryAreaRule,columnAxes,columnGridDraft,noColumn,addColumn,setColumnMode,structuralHeight,applyClearances,clone,columnRect,columnZoneConflict314,setRegion,setTransferColumn,axisData,ownAxes,axes,resolve,validate,floors,tiles,rectAllowed,align,rect,overlap,on,sig,model,generate,removeAxis,removeType,openingGroups,removeOpening,viewRange,removeBeam,removeMember,removeMembers,editSize};
 })();
 if(typeof module!=='undefined')module.exports=Engine;

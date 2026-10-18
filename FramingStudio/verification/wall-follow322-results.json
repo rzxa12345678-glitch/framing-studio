@@ -1,0 +1,170 @@
+{
+  "baseline": "70543ce9cba97984040a4406043cf0aed5adde41",
+  "version": "E2.322",
+  "unrelatedJS": 67,
+  "css": 6,
+  "nativeExcel": 12,
+  "synchronized": 43,
+  "scripts": 44,
+  "originalLoadingFormulas": true,
+  "originalReportMarkup": true,
+  "nativeHostVersionOnly": true,
+  "windowsExeSha256": "84fede8ebf012c557b9b98b06e6f63f17619d8379581b80398fccbe77a508ead",
+  "results": [
+    {
+      "file": "source/tests/wall-follow322.cjs",
+      "exitCode": 0,
+      "ms": 298
+    },
+    {
+      "file": "source/tests/wall-follow322-edge.cjs",
+      "exitCode": 0,
+      "ms": 249
+    },
+    {
+      "file": "source/tests/wall-follow322-ui.cjs",
+      "exitCode": 0,
+      "ms": 2220
+    },
+    {
+      "file": "source/tests/wall-copy292.cjs",
+      "exitCode": 0,
+      "ms": 259
+    },
+    {
+      "file": "source/tests/wall-copy292-ui.cjs",
+      "exitCode": 0,
+      "ms": 2698
+    },
+    {
+      "file": "source/tests/wall-boundary302.cjs",
+      "exitCode": 0,
+      "ms": 280
+    },
+    {
+      "file": "source/tests/wall-beam-snap301.cjs",
+      "exitCode": 0,
+      "ms": 422
+    },
+    {
+      "file": "source/tests/wall-beam-junction301.cjs",
+      "exitCode": 0,
+      "ms": 310
+    },
+    {
+      "file": "source/tests/cad-selection321.cjs",
+      "exitCode": 0,
+      "ms": 52
+    },
+    {
+      "file": "source/tests/cad-selection321-ui.cjs",
+      "exitCode": 0,
+      "ms": 6060
+    },
+    {
+      "file": "source/tests/review193-ui.cjs",
+      "exitCode": 0,
+      "ms": 2965
+    },
+    {
+      "file": "source/tests/slab-thickness-table.cjs",
+      "exitCode": 0,
+      "ms": 2487
+    },
+    {
+      "file": "source/tests/diagonal315.cjs",
+      "exitCode": 0,
+      "ms": 5783
+    },
+    {
+      "file": "source/tests/diagonal315-ui.cjs",
+      "exitCode": 0,
+      "ms": 2971
+    },
+    {
+      "file": "source/tests/irregular-secondary305.cjs",
+      "exitCode": 0,
+      "ms": 260
+    },
+    {
+      "file": "source/tests/concave-transfer306.cjs",
+      "exitCode": 0,
+      "ms": 362
+    },
+    {
+      "file": "source/tests/secondary-fullspan307.cjs",
+      "exitCode": 0,
+      "ms": 452
+    },
+    {
+      "file": "source/tests/mb-column-follow299.cjs",
+      "exitCode": 0,
+      "ms": 50
+    },
+    {
+      "file": "source/tests/cb-column-follow298.cjs",
+      "exitCode": 0,
+      "ms": 231
+    },
+    {
+      "file": "source/tests/secondary-bay-follow300.cjs",
+      "exitCode": 0,
+      "ms": 47
+    },
+    {
+      "file": "source/tests/beam-network165.cjs",
+      "exitCode": 0,
+      "ms": 47
+    },
+    {
+      "file": "source/tests/geometry-consistency-local.cjs",
+      "exitCode": 0,
+      "ms": 218
+    },
+    {
+      "file": "source/tests/axis-insert291.cjs",
+      "exitCode": 0,
+      "ms": 252
+    },
+    {
+      "file": "source/tests/axis-insert291-ui.cjs",
+      "exitCode": 0,
+      "ms": 3166
+    },
+    {
+      "file": "source/tests/column-position257.cjs",
+      "exitCode": 0,
+      "ms": 287
+    },
+    {
+      "file": "source/tests/local-rebar285-ui.cjs",
+      "exitCode": 0,
+      "ms": 685
+    },
+    {
+      "file": "source/tests/report-ui-scale302-ui.cjs",
+      "exitCode": 0,
+      "ms": 30276
+    },
+    {
+      "file": "source/tests/report-scroll296-ui.cjs",
+      "exitCode": 0,
+      "ms": 3834
+    },
+    {
+      "file": "source/tests/report-handoff248.cjs",
+      "exitCode": 0,
+      "ms": 370
+    },
+    {
+      "file": "source/tests/wall-follow322-baseline.cjs",
+      "exitCode": 0,
+      "ms": 3486
+    },
+    {
+      "file": "verification/integration143.cjs",
+      "exitCode": 0,
+      "ms": 345
+    }
+  ]
+}

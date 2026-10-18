@@ -1,3 +1,33 @@
+# E2.319 — Offline column-layout proposals
+
+06 Columns now offers bounded offline candidate search, preview and explicit one-transaction apply. It respects actual section footprints, X/Y spacing, Opening/exclusion/wall/outside boundaries and shared-Framing interfaces. Existing manual/input/beam-connected columns, upper reference columns and real deletion records remain protected. Proposed layouts that alter existing beams are excluded before display; stale drafts require regeneration. No web service or AI is required. This geometry assistant does not replace structural design checks.
+
+Passed 13 synthetic regression groups and the current HKIE Q5 model group, plus 18 isolated Windows EXE UI/native-response checks. Current F03 retains its 24 beam-connected columns; incompatible alternatives are excluded. Original browser tab refreshed after backup, preview checked, exported model byte-identical before/after. E2.318 app/source/model separately preserved. Original calculation equations, Excel templates/bridge and A/B report formats unchanged. See verification/E2.319-column-schemes.md.
+
+# E2.318 — Separate plan fill and 3D slab visibility
+
+04 Region plan always shows the existing pale-yellow building/slab extent. Its checked plan-fill control explains that this page is fixed; other plan pages retain the user's independent optional fill preference. A separate 3D slab-body checkbox controls 3D rendering, with matching pale-yellow/green legend swatches. Opening and outside colours remain unchanged, including diagonal outlines.
+
+Verified in the packaged Windows WebView2 EXE with 16 display/model assertions plus 3 native confirmation-response checks. Tests cover the current model, mixed Opening/outside cells, diagonal slab faces, independent toggles and exact project/generated-result preservation. The existing browser tab was refreshed after backup, UI toggles verified, and before/after exported project files are byte-identical. No calculation, Excel workbook/worker or Section A/B report code changed; the 44 other embedded scripts are byte-identical. Native Excel recalculation was not rerun for this display-only update.
+
+# E2.317 — In-page confirmations with Windows EXE verification
+
+Replace application-level native confirm/prompt calls with an accessible in-page dialog shared by browser and WebView2: type deletion, Opening deletion, pure-auto column reset, new/open project replacement, recovery and new type names. Cancel is focused by default; Escape cancels; duplicate requests fail closed; name validation remains visible. Confirmed operations retain the original transactions and undo.
+
+The EXE uses the same panel for dirty closing and export-file overwrite confirmation. Save acknowledgement clears dirty state only after a matching project is actually written. Restored backups are included in dirty-close checks. Native Help opens the existing in-page help instead of a missing text file. Test mode no longer automatically accepts native script dialogs. Windows file selection remains a system file picker; startup errors without a working page remain native notifications.
+
+Actual packaged WebView2 testing: 27 isolated checks passed, then 28 passed with the current HKIE Q5 model, including cancel/confirm, delete/undo, new type, replacement cancellation, native project write, stale save acknowledgement and native close-choice messaging. Browser recovery and F04 deletion cancellation passed; before/after project exports are exactly equal. Native Excel/report generation was not rerun. Visible Windows EXE checks also passed: native Save cancellation, in-page overwrite cancellation with an unchanged file hash, confirmed overwrite, title-bar close/return/save-first, clean close, backup recovery and close without another save. Both visible runs exited with code 0; the saved model matched its source except the intentional QA name.
+
+Calculation engines, original Excel templates/worker logic, Section A/B report content and embedded report code are unchanged. E2.315 beam update feedback is retained.
+
+# E2.315 — Beam-size update feedback
+
+Batch and per-row beam-size edits show a blocking busy indicator before the existing synchronous transaction begins. Queued input cannot submit the edit twice. Completion leaves a persistent member count and elapsed time; rejected edits retain their inputs and show the original validation reason. Successful batches remain one undo operation.
+
+Verified using the current HKIE 2025 Q5 model: five 25 m TBs changed from 3500 to 3400 mm (visible completion: 7.5 s), 3600 mm rejected by the existing 3500 mm structural-zone limit, then one undo restored the complete saved model exactly. Old/new transaction runs produced identical model and generated geometry; this release improves feedback, not calculation speed.
+
+Calculation/loading engines, Excel templates and native bridge, Section A/B report modules and embedded report code are unchanged. Native Excel reports were not regenerated for this UI-only update.
+
 # E2.323 — Summary Check 右側樣式修復
 
 - 全樓檢查的動態組合表補回側欄共用表格容器及主題；窄側欄仍能換行顯示，保留原數據、文字及勾選狀態。

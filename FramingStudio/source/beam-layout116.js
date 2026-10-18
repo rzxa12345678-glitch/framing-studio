@@ -92,6 +92,36 @@ const BeamLayout116=(()=>{
  return {settings,candidate,clear,setDirections,setThickness,drawDirections,drawThicknessLabels};
 })();
 
+// UI-only transaction feedback. The existing atomic model edit stays synchronous.
+const BeamUpdate315=(()=>{
+ let busy=false;const messages=new Map();
+ const paint=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(resolve,0))));
+ function publish(key,text,error=false){messages.set(key,{text,error});for(const el of document.querySelectorAll('[data-beam-update315]'))if(el.dataset.beamUpdate315===key){el.textContent=text;el.hidden=false;el.dataset.error=String(error);el.setAttribute('role',error?'alert':'status');}}
+ async function run(key,count,edit){
+  if(busy)return false;busy=true;
+  const started=performance.now(),focus=document.activeElement,focusId=focus?.id,focusLabel=focus?.getAttribute?.('aria-label');
+  const mask=document.createElement('div');mask.className='beam-update-mask315';
+  mask.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="beam-update-title315" tabindex="-1"><h3 id="beam-update-title315">正在更新梁尺寸</h3><p role="status" aria-live="polite"></p><progress aria-label="梁尺寸更新進行中"></progress><p>正在同步模型及檢查幾何，完成前請稍候。</p></section>';
+  mask.querySelector('[role="status"]').textContent=key+' · '+count+' 根梁 · 更新中';
+  const prior=[...document.body.children].map(el=>[el,el.inert]);for(const [el]of prior)el.inert=true;
+  const events=['click','dblclick','pointerdown','pointerup','keydown','input','change','submit'];
+  const block=e=>{e.preventDefault();e.stopImmediatePropagation();};for(const name of events)document.addEventListener(name,block,true);
+  document.body.appendChild(mask);mask.querySelector('section').focus();
+  let answer;
+  try{await paint();answer=edit();}
+  catch(error){answer={ok:false,error:error.message||String(error)};}
+  finally{
+   // Keep the guard through the first post-work paint so queued clicks cannot submit again.
+   await paint();mask.remove();for(const [el,inert]of prior)el.inert=inert;for(const name of events)document.removeEventListener(name,block,true);busy=false;
+  }
+  const seconds=((performance.now()-started)/1000).toFixed(1),ok=!!answer?.ok;
+  publish(key,ok?(answer.count?'已更新 '+answer.count+' 根梁 · '+key+' 共用樓層同步 · 耗時 '+seconds+' 秒 · 可一次撤銷':'尺寸沒有變更，未新增撤銷紀錄'):'未套用：'+(answer?.error||'請查看尺寸或幾何提示')+'。尺寸輸入已保留，請修正後重試。',!ok);
+  const target=focus?.isConnected?focus:focusId?document.getElementById(focusId):focusLabel?[...document.querySelectorAll('[aria-label]')].find(el=>el.getAttribute('aria-label')===focusLabel):document.querySelector('[data-bl116="beam-selected"]');target?.focus?.({preventScroll:true});
+  return ok;
+ }
+ return {run,busy:()=>busy,message:key=>messages.get(key)};
+})();
+
 function BeamLayoutUI116(host){
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const $=id=>document.getElementById(id),folds={main:true,secondary:true,slab:true};
@@ -106,7 +136,8 @@ function BeamLayoutUI116(host){
  function switchTab(step,focus=false){if(!['main','secondary','slab'].includes(step))return;remember();if(activeTab!==step){host.clearSelection();host.selectMode();gesture=null;}activeTab=step;host.refresh();if(focus)$('bl116-tab-'+step)?.focus();}
  function selectedBeams(){const h=host.get(),ids=new Set((host.selectedMembers?.()||[]).map(b=>b.kind+':'+b.id));return Engine.floorModel(h.result,h.floor,h.key).beams.filter(b=>ids.has(b.kind+':'+b.id));}
  function beamTable(h,m){const chosen=selectedBeams(),ids=new Set(chosen.map(b=>b.kind+':'+b.id)),count=chosen.length;
-  return '<section id="bl116-beam-table" class="beam-parameters116" '+(activeTab==='slab'?'hidden':'')+'><h3>梁參數 · '+esc(FloorLevels.name(h.p,h.floor))+'</h3><p class="muted">只顯示圖上選中的 '+(activeTab==='main'?'MB／TB／CB':'SB')+'；修改同步至 '+esc(h.key)+' 共用樓層。</p><div class="row"><label class="field">批量梁闊 B mm<input id="bl116-beam-width" type="number" min="1" max="20000" step="any" placeholder="留空不修改" data-input-state="required"></label>'+'<label class="field">批量梁深 D mm<input id="bl116-beam-depth" type="number" min="1" max="20000" step="any" placeholder="留空不修改" data-input-state="required"></label>'+btn('套用已選（'+count+'）','beam-selected',count?'':'disabled')+'</div>'+(count?'<div class="beam-parameters-scroll116"><table><thead><tr><th>梁</th><th>類型</th><th>B mm</th><th>D mm</th><th>跨度 m</th></tr></thead><tbody>'+m.beams.map((b,i)=>ids.has(b.kind+':'+b.id)?'<tr><td>'+esc(b.displayId||b.id)+'</td><td><select data-beam-kind="'+i+'" aria-label="'+esc(b.displayId||b.id)+' 類型">'+['MB','SB','TB','CB'].map(k=>'<option '+(k===b.kind?'selected':'')+'>'+k+'</option>').join('')+'</select></td><td><input data-beam-width="'+i+'" aria-label="'+esc(b.displayId||b.id)+' 梁闊 B mm" type="number" min="1" max="20000" step="any" value="'+Number((b.b*1000).toFixed(6))+'" data-input-state="required"></td><td><input data-beam-depth="'+i+'" aria-label="'+esc(b.displayId||b.id)+' 梁深 D mm" type="number" min="1" max="20000" step="any" value="'+Number((b.d*1000).toFixed(3))+'" data-input-state="required"></td><td>'+Math.hypot(b.rawZ[0]-b.rawA[0],b.rawZ[1]-b.rawA[1]).toFixed(2)+'</td></tr>':'').join('')+'</tbody></table></div><p class="muted">修改後按 Enter 或離開欄位即套用；可撤銷。逐列 B／D 留空恢復預設。</p>':'<p class="muted">請在圖上單擊或拖拉框選梁。</p>')+'<p class="muted">B 須符合共用樓層最嚴格 FRR（1／2 h：200 mm；4 h：280 mm）；不足時不套用。D 可個別指定，須符合所有共用樓層／局部 Structural Zone 上限。未指定時 MB／TB／CB 用 Structural Zone；SB 用「00 參數」的 Framing SB 深度。修改尺寸保留原布置方式；B／D 留空恢復跟參數。</p></section>';
+  const feedback=BeamUpdate315.message(h.key),status='<p class="beam-update-status315" data-beam-update315="'+esc(h.key)+'" data-error="'+!!feedback?.error+'" role="'+(feedback?.error?'alert':'status')+'" aria-live="polite" '+(!feedback||activeTab==='slab'?'hidden':'')+'>'+esc(feedback?.text||'')+'</p>';
+  return status+'<section id="bl116-beam-table" class="beam-parameters116" '+(activeTab==='slab'?'hidden':'')+'><h3>梁參數 · '+esc(FloorLevels.name(h.p,h.floor))+'</h3><p class="muted">只顯示圖上選中的 '+(activeTab==='main'?'MB／TB／CB':'SB')+'；修改同步至 '+esc(h.key)+' 共用樓層。</p><div class="row"><label class="field">批量梁闊 B mm<input id="bl116-beam-width" type="number" min="1" max="20000" step="any" placeholder="留空不修改" data-input-state="required"></label>'+'<label class="field">批量梁深 D mm<input id="bl116-beam-depth" type="number" min="1" max="20000" step="any" placeholder="留空不修改" data-input-state="required"></label>'+btn('套用已選（'+count+'）','beam-selected',count?'':'disabled')+'</div>'+(count?'<div class="beam-parameters-scroll116"><table><thead><tr><th>梁</th><th>類型</th><th>B mm</th><th>D mm</th><th>跨度 m</th></tr></thead><tbody>'+m.beams.map((b,i)=>ids.has(b.kind+':'+b.id)?'<tr><td>'+esc(b.displayId||b.id)+'</td><td><select data-beam-kind="'+i+'" aria-label="'+esc(b.displayId||b.id)+' 類型">'+['MB','SB','TB','CB'].map(k=>'<option '+(k===b.kind?'selected':'')+'>'+k+'</option>').join('')+'</select></td><td><input data-beam-width="'+i+'" aria-label="'+esc(b.displayId||b.id)+' 梁闊 B mm" type="number" min="1" max="20000" step="any" value="'+Number((b.b*1000).toFixed(6))+'" data-input-state="required"></td><td><input data-beam-depth="'+i+'" aria-label="'+esc(b.displayId||b.id)+' 梁深 D mm" type="number" min="1" max="20000" step="any" value="'+Number((b.d*1000).toFixed(3))+'" data-input-state="required"></td><td>'+Math.hypot(b.rawZ[0]-b.rawA[0],b.rawZ[1]-b.rawA[1]).toFixed(2)+'</td></tr>':'').join('')+'</tbody></table></div><p class="muted">修改後按 Enter 或離開欄位即套用；可撤銷。逐列 B／D 留空恢復預設。</p>':'<p class="muted">請在圖上單擊或拖拉框選梁。</p>')+'<p class="muted">B 須符合共用樓層最嚴格 FRR（1／2 h：200 mm；4 h：280 mm）；不足時不套用。D 可個別指定，須符合所有共用樓層／局部 Structural Zone 上限。未指定時 MB／TB／CB 用 Structural Zone；SB 用「00 參數」的 Framing SB 深度。修改尺寸保留原布置方式；B／D 留空恢復跟參數。</p></section>';
  }
  function thicknessTable(h,m,chosen){const selected=new Set(chosen.map(s=>s.id)),count=selected.size;
   return '<section id="bl116-thickness" class="slab-thickness116" '+(activeTab==='slab'?'':'hidden')+'><h3>樓板厚度 · '+esc(FloorLevels.name(h.p,h.floor))+'</h3><p class="muted">修改同步至 '+esc(h.key)+' 的共用樓層。只顯示圖上選中的樓板。</p><div class="row"><label class="field">批量厚度 mm<input id="bl116-thickness-value" type="number" min="1" max="20000" step="any" placeholder="輸入厚度" data-input-state="required"></label>'+btn('套用已選（'+count+'）','thickness-selected',count?'':'disabled')+'</div>'+(count?'<div class="slab-thickness-scroll116"><table><thead><tr><th>樓板</th><th>跨度 L · m</th><th>淨面積 m²</th><th>厚度 mm</th></tr></thead><tbody>'+m.slabs.map((s,i)=>selected.has(s.id)?'<tr data-slab-row="'+i+'"><td>'+esc(s.id)+'</td><td>'+(()=>{const token=Loading.token('SLAB',s),dir=Loading.slabDirection(h.p,h.floor,token,s,m),L=Loading.slabCalculation(s,dir,m,Loading.input(h.p,h.floor,token)).L;return L>0?L.toFixed(3):'待確認';})()+'</td><td>'+s.area.toFixed(2)+'</td><td><input type="number" min="1" max="20000" step="any" data-slab-thickness="'+i+'" aria-label="'+esc(s.id)+' 厚度 mm" value="'+s.thickness+'" data-input-state="required"></td></tr>':'').join('')+'</tbody></table></div><p class="muted">逐列修改後按 Enter 或離開欄位即套用；可撤銷。Esc 清除圖上選取。</p>':'<p class="muted">請在圖上單擊或拖拉框選樓板。</p>')+'</section>';

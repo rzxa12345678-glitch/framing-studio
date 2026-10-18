@@ -1140,6 +1140,8 @@ const Engine=(()=>{
  function removeColumns289(p,key,columns,m){
   const t=p.types[key],auto=columns.filter(c=>t.mode==='auto'&&c.anchorX!==undefined),manual=columns.filter(c=>!auto.includes(c));
   freezeAutoBeams(p,key,m);
+  // Preserve physical deletion reservations for offline scheme searches, including free columns.
+  const reservations=t.columnSchemeDeleted319??=[];for(const c of columns){const r=columnRect(c);if(!reservations.some(q=>near(q.x,r.x)&&near(q.y,r.y)))reservations.push({x:r.x,y:r.y,w:r.w,d:r.d});}
   const removed=new Set(manual.map(c=>c.id)),keys=new Set(manual.map(columnPositionKey));
   t.columns=t.columns.filter(c=>!removed.has(c.id));
   const deleted=auto.map(c=>({ax:c.anchorX,ay:c.anchorY}));

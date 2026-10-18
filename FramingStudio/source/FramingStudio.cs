@@ -14,8 +14,8 @@ using Microsoft.Web.WebView2.WinForms;
 [assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.8",FrameworkDisplayName=".NET Framework 4.8")]
 
 [assembly: System.Reflection.AssemblyTitle("Framing Studio")]
-[assembly: System.Reflection.AssemblyVersion("2.323.0.0")]
-[assembly: System.Reflection.AssemblyFileVersion("2.323.0.0")]
+[assembly: System.Reflection.AssemblyVersion("2.319.0.0")]
+[assembly: System.Reflection.AssemblyFileVersion("2.319.0.0")]
 
 static class Program {
     [STAThread] static int Main(string[] args) {
@@ -49,7 +49,9 @@ sealed class Studio : Form {
     readonly string BrowserRequest251;
     bool BrowserStarted251;
     int BrowserEvent251;
-    bool Ready, ClosingConfirmed, ClosingReview203;
+    bool Ready, ClosingConfirmed, ClosingReview203, Saving316;
+    int PageChoiceId316;
+    readonly Dictionary<string,TaskCompletionSource<string>> PageChoices316 = new Dictionary<string,TaskCompletionSource<string>>();
     // Set by each autosave (project edit); cleared only after a confirmed .framing.json save.
     bool Unsaved;
     string SavedDownload;
@@ -59,16 +61,17 @@ sealed class Studio : Form {
         AutoScaleDimensions=new SizeF(96f,96f); AutoScaleMode=AutoScaleMode.Dpi;
         TestDir = args.Length == 2 && args[0] == "--self-test" ? Path.GetFullPath(args[1]) : null;
         BrowserRequest251 = args.Length == 2 && args[0] == "--local-report251" ? Path.GetFullPath(args[1]) : null;
-        Data = BrowserRequest251 != null ? Path.Combine(Path.GetDirectoryName(BrowserRequest251), "worker-data") : TestDir == null ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FramingStudio") : Path.Combine(TestDir, "isolated-user-data");
+        string qaProfile316=args.Length==2&&args[0]=="--qa-profile"?Path.GetFullPath(args[1]):null;
+        Data = qaProfile316 ?? (BrowserRequest251 != null ? Path.Combine(Path.GetDirectoryName(BrowserRequest251), "worker-data") : TestDir == null ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FramingStudio") : Path.Combine(TestDir, "isolated-user-data"));
         Profile = Path.Combine(Data, "WebView2"); Directory.CreateDirectory(Data);
         if (TestDir != null) { Directory.CreateDirectory(TestDir); Opacity = .01; ShowInTaskbar = false; }
         if (BrowserRequest251 != null) { Opacity = 0; ShowInTaskbar = false; }
-        Text = "Framing Studio · E2.323 Desktop"; Width = 1500; Height = 950;
+        Text = "Framing Studio · E2.319 Desktop"; Width = 1500; Height = 950;
         MinimumSize = new Size(900, 650); StartPosition = FormStartPosition.CenterScreen;
         if (File.Exists(Path.Combine(Root,"FramingStudio.ico"))) Icon = new Icon(Path.Combine(Root,"FramingStudio.ico"));
         var menu = new MenuStrip(); var file = new ToolStripMenuItem("项目");
         Add(file, "打开项目…", Keys.Control | Keys.O, delegate { OpenProjectDialog(); });
-        Add(file, "保存项目…", Keys.Control | Keys.S, async delegate { await JS("document.getElementById('save').click()"); });
+        Add(file, "保存项目…", Keys.Control | Keys.S, async delegate { if(await JS("Boolean(document.querySelector('dialog[open]'))")=="false")await JS("document.getElementById('save').click()"); });
         file.DropDownItems.Add(new ToolStripSeparator());
         Add(file, "打开自动备份目录", Keys.None, delegate { Process.Start("explorer.exe", "\"" + Path.Combine(Data,"Backups") + "\""); });
         var display = new ToolStripMenuItem("视图");
@@ -76,8 +79,8 @@ sealed class Studio : Form {
         Add(display, "缩小", Keys.Control | Keys.Subtract, delegate { View.ZoomFactor = Math.Max(.6, View.ZoomFactor - .1); });
         Add(display, "恢复 100%", Keys.Control | Keys.D0, delegate { View.ZoomFactor = 1; });
         var tools = new ToolStripMenuItem("工具");
-        Add(tools, "Excel 同步与原表抄…", Keys.None, async delegate { await JS("window.ExcelSync.open()"); });
-        Add(tools, "使用说明", Keys.None, delegate { Process.Start(new ProcessStartInfo(Path.Combine(Root,"使用说明.txt")) { UseShellExecute = true }); });
+        Add(tools, "Excel 同步与原表抄…", Keys.None, async delegate { if(await JS("Boolean(document.querySelector('dialog[open]'))")=="false")await JS("window.ExcelSync.open()"); });
+        Add(tools, "使用说明", Keys.None, async delegate { await JS("document.getElementById('help').click()"); });
         menu.Items.AddRange(new ToolStripItem[] { file, display, tools }); MainMenuStrip = menu;
         var bar = new StatusStrip(); bar.Items.Add(Status); Controls.Add(View); Controls.Add(bar); Controls.Add(menu);
         Directory.CreateDirectory(Path.Combine(Data,"Backups"));
@@ -93,17 +96,17 @@ sealed class Studio : Form {
         FormClosing += async delegate(object s, FormClosingEventArgs e) {
             if (TestDir != null || BrowserRequest251 != null || ClosingConfirmed || !Ready) return;
             e.Cancel = true;
-            if (ClosingReview203) return;
+            if (ClosingReview203 || Saving316) return;
             ClosingReview203 = true;
             try {
-                bool pending = await JS("Boolean(window.hasPendingFramingInputs203 && window.hasPendingFramingInputs203())") != "false";
+                bool pending = await JS("Boolean((window.hasPendingFramingInputs203 && window.hasPendingFramingInputs203()) || (window.hasUnsavedFramingProject316 && window.hasUnsavedFramingProject316()))") != "false";
                 if (!Unsaved && !pending) { ClosingConfirmed = true; Close(); return; }
-                var answer = MessageBox.Show(this,"项目有未保存或未应用的修改。\n\n是：先保存项目（保存完成后请再关闭）\n否：不保存，直接关闭（已应用修改的自动备份保留在本机）\n取消：返回继续编辑", "Framing Studio", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
-                if (answer == DialogResult.No) { ClosingConfirmed = true; Close(); return; }
-                if (answer == DialogResult.Yes) await JS("document.getElementById('save').click()");
+                string answer = await PageChoice316("關閉 Framing Studio", "項目有未保存或未套用的修改。\n先保存：完成保存後請再次關閉。\n不保存而關閉：只保留已套用修改的本機自動備份。", new[]{new[]{"cancel","返回繼續編輯"},new[]{"save","先保存"},new[]{"discard","不保存而關閉"}});
+                if (answer == "discard") { ClosingConfirmed = true; Close(); return; }
+                if (answer == "save") await JS("document.getElementById('save').click()");
             } catch (Exception ex) {
                 Log("Close review: " + ex.Message);
-                MessageBox.Show(this,"暂时无法确认保存状态，请保存项目后再关闭。", "Framing Studio");
+                Status.Text="暫時無法確認保存狀態，已保留窗口；請先保存項目再關閉。";
             } finally { ClosingReview203 = false; }
         };
     }
@@ -136,7 +139,7 @@ sealed class Studio : Form {
             await web.AddScriptToExecuteOnDocumentCreatedAsync(File.ReadAllText(Path.Combine(Root,"desktop-bridge.js")));
             web.NavigationCompleted += async delegate(object s, CoreWebView2NavigationCompletedEventArgs e) {
                 if (!e.IsSuccess) { Log("Navigation: " + e.WebErrorStatus); Status.Text = "页面加载失败：" + e.WebErrorStatus; return; }
-                Ready = true; Status.Text = "离线模式 · E2.323 · 项目请保存为 .framing.json";
+                Ready = true; Status.Text = "离线模式 · E2.319 · 项目请保存为 .framing.json";
                 if (TestDir != null && TestNavigation++ == 0) await SelfTest();
                 if (BrowserRequest251 != null && !BrowserStarted251) {
                     BrowserStarted251=true;
@@ -146,7 +149,7 @@ sealed class Studio : Form {
                     } catch(Exception error) { ExcelNotify(new {done=true,error=error.Message}).GetAwaiter().GetResult(); }
                 }
             };
-            if (TestDir != null) web.ScriptDialogOpening += delegate(object s, CoreWebView2ScriptDialogOpeningEventArgs e) { e.Accept(); };
+            // Tests must exercise real in-page choices; never auto-accept destructive prompts.
             web.Navigate(Origin + "/index.html");
             Log("Started WebView2 " + env.BrowserVersionString);
         } catch (Exception ex) {
@@ -308,6 +311,7 @@ sealed class Studio : Form {
         try {
             var m = Json.Deserialize<Dictionary<string, object>>(e.WebMessageAsJson);
             string kind = Convert.ToString(m["kind"]);
+            if(kind=="page-choice316") { string id=Convert.ToString(m["id"]);TaskCompletionSource<string> choice;if(PageChoices316.TryGetValue(id,out choice)){PageChoices316.Remove(id);choice.TrySetResult(Convert.ToString(m["value"]));}return; }
             if(kind=="export-file"){SaveExport(m);return;}
             if(kind.StartsWith("excel-")){ExcelMessage(m);return;}
             if (kind == "error") { string error = Convert.ToString(m["value"]); Errors.Add(error); Log("JS: " + error); }
@@ -323,7 +327,18 @@ sealed class Studio : Form {
             }
         } catch (Exception ex) { Log("Backup/message: " + ex.Message); Status.Text = "自动备份未完成，请立即保存项目文件。"; }
     }
+    async void ShowNotice316(string text,string title) { try {await JS("StudioDialogs316.notice("+Json.Serialize(text)+","+Json.Serialize(title)+")");}catch(Exception e){Log(e.Message);Status.Text=text;} }
+    async Task<string> PageChoice316(string title,string message,string[][] choices=null) {
+        string id=(++PageChoiceId316).ToString();var completion=new TaskCompletionSource<string>();PageChoices316[id]=completion;
+        try {
+            if(await JS("Boolean(window.StudioDialogs316)")!="true")return null;
+            var options=new {title=title,message=message,choices=choices??new[]{new[]{"cancel","取消"},new[]{"ok","確認"}}};
+            await JS("StudioDialogs316.request("+Json.Serialize(options)+").then(value=>chrome.webview.postMessage({kind:'page-choice316',id:"+Json.Serialize(id)+",value}));void 0");
+            return await completion.Task;
+        } finally {PageChoices316.Remove(id);}
+    }
     async void SaveExport(Dictionary<string,object> message) {
+        if(Saving316)return;Saving316=true;
         await Task.Yield();
         try {
             string name=Convert.ToString(message["name"]),extension=Path.GetExtension(name).ToLowerInvariant();
@@ -332,11 +347,13 @@ sealed class Studio : Form {
             if(bytes.Length>50000000)throw new Exception("导出文件过大，请分批生成");
             string target;
             if(TestDir!=null)target=Path.Combine(TestDir,name);
-            else using(var dialog=new SaveFileDialog{Title="保存 Framing Studio 文件",FileName=name,Filter="导出文件 (*"+extension+")|*"+extension,OverwritePrompt=true,AddExtension=true}) {
+            else using(var dialog=new SaveFileDialog{Title="保存 Framing Studio 文件",FileName=name,Filter="导出文件 (*"+extension+")|*"+extension,OverwritePrompt=false,AddExtension=true}) {
                 if(dialog.ShowDialog(this)!=DialogResult.OK){SetSaveStatus("已取消文件保存");return;}target=dialog.FileName;
             }
-            File.WriteAllBytes(target,bytes);SavedDownload=target;if(name.EndsWith(".framing.json",StringComparison.OrdinalIgnoreCase))Unsaved=false;Status.Text="已保存："+target;SetSaveStatus("文件已保存 · "+Path.GetFileName(target));
+            if(TestDir==null&&File.Exists(target)&&await PageChoice316("覆寫檔案", "檔案已存在：\n"+target+"\n要取代這個檔案嗎？")!="ok"){SetSaveStatus("已取消覆寫 · 原檔案未更改");return;}
+            File.WriteAllBytes(target,bytes);SavedDownload=target;if(name.EndsWith(".framing.json",StringComparison.OrdinalIgnoreCase))Unsaved=await JS("window.savedFramingProject316("+Json.Serialize(Encoding.UTF8.GetString(bytes))+")")!="true";Status.Text="已保存："+target;SetSaveStatus("文件已保存 · "+Path.GetFileName(target));
         }catch(Exception e){Log("Export: "+e.Message);SetSaveStatus("保存未完成："+e.Message);}
+        finally{Saving316=false;}
     }
 
     async void Download(object sender, CoreWebView2DownloadStartingEventArgs e) {
@@ -348,8 +365,9 @@ sealed class Studio : Form {
         string name = Path.GetFileName(e.ResultFilePath);
         if (String.IsNullOrEmpty(name)) name = "Framing-export.json";
         if (TestDir == null) {
-            using (var dialog = new SaveFileDialog { Title = "保存 Framing Studio 文件", FileName = name, Filter = "导出文件 (*"+Path.GetExtension(name)+")|*"+Path.GetExtension(name), OverwritePrompt = true, AddExtension = true }) {
+            using (var dialog = new SaveFileDialog { Title = "保存 Framing Studio 文件", FileName = name, Filter = "导出文件 (*"+Path.GetExtension(name)+")|*"+Path.GetExtension(name), OverwritePrompt = false, AddExtension = true }) {
                 if (dialog.ShowDialog(this) != DialogResult.OK) { e.Cancel = true; Status.Text = "已取消保存；项目仍保留在当前窗口。"; SetSaveStatus("已取消文件保存 · 请重新保存项目"); return; }
+                if(File.Exists(dialog.FileName)&&await PageChoice316("覆寫檔案", "檔案已存在：\n"+dialog.FileName+"\n要取代這個檔案嗎？")!="ok"){e.Cancel=true;SetSaveStatus("已取消覆寫 · 原檔案未更改");return;}
                 e.ResultFilePath = dialog.FileName;
             }
         } else e.ResultFilePath = Path.Combine(TestDir, name);
@@ -363,9 +381,9 @@ sealed class Studio : Form {
     }
     async void SetSaveStatus(string text) { await JS("document.getElementById('savestatus').textContent=" + Json.Serialize(text)); }
     async void OpenProjectDialog() {
-        if (!Ready) return;
+        if (!Ready || Saving316 || ClosingReview203 || await JS("Boolean(document.querySelector('dialog[open]'))") == "true") return;
         using (var dialog = new OpenFileDialog { Title = "打开 Framing 项目", Filter = "Framing 项目 (*.json)|*.json" }) {
-            if (dialog.ShowDialog(this) == DialogResult.OK) try { await ImportProject(dialog.FileName); } catch (Exception ex) { MessageBox.Show(this,ex.Message,"无法打开项目"); }
+            if (dialog.ShowDialog(this) == DialogResult.OK) try { await ImportProject(dialog.FileName); } catch (Exception ex) { ShowNotice316(ex.Message,"無法打開項目"); }
         }
     }
     async Task ImportProject(string path) {
@@ -590,7 +608,29 @@ sealed class Studio : Form {
         }catch(Exception ex){ExitCode=1;File.WriteAllText(Path.Combine(TestDir,"result.json"),Json.Serialize(new{ok=false,passed=Passed,errors=Errors,failure=ex.ToString()}));}
         finally{ClosingConfirmed=true;View.Dispose();Close();}
     }
+    async Task ConfirmationSmoke316() {
+        try {
+            await JS(File.ReadAllText(Path.Combine(TestDir,"checks.js")));
+            for(int i=0;i<180&&await JS("Boolean(window.confirmSmoke316&&confirmSmoke316.done)")!="true";i++)await Task.Delay(500);
+            if(await JS("Boolean(window.confirmSmoke316&&confirmSmoke316.ok)")=="true") {
+                await JS("document.querySelector('#studio-confirm316 [data-confirm316=ok]').click()");
+                foreach(string answer in new[]{"cancel","save","discard"}) {
+                    Task<string> pending=PageChoice316("EXE 關閉確認測試","頁面選擇必須傳回 Windows 主程式。",new[]{new[]{"cancel","返回繼續編輯"},new[]{"save","先保存"},new[]{"discard","不保存而關閉"}});
+                    for(int i=0;i<40&&await JS("Boolean(document.querySelector('#studio-confirm316[open]'))")!="true";i++)await Task.Delay(25);
+                    await JS("document.querySelector('[data-confirm316="+answer+"]').click()");
+                    if(await Task.WhenAny(pending,Task.Delay(5000))!=pending||await pending!=(answer=="cancel"?"":answer))throw new Exception("Native confirmation response failed: "+answer);
+                    await JS("confirmSmoke316.passed.push('Native confirmation response: "+answer+"')");
+                }
+                await JS("StudioDialogs316.notice('EXE 確認與取消測試通過','EXE 頁面內確認')");
+            }
+            string result=await JS("window.confirmSmoke316");File.WriteAllText(Path.Combine(TestDir,"result.json"),result);
+            if(await JS("Boolean(window.confirmSmoke316&&confirmSmoke316.ok)")!="true")ExitCode=1;
+            using(var stream=File.Create(Path.Combine(TestDir,"confirmation-exe.png")))await View.CoreWebView2.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png,stream);
+        } catch(Exception e){ExitCode=1;File.WriteAllText(Path.Combine(TestDir,"failure.txt"),e.ToString());}
+        finally{ClosingConfirmed=true;Close();}
+    }
     async Task SelfTest() {
+        if(File.Exists(Path.Combine(TestDir,"confirm-smoke.flag"))){await ConfirmationSmoke316();return;}
         if(File.Exists(Path.Combine(TestDir,"layout-smoke.flag"))){await LayoutSmokeTest116();return;}
         if(File.Exists(Path.Combine(TestDir,"complete-smoke.flag"))){await CompleteSmokeTest();return;}
         if(File.Exists(Path.Combine(TestDir,"deflection-smoke.flag"))){await DeflectionSmokeTest();return;}

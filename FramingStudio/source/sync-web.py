@@ -11,6 +11,6 @@ def replace(match):
     replacement=b'/* studio-source:'+match[1]+b':start */'+match[2]+body+match[2]+b'/* studio-source:'+match[1]+b':end */'
     return match[0] if replacement.replace(b'\r\n',b'\n')==match[0].replace(b'\r\n',b'\n') else replacement
 updated,count=re.subn(pattern,replace,source,flags=re.S)
-if count!=43:raise SystemExit(f'Expected 43 marked modules, found {count}; no file written')
+if count!=45:raise SystemExit(f'Expected 45 marked modules, found {count}; no file written')
 target.write_bytes(updated)
 print(f'Synchronized {count} UI and geometry modules')

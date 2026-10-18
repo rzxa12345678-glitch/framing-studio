@@ -158,6 +158,7 @@ window.StudioDialogs316=StudioDialogs316;
  let columnDrag=null,memberDrag=null;
  const columnPage308=()=>['columns','columnMove'].includes(tab);
  const columnDraft308={step:'0.1',dx:'0',dy:'0'};let columnMoveError325='',columnMoveErrorModel325=null,columnMoveErrorKey325='';
+ function columnWallNotes329(){const notes=ColumnSchemes319.wallNotes329(p,result,key);return '<section data-column-wall-notes329><p class="muted">自動布柱避讓牆身及牆端：淨距至少半個柱短邊；手動／固定柱保留，有特殊承托需要請核對。舊柱位在重新自動布柱前保留。</p>'+(notes.length?'<details class="notice" open><summary>牆邊柱／承托提示 · '+notes.length+' 項</summary>'+notes.map(n=>'<p>'+esc(n)+'</p>').join('')+'</details>':'')+'</section>';}
  function columnSpacingPanel325(){const t=p.types[key],i=Object.keys(p.types).indexOf(key);return '<section class="notice column-spacing258" style="margin:12px 0"><h3>最小柱中心距 · '+esc(key)+'</h3><div class="row">'+['x','y'].map(d=>'<label class="field">'+d.toUpperCase()+' 最小柱中心距 m'+input(t.columnSpacing258?.[d]??'','column-spacing258',i,d,'text').replace('aria-label="'+d+'"','aria-label="'+esc(key)+' '+d.toUpperCase()+' 最小柱中心距 m" inputmode="decimal" autocomplete="off" placeholder="不限制"')+'</label>').join('')+'</div><p class="muted">只需填一次；方案助手以此作排柱依據。留空表示該方向不限制。按 Enter 或離開輸入格保存，共用 Framing 樓層同步；舊模型設定沿用。相同行／列按 X／Y 核對，錯列柱亦不得小於兩方向限制的較小值。此處不是梁跨度驗算。</p></section>';}
  function columnMovePanel308(){
   if(columnMoveErrorModel325!==p||columnMoveErrorKey325!==key)columnMoveError325='';
@@ -415,7 +416,7 @@ window.StudioDialogs316=StudioDialogs316;
   }else if(tab==='columns'){
    html='<h2>柱布置</h2><div class="muted">自動布柱後亦可手動加柱、移位及修改尺寸。選擇／刪除可拖框累加選柱；Delete 刪除，Esc 清除選取，可撤銷。</div><div class="column-settings312"><label class="column-follow312"><span class="column-follow-copy312"><strong>隨軸網自動更新</strong><small>軸線或柱距改動時，同步更新自動柱</small></span><span class="column-switch312"><input type="checkbox" id="column-follow311" aria-label="隨軸網自動更新" '+(FloorColumns101.follows311(t)?'checked':'')+'><span class="column-switch-track312" aria-hidden="true"></span></span></label><div class="column-dimensions312"><label class="field">默认 B mm '+input(df.cb,'default',0,'cb')+'</label><label class="field">默认 D mm '+input(df.cd,'default',0,'cd')+'</label></div></div>';
    html+=columnSpacingPanel325();
-   html+='<div class="row"><button type="button" data-action="auto-columns311">自動布柱</button><button type="button" data-action="draw-columns311">手動加柱</button><button type="button" data-action="select-all-columns101" '+(!m.columns.length?'disabled':'')+'>全選當層柱</button></div><p class="muted">'+(FloorColumns101.follows311(t)?'已啟用：軸線／柱距改動時更新自動柱。':'已固定柱位：軸線／柱距改動不會重布現有柱；按自動布柱可更新一次。')+' 手動新增、移位、尺寸及已刪柱記錄保留；有衝突會提示。共用 Framing 樓層同步。</p>'+(columnSchemesUI319?.panel()||'')+columnSelectionPanel()+GeometryIssuesLocal.focusPanel(p,key,floor)+GeometryIssuesLocal.panel(p,result,key);
+   html+='<div class="row"><button type="button" data-action="auto-columns311">自動布柱</button><button type="button" data-action="draw-columns311">手動加柱</button><button type="button" data-action="select-all-columns101" '+(!m.columns.length?'disabled':'')+'>全選當層柱</button></div><p class="muted">'+(FloorColumns101.follows311(t)?'已啟用：軸線／柱距改動時更新自動柱。':'已固定柱位：軸線／柱距改動不會重布現有柱；按自動布柱可更新一次。')+' 手動新增、移位、尺寸及已刪柱記錄保留；有衝突會提示。共用 Framing 樓層同步。</p>'+columnWallNotes329()+(columnSchemesUI319?.panel()||'')+columnSelectionPanel()+GeometryIssuesLocal.focusPanel(p,key,floor)+GeometryIssuesLocal.panel(p,result,key);
   }else if(tab==='columnMove'){
    html=columnMovePanel308();
   }else if(tab==='beamLayout'){
@@ -428,6 +429,7 @@ window.StudioDialogs316=StudioDialogs316;
   }
 
   if(tab==='walls')html=memberSelectionPanel()+html+GeometryIssuesLocal.panel(p,result,key);
+
   if(['regions','columns'].includes(tab)&&selected?.kind==='ZONE'&&t.noColumnZones?.[selected.index])html='<div class="notice"><b>已选禁柱区 '+(selected.index+1)+'</b><p>重叠处再次点击切换；Delete 删除；可撤销。</p>'+button('删除所选禁柱区','delete-no-column',selected.index)+'</div>'+html;const sideMarkup328=document.createElement('aside');sideMarkup328.innerHTML=InputColours.decorate(html,p);RightInputPreview.decorate(tab,{p,result,key,floor},sideMarkup328);for(const select of sideMarkup328.querySelectorAll('select'))for(const option of select.options)option.toggleAttribute('selected',option.selected);$('side').innerHTML=sideMarkup328.innerHTML;if(tab==='beamLayout')beamLayoutUI.restore();if(tab==='checks')BeamRebar116.decorate({p,result,floor,key,selected,memberResult:(f,t)=>exploration.getMemberResult227(p,f,t)});
  }
  function calculationView(){return ['checks','loading','deflection'].includes(tab);}

@@ -1,5 +1,7 @@
 # Framing Studio
 
+E2.329 · **自動柱避牆及實際截面預覽**：避讓牆身／牆端，保留手動和特殊承托柱並提示。舊模型開啟不重排，按自動布柱或套用方案才更新。網頁及 EXE 已用目前模型副本核對，原計算、Excel/VBA 及 A/B 抄不變。詳見 [E2.329 驗證](FramingStudio/verification/release329.json)。
+
 E2.328 · **數字選取保留與逐條 Grid 複製**：修正首次全選被面板更新取消；X／Y 每條軸線可複製至全部 Framing，保留其他軸線及區域，衝突整批提示，可撤銷。網頁及 EXE 已驗證；原計算、Excel/VBA 和 A/B 抄不變。詳見 [E2.328 驗證](FramingStudio/verification/release328.json)。
 
 E2.327 · **柱距整合與連續輸入修正**：最小柱距統一在柱頁設定；移柱／複製保留衝突檢查。輸入時保留焦點、游標、捲動及展開狀態，淨高／E&M 空白按 0，可逐格填寫。包含 E2.325–E2.326 的導覽順序、表格上方新增按鈕、取消數字箭頭及確認按鈕位置調整。原計算方程、Excel/VBA 及 A／B 抄格式保留。驗證紀錄見 [E2.327 驗證](FramingStudio/verification/release327.json)。

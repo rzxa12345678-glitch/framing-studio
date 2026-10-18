@@ -365,6 +365,29 @@ const Engine=(()=>{
  // E2.314: compare physical section area, allowing boundary contact without penetration.
  function columnZoneConflict314(t,r){return (t.noColumnZones||[]).some(z=>Math.min(r.x+r.w/2,z.x1)-Math.max(r.x-r.w/2,z.x0)>eps&&Math.min(r.y+r.d/2,z.y1)-Math.max(r.y-r.d/2,z.y0)>eps);}
 
+ // E2.329 layout preference only: finite physical wall footprint, including ends.
+ // Half the smaller column dimension is an automatic-placement clearance, not a design limit.
+ function columnWallClearance329(r,walls){
+  const required=Math.min(r.w,r.d)/2;let nearest=null;
+  for(const wall of walls){const q=rect(wall),dx=Math.max(0,Math.abs(r.x-q.x)-(r.w+q.w)/2),dy=Math.max(0,Math.abs(r.y-q.y)-(r.d+q.d)/2),gap=Math.hypot(dx,dy);
+   if(gap<required-eps&&(!nearest||gap<nearest.gap))nearest={wallId:wall.id,gap,required};
+  }
+  return nearest;
+ }
+ // User edits made after enabling automatic wall avoidance remain explicit choices.
+ // Read only saved identities/endpoints here: generating a model would recurse.
+ function columnWallReservations329(p,key,t){
+  const keys=new Set((t.transferColumns||[]).map(c=>'axis:'+c.ax+'|'+c.ay)),points=[],tokens=new Set(),numbers=new Set(floors(p).filter(f=>f.type===key).map(f=>String(f.n)));
+  for(const b of [...t.beams.filter(b=>b.on),...t.autoBeamSnapshot?.main||[],...t.autoBeamSnapshot?.primary||[],...t.autoBeamSnapshot?.secondary||[]].filter(b=>b.on!==false&&!b.deleted304)){
+   for(const link of b.columnSupports164||[])if(link?.key)keys.add(link.key);
+   for(const end of ['a','z']){const raw=b[end==='a'?'rawA':'rawZ']||b[end],q=Array.isArray(raw)?raw:raw?resolve(p,raw):null;if(q?.length===2&&q.every(Number.isFinite))points.push(q);}
+  }
+  for(const value of [p.foundation?.column,...['members','selected','reportA','reportB'].flatMap(name=>Object.keys(p.explorer?.[name]||{}))])if(typeof value==='string'){
+   const at=value.indexOf('|');if(numbers.has(value.slice(0,at))&&value.slice(at+1).startsWith('COL|'))tokens.add(value.slice(at+1));
+  }
+  return (c,r,custom)=>!!custom||keys.has(columnPositionKey(c))||points.some(q=>Math.abs(q[0]-r.x)<=r.w/2+eps&&Math.abs(q[1]-r.y)<=r.d/2+eps)||tokens.has('COL|'+[c.x,c.y].map(v=>Math.round(v*1e6)/1e6));
+ }
+
  // Vertical column loads act at the physical section centre, independently of its grid reference.
  const columnLoadPoint=c=>{const r=columnRect(c);return [r.x,r.y];};
  // Optional section offsets. Missing records leave automatic placement byte-for-byte unchanged.
@@ -691,12 +714,12 @@ const Engine=(()=>{
   const layout=t.beamLayout116,autoMain=!t.autoBeamSnapshot?.main&&(layout?.main??(t.autoBeams101!==false)),autoSecondary=!t.autoBeamSnapshot?.secondary&&(layout?.secondary??(t.autoBeams101!==false)),mainDirection=layout?.mainDirection||'XY';
   if(referenceModel)walls.push(...clone(referenceModel.walls));
   for(const c of (referenceModel?[]:t.walls.filter(c=>c.on))){const a=resolve(p,c.a),z=resolve(p,c.z),b=c.b/1000,follow=wallPlacements322?.get(c.id),pos=follow?follow.pos:align(ts,a,z,b,true,c.axisPosition??"auto");if(!pos){issue(c.id,'墙不在有效边界或贴边方向改变，请分段');continue;}const box=rect({...pos,b});if(!rectAllowed(ts,box.x,box.y,box.w,box.d,true))issue(c.id,'手動牆身越出建築範圍（厚度 '+c.b+' mm）；已保留指定偏置，請改為自動向內貼齊或調整牆位');walls.push({...c,...pos,b,rawA:a,rawZ:z,kind:'WALL',...(follow?{wallFollow322:follow.meta}:{})});}
-  const wr=walls.map(rect);
+  const wr=walls.map(rect),wallReserved329=t.columnWallPolicy329===true?columnWallReservations329(p,key,t):null;
   if(referenceModel){columns.push(...clone(referenceModel.columns));}else{
   let input=t.columns.filter(c=>c.on).map(c=>({...c,x:resolve(p,c)[0],y:resolve(p,c)[1],b:(c.bMode201==='default'?df.cb:c.b)/1000,d:(c.dMode201==='default'?df.cd:c.d)/1000}));
   {const xx=axes(p,'x'),yy=axes(p,'y');for(const c of input){c.cx=c.x+(near(c.x,xx[0].v)?c.b/2:near(c.x,xx.at(-1).v)?-c.b/2:0);c.cy=c.y+(near(c.y,yy[0].v)?c.d/2:near(c.y,yy.at(-1).v)?-c.d/2:0);}}
   if(t.mode==='auto'&&t.columnFrozen311){const added=input.filter(c=>c.autoAdded);input=clone(t.columnFrozen311.columns);for(const c of input){const custom=t.columnSizes?.find(q=>q.ax===c.anchorX&&q.ay===c.anchorY);c.b=(!custom||custom.bMode201==='default'?df.cb:custom.b)/1000;c.d=(!custom||custom.dMode201==='default'?df.cd:custom.d)/1000;c.bMode201=custom?custom.bMode201??'manual':'default';c.dMode201=custom?custom.dMode201??'manual':'default';}input.push(...added);}
-  else if(t.mode==='auto'){const added=input.filter(c=>c.autoAdded);input=[];const cx=columnAxes(p,'x',key),cy=columnAxes(p,'y',key);for(const [ix,x]of cx.entries())for(const [iy,y]of cy.entries()){if(added.some(c=>near(c.x,x.v)&&near(c.y,y.v)))continue;const custom=t.columnSizes?.find(q=>q.ax===x.id&&q.ay===y.id),b=(!custom||custom.bMode201==='default'?df.cb:custom.b)/1000,d=(!custom||custom.dMode201==='default'?df.cd:custom.d)/1000;let found=false;for(const dx of [0,b/2,-b/2]){for(const dy of [0,d/2,-d/2]){let id='AC'+(input.length+1);while(added.some(c=>c.id===id))id+='A';const c={id,anchorX:x.id,anchorY:y.id,x:x.v+dx,y:y.v+dy,b,d,bMode201:custom?custom.bMode201??'manual':'default',dMode201:custom?custom.dMode201??'manual':'default',status:'上下贯通',on:true};const r={...c,w:b},pinned=columnPositionRecord(t,c)||t.columnPlacements?.some(v=>v.key===columnPositionKey(c));if(!pinned&&columnZoneConflict314(t,r)||!rectAllowed(ts,c.x,c.y,b,d,true)||wr.some(w=>overlap(r,w))||input.some(o=>overlap(r,{...o,w:o.b})))continue;input.push(c);found=true;break;}if(found)break;}}input.push(...added);}
+  else if(t.mode==='auto'){const added=input.filter(c=>c.autoAdded);input=[];const cx=columnAxes(p,'x',key),cy=columnAxes(p,'y',key);for(const [ix,x]of cx.entries())for(const [iy,y]of cy.entries()){if(added.some(c=>near(c.x,x.v)&&near(c.y,y.v)))continue;const custom=t.columnSizes?.find(q=>q.ax===x.id&&q.ay===y.id),b=(!custom||custom.bMode201==='default'?df.cb:custom.b)/1000,d=(!custom||custom.dMode201==='default'?df.cd:custom.d)/1000;let found=false;for(const dx of [0,b/2,-b/2]){for(const dy of [0,d/2,-d/2]){let id='AC'+(input.length+1);while(added.some(c=>c.id===id))id+='A';const c={id,anchorX:x.id,anchorY:y.id,x:x.v+dx,y:y.v+dy,b,d,bMode201:custom?custom.bMode201??'manual':'default',dMode201:custom?custom.dMode201??'manual':'default',status:'上下贯通',on:true};const r={...c,w:b},pinned=columnPositionRecord(t,c)||t.columnPlacements?.some(v=>v.key===columnPositionKey(c));if(!pinned&&columnZoneConflict314(t,r)||!pinned&&wallReserved329&&!wallReserved329(c,r,custom)&&columnWallClearance329(r,walls)||!rectAllowed(ts,c.x,c.y,b,d,true)||wr.some(w=>overlap(r,w))||input.some(o=>overlap(r,{...o,w:o.b})))continue;input.push(c);found=true;break;}if(found)break;}}input.push(...added);}
   for(const c of input){const placement=(t.columnPlacements||[]).find(v=>v.key===(c.anchorX!==undefined?'axis:'+c.anchorX+'|'+c.anchorY:'id:'+c.id));if(placement){c.alignmentReference=[c.x,c.y];c.x=c.cx=placement.resize174?placement.resize174.x+placement.resize174.dx*c.b/2:placement.x;c.y=c.cy=placement.resize174?placement.resize174.y+placement.resize174.dy*c.d/2:placement.y;c.alignmentNote='已应用柱对齐 · 可撤销';}}
   // Apply only explicit manual section positions after the unchanged auto-column search.
   for(const c of input){const record=columnPositionRecord(t,c);if(record&&!t.columnPlacements?.some(v=>v.key===columnPositionKey(c))){const ref=columnReference(p,key,c),offset=columnDirections[record.position];c.cx=ref[0]+offset[0]*c.b/2;c.cy=ref[1]+offset[1]*c.d/2;c.axisPosition=record.position;}}
@@ -1167,6 +1190,6 @@ const Engine=(()=>{
   return {lo:floor,hi:floor};
  }
  function floorModel(result,f,key){const n=typeof f==="object"?f.n:f,k=key??result?.floors[n-1]?.type;return result?.floorModels?.[n]?.key===k?result.floorModels[n]:result?.models[k];}
- return {columnReferenceAxes289,bindWallChanges302,beamDrawPath301,insertAxis291,removeColumns289,editBeamSizes245,editBeamWidths244,beamFire241,beamMinimum241,assertBeamWidth241,assertSlab241,validateDimensionChanges241,secondaryWidth,promoteColumnBeams194,columnLoadPoint,transferBeamAt,beamSpaceConflict,bindMainColumns164,freezeAutoBeams,baseModel,floorModel,columnDirections,columnPositionKey,columnPositionRecord,setColumnPosition,mainBeamWidth,wallPosition,wallPlacement322:wallFollow322.placement,wallSupport322:wallFollow322.support,columnReference,addSecondaryArea,secondaryAreaRule,columnAxes,columnGridDraft,noColumn,addColumn,setColumnMode,structuralHeight,applyClearances,clone,columnRect,columnZoneConflict314,setRegion,setTransferColumn,axisData,ownAxes,axes,resolve,validate,floors,tiles,rectAllowed,align,rect,overlap,on,sig,model,generate,removeAxis,removeType,openingGroups,removeOpening,viewRange,removeBeam,removeMember,removeMembers,editSize};
+ return {columnWallClearance329,columnReferenceAxes289,bindWallChanges302,beamDrawPath301,insertAxis291,removeColumns289,editBeamSizes245,editBeamWidths244,beamFire241,beamMinimum241,assertBeamWidth241,assertSlab241,validateDimensionChanges241,secondaryWidth,promoteColumnBeams194,columnLoadPoint,transferBeamAt,beamSpaceConflict,bindMainColumns164,freezeAutoBeams,baseModel,floorModel,columnDirections,columnPositionKey,columnPositionRecord,setColumnPosition,mainBeamWidth,wallPosition,wallPlacement322:wallFollow322.placement,wallSupport322:wallFollow322.support,columnReference,addSecondaryArea,secondaryAreaRule,columnAxes,columnGridDraft,noColumn,addColumn,setColumnMode,structuralHeight,applyClearances,clone,columnRect,columnZoneConflict314,setRegion,setTransferColumn,axisData,ownAxes,axes,resolve,validate,floors,tiles,rectAllowed,align,rect,overlap,on,sig,model,generate,removeAxis,removeType,openingGroups,removeOpening,viewRange,removeBeam,removeMember,removeMembers,editSize};
 })();
 if(typeof module!=='undefined')module.exports=Engine;

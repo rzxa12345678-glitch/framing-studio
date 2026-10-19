@@ -20,7 +20,7 @@ const FloorColumns101=(()=>{
    // Opt in on an explicit update; merely opening an older project never repositions its columns.
    const protected329=before.columns.filter(c=>c.status!=='上层柱'&&ColumnSchemes319.protectedColumn(trial,key,before,c,false));
    for(const c of protected329.filter(c=>c.anchorX!==undefined)){const pk=Engine.columnPositionKey(c);if(!t.columnPlacements?.some(q=>q.key===pk)){const r=Engine.columnRect(c);(t.columnPlacements??=[]).push({key:pk,x:r.x,y:r.y,explicit174:true});}}
-   t.columnWallPolicy329=true;
+   t.columnWallPolicy329=true;t.columnLayout336=true;
    t.mode='auto';delete t.columnFrozen311;
    const after=Engine.model(trial,key),protectedColumns=before.columns.filter(c=>c.anchorX===undefined||Engine.columnPositionRecord(t,c)||t.columnPlacements?.some(r=>r.key===Engine.columnPositionKey(c)));
    for(const c of protectedColumns){const next=after.columns.find(n=>Engine.columnPositionKey(n)===Engine.columnPositionKey(c));if(!next)throw Error(c.id+' 的手動柱位與自動布柱衝突；未套用，請先核對柱位、牆及邊界');const a=Engine.columnRect(c),b=Engine.columnRect(next);if(['x','y','w','d'].some(k=>Math.abs(a[k]-b[k])>1e-7))throw Error(c.id+' 的手動柱位或尺寸不能保留；未套用');}

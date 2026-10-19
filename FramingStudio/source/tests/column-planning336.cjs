@@ -1,0 +1,27 @@
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const {context}=require('./audit-performance247.cjs'),{fixture}=require('./column-schemes319.cjs');
+const c=context(),clone=x=>JSON.parse(JSON.stringify(x)),passed=[],near=(a,b)=>Math.abs(a-b)<1e-6;
+function auto(p,key='F1'){c.run('FloorColumns101.update311(argument.p,argument.key,1,false,true)',{p,key});return c.run('Engine.model(argument.p,argument.key)',{p,key});}
+function verify(cols,min){for(let i=0;i<cols.length;i++)for(const q of cols.slice(0,i))assert.equal(c.run('FloorColumns101.spacingProblem325(argument.a,argument.b,argument.min)',{a:cols[i],b:q,min}),'');}
+{
+ const p=fixture({spacing:{x:7,y:7}});p.types.F1.columns=[];const m=auto(p),cols=m.columns.map(q=>c.run('Engine.columnRect(argument)',q));verify(cols,{x:7,y:7});
+ const x=c.run("Engine.axes(argument,'x','F1').at(-1).v",p),y=c.run("Engine.axes(argument,'y','F1').at(-1).v",p),b=p.defaults.cb/1000,d=p.defaults.cd/1000;
+ for(const xx of [b/2,x-b/2])for(const yy of [d/2,y-d/2])assert(cols.some(q=>near(q.x,xx)&&near(q.y,yy)),'legal physical corner missing');assert(cols.length>=9);passed.push('Bounded Auto Columns starts with all four legal corners and obeys 7m physical spacing');
+ const edited=clone(p);c.run("Engine.removeColumns289(argument,'F1',[Engine.model(argument,'F1').columns[0]],Engine.model(argument,'F1'))",edited);const deleted=edited.types.F1.columnSchemeDeleted319[0];assert(!auto(edited).columns.some(q=>near(c.run('Engine.columnRect(argument).x',q),deleted.x)&&near(c.run('Engine.columnRect(argument).y',q),deleted.y)));passed.push('Auto rerun retains deleted physical positions');
+ const blocked=fixture({spacing:{x:7,y:7}});blocked.types.F1.noColumnZones=[{x0:0,x1:2,y0:0,y1:2}];assert(!auto(blocked).columns.some(q=>q.x<2&&q.y<2));passed.push('Forbidden corner is skipped without moving individual columns off their regular row');
+ for(const obstacle of ['wall','opening']){const q=fixture({spacing:{x:7,y:7}});if(obstacle==='wall')q.types.F1.walls=[{id:'W',a:{x:0,y:0},z:{x:0,y:6},b:300,on:true}];else q.types.F1.opening={'0,0':true};assert(!auto(q).columns.some(c=>c.x<1&&c.y<1));}passed.push('Wall and Opening at a corner both prevent an automatic corner column');
+ const custom=clone(p),col=m.columns[0],originalCentre=c.run('Engine.columnRect(argument)',col);custom.types.F1.columnSizes=[{ax:col.anchorX,ay:col.anchorY,b:500,d:500}];custom.types.F1.columnSpacing258={x:8,y:8};const refreshed=auto(custom).columns.find(q=>q.anchorX===col.anchorX&&q.anchorY===col.anchorY);assert(refreshed);assert.deepEqual(clone(c.run('Engine.columnRect(argument)',refreshed)),clone(originalCentre));passed.push('Custom column on a generated reference survives spacing change and Auto rerun at its original position');
+ const one=fixture({spacing:{x:7}});delete one.types.F1.columnSpacing258.y;verify(auto(one).columns.map(q=>c.run('Engine.columnRect(argument)',q)),{x:7,y:0});passed.push('One-direction spacing works independently');
+ const plain=fixture();delete plain.types.F1.columnSpacing258;const old=c.run("(()=>{const q=Engine.clone(argument);q.types.F1.columnWallPolicy329=true;delete q.types.F1.columnFrozen311;q.types.F1.mode='auto';return Engine.model(q,'F1').columns;})()",plain);assert.deepEqual(clone(auto(plain).columns).map(({reference311,...q})=>q),clone(old));passed.push('No spacing restriction retains previous architectural-grid auto layout');
+}
+if(process.argv[2]){
+ const bytes=fs.readFileSync(process.argv[2]),p=JSON.parse(bytes.toString('utf8').replace(/^\uFEFF/,'')),r=c.run('Engine.generate(Engine.clone(argument))',p),out=[];
+ for(const key of ['F01','F03','F05','F08']){const before=JSON.stringify(p),report=c.run('ColumnSchemes319.search(argument.p,argument.r,argument.key)',{p,r,key});assert(report.schemes.length);assert.equal(JSON.stringify(p),before);for(const s of report.schemes)verify(s.columns,p.types[key].columnSpacing258||{});
+  if(key==='F08'){const s=report.schemes[0];assert(s.planning336);assert(s.columns.length>12);assert.equal(s.routes334.length,0);assert(s.unresolved334>0);const q=clone(p),old=clone(p);c.run('ColumnSchemes319.apply(argument.q,argument.r,argument.key,argument.s,argument.report)',{q,r,key,s,report});assert(q.types[key].columnSchemeReview330);assert.deepEqual(clone(q.types[key].beams),p.types[key].beams);delete q.types[key];delete old.types[key];assert.deepEqual(clone(q),old);}
+  if(key==='F08'){const q=clone(p),m=auto(q,key);assert(m.columns.length>12);verify(m.columns.map(q=>c.run('Engine.columnRect(argument)',q)),{x:7,y:7});assert.deepEqual(q.types.F01,p.types.F01);assert.deepEqual(q.types.F03,p.types.F03);}
+  if(key==='F05'){assert.deepEqual(clone(report.reuse336),{total:44,retained:16,geometry:16,deleted:0,spacing:12,otherFloor:0});const s=report.schemes.find(s=>s.family==='reuse336');assert(s);assert.equal(s.columns.length,16);assert.equal(s.metrics.unalignedBelow,0);}
+  out.push({key,lowerReuse:report.reuse336,schemes:report.schemes.map(s=>({label:s.label,columns:s.columns.length,planning:!!s.planning336,routes:s.routes334.length,unresolved:s.unresolved334}))});
+ }
+ assert.deepEqual(fs.readFileSync(process.argv[2]),bytes);console.log(JSON.stringify({model:out}));passed.push('Current G/F/F03 preserved; top floor local-first with unresolved support; F05 reports exact 44-to-16 exclusion reasons');
+}
+console.log(JSON.stringify({ok:true,passed},null,2));

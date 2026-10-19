@@ -52,7 +52,7 @@ if(require.main===module){
  const balanced=out=>{const s=out.report.schemes.find(s=>s.family==='balanced330');assert(s,'coverage/transfer family was lost: '+JSON.stringify(out.report.messages));return s;};
  const pass=s=>{passed.push(s);console.log('PASS '+s);};
  {
-  const p=sparseFixture(),out=search(p),s=balanced(out),aligned=out.report.schemes.find(q=>q.family==='只補上下層對齊');
+  const p=sparseFixture(),out=search(p),s=balanced(out),aligned=out.report.schemes.find(q=>['只補上下層對齊','reuse336'].includes(q.family));
   assert(aligned,'pure alignment comparison missing');
   assert(s.columns.filter(q=>q.x>6&&q.x<30&&q.y>6&&q.y<18).length>=1,'large central region is still empty');
   assert(s.metrics.maxReach<aligned.metrics.maxReach-1,'interior infill does not materially improve coverage');
@@ -171,7 +171,7 @@ if(require.main===module){
  }
  if(process.argv[2]){
   const file=path.resolve(process.argv[2]),bytes=fs.readFileSync(file),p=JSON.parse(bytes.toString('utf8').replace(/^\uFEFF/,'')),key='F03',before=JSON.stringify(p),out=search(p,key),s=balanced(out),other=JSON.stringify([Object.fromEntries(Object.entries(p.types).filter(([k])=>k!==key)),p.axes,p.defaults,p.groups,p.explorer]);
-  const aligned=out.report.schemes.find(q=>q.family==='只補上下層對齊');if(aligned)assert(s.metrics.maxReach<aligned.metrics.maxReach,'current empty interior not improved');
+  const aligned=out.report.schemes.find(q=>['只補上下層對齊','reuse336'].includes(q.family));if(aligned)assert(s.metrics.maxReach<aligned.metrics.maxReach,'current empty interior not improved');
   assert(s.support330.some(q=>['transfer','missing','offset-column','wall','beam','ambiguous'].includes(q.kind)),'current transfer candidate has no visible support review');
   const trial=clone(p);apply(trial,key,s,out);assert.equal(JSON.stringify([Object.fromEntries(Object.entries(trial.types).filter(([k])=>k!==key)),trial.axes,trial.defaults,trial.groups,trial.explorer]),other);
   const reopened=generate(clone(trial));assert.equal(signature(reopened.models[key].columns.filter(q=>q.status!=='上层柱')),signature(s.columns));

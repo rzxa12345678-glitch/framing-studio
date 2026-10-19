@@ -1,4 +1,4 @@
-// Isolated browser/WebView2 profiles only. The runner supplies a private copy.
+// E2.333 direct apply and undo. Isolated browser/WebView2 profiles only. The runner supplies a private copy.
 // ok=false deliberately bypasses the legacy host's automatic dialog sweep.
 window.confirmSmoke316={done:false,ok:false,uiOK:false,passed:[],metrics:{cases:[]}};
 (async()=>{
@@ -22,13 +22,6 @@ window.confirmSmoke316={done:false,ok:false,uiOK:false,passed:[],metrics:{cases:
  const nav=async()=>{const h=StudioHost.get(),floor=h.result.floors.find(f=>f.type===key);if(!floor)throw Error('Fixture has no floor using '+key);StudioHost.viewFloor(floor.n);StudioHost.navigate('columns');await tick();if(getComputedStyle($('#side')).display==='none')await click('#mobile-inputs');guard();};
  const replace=async input=>{let error;const ok=StudioHost.transact(()=>{const p=StudioHost.get().p;for(const k of Object.keys(p))delete p[k];Object.assign(p,clone(input));},e=>error=e,false,true);if(!ok)throw error||Error('Fixture transaction rejected');await nav();};
  const generate=async reset=>{$('#column-schemes319').open=true;lastReport=null;await click(reset?'[data-scheme331-replan]':'[data-scheme319-generate]');await wait(()=>lastReport&&!$('[data-scheme319-generate]')?.disabled);return lastReport;};
- const inspectConfirmation=(report,scheme,phase)=>{
-  const d=dialog(),text=d?.textContent||'',ok=d?.querySelector('[data-confirm316=ok]'),cancel=d?.querySelector('[data-confirm316=cancel]');
-  check(key+': before '+phase+', reset dialog states concrete Framing, scheme and deletion count',!!d&&text.includes(key)&&text.includes(String(scheme.id))&&text.includes(String(report.deletion331.resettableCount))&&/刪柱/.test(text));
-  check(key+': before '+phase+', reset dialog has Confirm-left / Cancel-right and explicit choices',!!ok&&!!cancel&&ok.textContent==='確認'&&cancel.textContent==='取消'&&ok.getBoundingClientRect().left<cancel.getBoundingClientRect().left);
-  return {d,ok,cancel};
- };
- const answerKnownReset=async(report,scheme,answer)=>{const inspected=inspectConfirmation(report,scheme,answer==='ok'?'Confirm':'Cancel');inspected[answer].click();await wait(()=>!dialog()&&!$('[data-scheme319-generate]')?.disabled);};
  const checkDiagnostics=(report,scheme)=>{
   const h=StudioHost.get(),card=$('[data-scheme319-preview="'+scheme.id+'"]')?.closest('section');
   check(key+': candidate card identifies the actual affected floor labels',!!card&&report.affectedFloors.every(f=>$('#column-schemes319').textContent.includes(FloorLevels.name(h.p,f))));
@@ -71,27 +64,33 @@ window.confirmSmoke316={done:false,ok:false,uiOK:false,passed:[],metrics:{cases:
    check(key+': reset preview provides an applicable scheme',!!scheme);let card=checkDiagnostics(report,scheme);
    await click('[data-scheme319-preview="'+scheme.id+'"]');card=$('[data-scheme319-preview="'+scheme.id+'"]').closest('section');card.scrollIntoView({block:'start'});await tick();
    check(key+': selecting a reset proposal keeps every source field unchanged',snapshot()===initial);await checkpoint(key+'-reset-preview');
-   await click('[data-scheme319-apply="'+scheme.id+'"]',true);await wait(()=>dialog(),true);await checkpoint(key+'-reset-confirmation');
-   await answerKnownReset(report,scheme,'cancel');
-   check(key+': explicit Cancel leaves all fields, geometry and deletion records unchanged',snapshot()===initial&&geometry(sections(actual()))===beforeGeometry&&stable(deletionRecords(StudioHost.get().p.types[key]))===stable(records));
-   // A fresh preview follows cancellation, so the confirmed action is checked
-   // against the exact newly displayed scope instead of a stale dialog.
+   check(key+': reset effect is shown next to each Apply button',!!card.querySelector('[data-scheme333-apply-note]')&&card.querySelector('[data-scheme333-apply-note]').textContent.includes(String(report.deletion331.resettableCount)));
+   await click('[data-scheme319-clear]');
+   check(key+': closing preview preserves all model fields and deleted positions',snapshot()===initial&&geometry(sections(actual()))===beforeGeometry);
    report=await generate(true);scheme=report.schemes.find(s=>s.family==='balanced330'&&!s.unchanged)||report.schemes.find(s=>!s.unchanged);
-   await click('[data-scheme319-apply="'+scheme.id+'"]',true);await wait(()=>dialog(),true);await answerKnownReset(report,scheme,'ok');
+   await click('[data-scheme319-apply="'+scheme.id+'"]');await wait(()=>!$('[data-scheme319-generate]')?.disabled);
+   check(key+': one Apply completes without an extra dialog',!dialog()&&!!$('[data-scheme333-undo]'));
+   check(key+': success identifies the applied scheme and column count',$('#column-schemes319 [role="status"]').textContent.includes('方案 '+scheme.id)&&$('#column-schemes319 [role="status"]').textContent.includes(scheme.columns.length+' 支柱'));
    const applied=snapshot(),appliedGeometry=geometry(sections(actual())),appliedRecords=deletionRecords(StudioHost.get().p.types[key]);
-   check(key+': confirmed reset clears only resettable records in the selected Framing',appliedRecords.columnSchemeDeleted319.length===0&&appliedRecords.suppressedColumns.length===0&&otherInput()===protectedInput);
-   check(key+': confirmed reset preserves disabled manual records',stable(appliedRecords.disabled)===stable(records.disabled));
-   check(key+': confirmed Apply exactly matches the displayed physical columns',appliedGeometry===geometry(scheme.columns));
+   check(key+': direct reset clears only resettable records in the selected Framing',appliedRecords.columnSchemeDeleted319.length===0&&appliedRecords.suppressedColumns.length===0&&otherInput()===protectedInput);
+   check(key+': direct reset preserves disabled manual records',stable(appliedRecords.disabled)===stable(records.disabled));
+   check(key+': direct Apply exactly matches the displayed physical columns',appliedGeometry===geometry(scheme.columns));
+   await checkpoint(key+'-direct-applied');
+   const oldName=StudioHost.get().p.name;
+   StudioHost.transact(()=>{StudioHost.get().p.name=oldName+' QA unrelated edit';});await tick();
+   check(key+': later model edit hides scheme-specific Undo instead of undoing unrelated work',!$('[data-scheme333-undo]'));
    await click('#undo');
+   check(key+': undoing later edit returns to the applied scheme',snapshot()===applied&&!!$('[data-scheme333-undo]'));
+   await click('[data-scheme333-undo]');
    check(key+': one Undo restores geometry and all deletion records exactly',snapshot()===initial&&geometry(sections(actual()))===beforeGeometry&&stable(deletionRecords(StudioHost.get().p.types[key]))===stable(records));
-   check(key+': Undo invalidates the applied status message',!/已套用/.test(document.querySelector('#column-schemes319 [role="status"]')?.textContent||'')&&/模型已變更/.test(document.querySelector('#column-schemes319 [role="status"]')?.textContent||''));
+   check(key+': Undo invalidates the applied status message',!/已套用/.test(document.querySelector('#column-schemes319 [role="status"]')?.textContent||'')&&!$('[data-scheme333-undo]'));
    await replace(JSON.parse(applied));
    check(key+': applied model reopens with exact geometry and cleared deletion records',snapshot()===applied&&geometry(sections(actual()))===appliedGeometry&&stable(deletionRecords(StudioHost.get().p.types[key]))===stable(appliedRecords));
    check(key+': reopened model preserves other Framing and input settings',otherInput()===protectedInput);
    await click('#undo');check(key+': reopen test Undo restores the pre-reset snapshot',snapshot()===initial);
    o.metrics.cases.push({key,floor:StudioHost.get().floor,floorLabel:FloorLevels.name(StudioHost.get().p,StudioHost.get().floor),originalDefaultDeletionCount:actualDefaultCount,isolatedDeletionSeeded:seeded,resettableCount:report.deletion331.resettableCount,disabledManualPreserved:records.disabled.length,schemes:report.schemes.map(s=>({id:s.id,family:s.family,columns:s.columns.length})),appliedColumns:scheme.columns.length,undoExact:true,reopenExact:true});
   }
-  key=keys[0];await replace(window.replan331Fixture);const finalModel=snapshot();const finalReport=await generate(true),finalScheme=finalReport.schemes.find(s=>s.family==='balanced330')||finalReport.schemes[0];await click('[data-scheme319-preview="'+finalScheme.id+'"]');const finalCard=$('[data-scheme319-preview="'+finalScheme.id+'"]').closest('section');finalCard.scrollIntoView({block:'start'});await tick();
+  key=keys[0];await replace(window.replan331Fixture);const finalModel=snapshot();const finalReport=await generate(ColumnSchemes319.deletionInfo331(StudioHost.get().p,key).resettableCount>0),finalScheme=finalReport.schemes.find(s=>s.family==='balanced330')||finalReport.schemes[0];await click('[data-scheme319-preview="'+finalScheme.id+'"]');const finalCard=$('[data-scheme319-preview="'+finalScheme.id+'"]').closest('section');finalCard.scrollIntoView({block:'start'});await tick();
   check('Final isolated preview restores the supplied current model exactly',snapshot()===finalModel&&snapshot()===supplied);
   check('Injected private fixture was never mutated',stable(window.replan331Fixture)===supplied);
   o.metrics.originalModelRestored=true;o.metrics.screenshotScope='isolated preview only; original user tab untouched';o.uiOK=true;

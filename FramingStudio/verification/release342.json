@@ -1,0 +1,102 @@
+{
+  "version": "E2.342",
+  "baseline": "cddefe3c468d0a5c124f8effb43724ec2b61575f",
+  "publish": "User hold: local only, no push or PR update",
+  "regressionSuites": [
+    {
+      "suite": "column-schemes319",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-rows341",
+      "exitCode": 0
+    },
+    {
+      "suite": "beam-direction337",
+      "exitCode": 0
+    }
+  ],
+  "browser": {
+    "errors": [],
+    "externalRequests": [],
+    "screenshots": [
+      "browser-replan-GF-structural-zone.png",
+      "browser-replan-local-structural-zone.png"
+    ],
+    "done": true,
+    "uiOK": true,
+    "passed": [
+      "Current model copy loaded",
+      "F01 Structural Zone control visible in Legend",
+      "F01 values/regions equal floor-page calculation",
+      "F01 structural mm labels visible",
+      "F01 off hides all zone labels",
+      "F01 toggle does not change project",
+      "F01 floor-page toggle shares the off setting",
+      "F01 floor-page toggle updates Legend",
+      "F01 shared on state survives navigation",
+      "F03 Structural Zone control visible in Legend",
+      "F03 values/regions equal floor-page calculation",
+      "F03 structural mm labels visible",
+      "F03 off hides all zone labels",
+      "F03 toggle does not change project",
+      "F03 floor-page toggle shares the off setting",
+      "F03 floor-page toggle updates Legend",
+      "F03 shared on state survives navigation",
+      "F04 Structural Zone control visible in Legend",
+      "F04 values/regions equal floor-page calculation",
+      "F04 structural mm labels visible",
+      "F04 off hides all zone labels",
+      "F04 toggle does not change project",
+      "F04 floor-page toggle shares the off setting",
+      "F04 floor-page toggle updates Legend",
+      "F04 shared on state survives navigation",
+      "columnMove plan shows structural zones",
+      "beamLayout plan shows structural zones",
+      "3D disables plan-only Structural Zone control",
+      "Returning to plan restores control and labels",
+      "Loading keeps unrelated overlays hidden",
+      "All original-model view operations leave complete project unchanged",
+      "Local structural-zone fixture accepted",
+      "Local zone has its separately calculated 500mm height",
+      "Local 500mm badge is visible",
+      "Local overlay does not edit project",
+      "02 local structural height matches Legend",
+      "Opening fixture accepted",
+      "Opening carries no structural-zone badge",
+      "Original test project restored",
+      "Original project contents exactly restored"
+    ],
+    "originalFileUnchanged": true,
+    "ok": true
+  },
+  "EXE": {
+    "compiledVersion": "2.342.0.0",
+    "x64PE": true,
+    "unchangedDependencies": [
+      "Microsoft.Web.WebView2.Core.dll",
+      "Microsoft.Web.WebView2.WinForms.dll",
+      "WebView2Loader.dll",
+      "FramingStudio.exe.config",
+      "desktop-bridge.js",
+      "Excel/ExcelBridge.exe"
+    ],
+    "launched": false,
+    "limitation": "Native runtime not tested per user instruction."
+  },
+  "preservation": {
+    "otherExistingSourceFilesIdentical": 431,
+    "engineAndReportSourcesUnchanged": true,
+    "HTMLOutsideAuthorizedUIAndVersionUnchanged": true,
+    "nativeHostOnlyVersionChanged": true,
+    "E2318SHA256": "3acbe8bd68aea46c008620d79b03ff63fe99c43c2a09c310a7d9389de4c54d00",
+    "modelBackupSHA256": "8d4a21d00195a3529b77cf9cbe59cc87df0dea9a7708e6606ea8bca6e7a7e057",
+    "originalTabNotReloaded": true
+  },
+  "preview": {
+    "url": "http://127.0.0.1:8783/",
+    "servedVersion": "E2.342",
+    "servedBytesMatch": true,
+    "cacheControl": "no-store"
+  }
+}

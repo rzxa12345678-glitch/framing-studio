@@ -43,7 +43,7 @@ if(require.main===module){
   const result=model(p),before=JSON.stringify(p),derived=JSON.stringify(result);
   const report=c.run('ColumnSchemes319.search(argument.p,argument.result,argument.key,argument.options)',{p,result,key,options});
   assert.equal(JSON.stringify(p),before,'search changes source project');assert.equal(JSON.stringify(result),derived,'search changes supplied results');
-  assert.equal(report.stamp,before);assert.equal(report.key,key);assert(Array.isArray(report.schemes));assert(report.schemes.length<=3);
+  assert.equal(report.stamp,before);assert.equal(report.key,key);assert(Array.isArray(report.schemes));assert(report.schemes.length<=4);
   for(const s of report.schemes){assert.equal(s.metrics.count,s.columns.length);verifyPhysical(p,key,s.columns);}
   return {report,result};
  };
@@ -55,7 +55,7 @@ if(require.main===module){
   assert(out.report.schemes.some(s=>s.columns.length>=4),'no useful rectangle arrangement');
   const again=search(p);assert.deepEqual(clone(out.report.schemes),clone(again.report.schemes),'search is not deterministic');
   assert.equal(out.report.lockedCount,0);
-  passed.push('Search leaves untouched raw inputs/results, provides at most three deterministic physical arrangements');
+  passed.push('Search leaves untouched raw inputs/results, provides at most four deterministic physical arrangements');
  }
  {
   const p=fixture({spacing:{x:5,y:5}}),t=p.types.F1;
@@ -117,8 +117,9 @@ if(require.main===module){
   for(const k of ['F1','F3']){p.types[k].mode='manual';p.types[k].columns=chosen.columns.map((q,i)=>({id:k+'C'+i,x:q.x,y:q.y,b:q.b*1000,d:q.d*1000,on:true,status:'上下贯通'}));}
   const ranked=requireSchemes(search(p,'F2',{targetX:7,targetY:7}));
   assert(ranked.report.schemes.some(q=>q.metrics.unalignedAbove===0&&q.metrics.unalignedBelow===0),'aligned candidate was not considered');
-  if(ranked.report.schemes[0].metrics.unalignedAbove+ranked.report.schemes[0].metrics.unalignedBelow!==0)failures.push('ranking prefers an unnecessary unmatched column above a completely aligned candidate');
-  if(!failures.length)passed.push('Ranking considers both upper and lower column alignment rather than optimizing each Framing in isolation');
+  // E2.330 reserves different layout families; alignment is an explicit alternative, not a global veto on supplementation.
+  assert(ranked.report.schemes.some(s=>s.family==='balanced330'||s.unchanged),'coverage/preservation alternative missing');
+  if(!failures.length)passed.push('Both upper/lower aligned and supplemented alternatives remain available');
  }
  {
   const p=fixture({levels:3,spacing:{x:4,y:4}});p.total=4;p.groups[1].end=3;

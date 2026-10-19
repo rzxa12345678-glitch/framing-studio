@@ -1,0 +1,71 @@
+// Isolated browser/WebView2 profile only. The runner injects a private fixture;
+// this distributable test never embeds or saves the user's project.
+// ok=false skips the legacy host's automatic confirmation sweep.
+window.confirmSmoke316={done:false,ok:false,uiOK:false,passed:[],metrics:{}};
+(async()=>{
+ const o=window.confirmSmoke316,$=s=>document.querySelector(s),clone=x=>JSON.parse(JSON.stringify(x)),near=(a,b)=>Math.abs(a-b)<1e-6;
+ const stable=x=>JSON.stringify(x,(_,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(k=>[k,v[k]])):v),snapshot=()=>stable(StudioHost.get().p);
+ const check=(name,value)=>{if(!value)throw Error(name);o.passed.push(name);};
+ const guard=()=>{if($('#studio-confirm316')&&getComputedStyle($('#studio-confirm316')).display!=='none')throw Error('Unexpected confirmation: test will not answer it');};
+ const tick=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(resolve,35))));
+ const wait=async fn=>{const end=Date.now()+90000;while(!fn()){guard();if(Date.now()>end)throw Error('Transfer proposal UI timeout');await new Promise(r=>setTimeout(r,25));}await tick();guard();};
+ const click=async selector=>{guard();const e=$(selector);if(!e||e.disabled)throw Error('Missing/enabled control: '+selector);e.click();await tick();guard();};
+ const key=window.transfer330Key||'F03';
+ const nav=async()=>{const h=StudioHost.get(),f=h.result.floors.find(f=>f.type===key);if(!f)throw Error('Fixture has no floor using '+key);StudioHost.viewFloor(f.n);StudioHost.navigate('columns');await tick();if(getComputedStyle($('#side')).display==='none')await click('#mobile-inputs');guard();};
+ const replace=async input=>{let error;const ok=StudioHost.transact(()=>{const p=StudioHost.get().p;for(const k of Object.keys(p))delete p[k];Object.assign(p,clone(input));},e=>error=e,false,true);if(!ok)throw error||Error('Fixture transaction rejected');await nav();};
+ const actual=()=>{const h=StudioHost.get();return Engine.floorModel(h.result,h.floor,h.key);};
+ const sections=m=>m.columns.filter(q=>q.status!=='上层柱').map(q=>{const r=Engine.columnRect(q);return {id:q.id,x:r.x,y:r.y,b:r.w,d:r.d};});
+ const review=r=>!['base','shared','column'].includes(r.kind),fmt=v=>v==null?'—':Number(v.toFixed(2));
+ const supportLabels={base:'模型底層：另核對基礎',shared:'相鄰同 Framing 柱位對齊',column:'下層柱中心對齊','offset-column':'偏心落在下層柱截面，需核對',wall:'落在下層牆截面，需核對',beam:'落在既有下層梁，需核對轉換承托',ambiguous:'多個可能支承，需確認',transfer:'未有直接承托，需另設 TB／轉換結構',missing:'下層未有支承模型，需建立／核對'};
+ const supportText=(p,r)=>FloorLevels.name(p,r.at)+' · '+(r.id?r.id+' · ':'')+'('+fmt(r.x)+', '+fmt(r.y)+') m → '+FloorLevels.name(p,r.below)+'：'+supportLabels[r.kind]+(r.member?' '+r.member:'');
+ const supportMatches=(panel,rows)=>{const expected=rows.filter(review),actualRows=[...(panel?.querySelector('details > div')?.children||[])].map(e=>e.textContent);return actualRows.length===expected.length&&actualRows.every((text,i)=>text===supportText(StudioHost.get().p,expected[i]));};
+ const supportSummary=rows=>rows.map(({id,...r})=>r).sort((a,b)=>a.at-b.at||a.x-b.x||a.y-b.y);
+ const currentSupport=()=>{const h=StudioHost.get();return ColumnSchemes319.support330(h.p,h.result,key,sections(actual()));};
+ const proto=CanvasRenderingContext2D.prototype,originalFill=proto.fillRect,originalStroke=proto.strokeRect,originalClip=proto.clip,originalRect=proto.rect,originalPlan=Drawing.plan;
+ let plot=null,rectangles=[],clipped=false,lastClipRect=null;
+ const previewColours=['#078163','#2879bd','#b96712'];
+ Drawing.plan=function(...args){rectangles=[];plot=originalPlan.apply(this,args);return plot;};
+ proto.fillRect=function(...args){if(this.canvas?.id==='canvas'&&previewColours.includes(this.strokeStyle)&&this.getLineDash().join(',')==='5,3')rectangles.push({kind:'fill',args:[...args],colour:this.strokeStyle});return originalFill.apply(this,args);};
+ proto.rect=function(...args){lastClipRect=[...args];return originalRect.apply(this,args);};
+ proto.clip=function(...args){clipped=true;return originalClip.apply(this,args);};
+ proto.strokeRect=function(...args){if(this.canvas?.id==='canvas'&&previewColours.includes(this.strokeStyle)&&this.getLineDash().join(',')==='5,3')rectangles.push({kind:'stroke',args:[...args],colour:this.strokeStyle,clipped,clip:lastClipRect&&[...lastClipRect]});return originalStroke.apply(this,args);};
+ const generate=async()=>{$('#column-schemes319').open=true;await click('[data-scheme319-generate]');await wait(()=>!$('[data-scheme319-generate]')?.disabled&&!!$('[data-scheme319-preview]'));};
+ try{
+  if(!window.transfer330Fixture?.types)throw Error('Runner must supply transfer330Fixture');const supplied=stable(window.transfer330Fixture);
+  await replace(window.transfer330Fixture);const initial=snapshot(),initialSections=sections(actual()),initialFloor=StudioHost.get().floor;
+  check('Private model opens at an actual floor using the requested Framing',StudioHost.get().key===key&&!!$('[data-scheme319-generate]'));
+  await generate();check('Generating proposals leaves the model unchanged',snapshot()===initial);
+  const h=StudioHost.get(),report=ColumnSchemes319.search(h.p,h.result,key),balanced=report.schemes.find(s=>s.family==='balanced330');
+  check('A distinct alignment-plus-interior/transfer proposal is available',!!balanced&&report.schemes.length<=4);
+  check('Support diagnostics cover every column on every shared Framing floor',balanced.support330.length===balanced.columns.length*report.affectedFloors.length&&report.affectedFloors.every(f=>balanced.support330.filter(r=>r.at===f).length===balanced.columns.length));
+  const card=$('[data-scheme319-preview="'+balanced.id+'"]').closest('section');
+  check('Expanded per-floor support list matches the generated diagnostics',supportMatches(card,balanced.support330));
+  check('Proposal clearly states that unresolved transfers are not completed',card.textContent.includes('未建立支承不會當作已完成 Transfer'));
+  await click('[data-scheme319-preview="'+balanced.id+'"]');StudioHost.repaint();await tick();
+  const expected=balanced.columns.map(q=>({args:[plot.ox+(q.x-q.b/2)*plot.scale,plot.oy+(q.y-q.d/2)*plot.scale,q.b*plot.scale,q.d*plot.scale],colour:balanced.support330.some(r=>r.at===initialFloor&&review(r)&&near(r.x,q.x)&&near(r.y,q.y))?'#b96712':q.existingKey?'#2879bd':'#078163'}));
+  const fills=rectangles.filter(r=>r.kind==='fill'),strokes=rectangles.filter(r=>r.kind==='stroke'),matches=(a,b)=>a&&b&&a.length===b.length&&a.every((v,i)=>near(v,b[i]));
+  check('Preview colours identify the current floor support status for every column',fills.length===expected.length&&fills.every((q,i)=>q.colour===expected[i].colour));
+  check('Preview fills use exact physical column dimensions',fills.length===expected.length&&fills.every((q,i)=>matches(q.args,expected[i].args)));
+  check('Preview outlines use exact clipped physical column dimensions',strokes.length===expected.length&&strokes.every((q,i)=>q.colour===expected[i].colour&&matches(q.args,expected[i].args)&&q.clipped&&matches(q.clip,expected[i].args)));
+  check('Preview alone leaves all model data unchanged',snapshot()===initial);
+  await click('[data-scheme319-apply="'+balanced.id+'"]');await wait(()=>!$('[data-scheme319-generate]')?.disabled);
+  const applied=snapshot(),appliedSections=sections(actual()),appliedSupport=currentSupport();
+  check('Apply creates exactly the displayed physical columns',appliedSections.length===balanced.columns.length&&balanced.columns.every(q=>appliedSections.some(a=>near(a.x,q.x)&&near(a.y,q.y)&&near(a.b,q.b)&&near(a.d,q.d))));
+  check('Apply persists the support-review marker',StudioHost.get().p.types[key].columnSchemeReview330===true);
+  check('Apply retains the same per-floor support diagnoses',stable(supportSummary(appliedSupport))===stable(supportSummary(balanced.support330)));
+  const persistent=$('#column-schemes319 section.notice');
+  check('Applied proposal has a persistent detailed support-review panel',persistent?.textContent.includes('已套用方案 · 承托仍需核對')&&supportMatches(persistent,appliedSupport));
+  await click('#undo');check('One Undo restores the original model and columns exactly',snapshot()===initial&&stable(sections(actual()))===stable(initialSections));
+  await replace(JSON.parse(applied));
+  check('Serialized model reopens with the exact applied column geometry',snapshot()===applied&&stable(sections(actual()))===stable(appliedSections));
+  check('Support-review marker and per-floor diagnostics survive reopen',StudioHost.get().p.types[key].columnSchemeReview330===true&&stable(supportSummary(currentSupport()))===stable(supportSummary(appliedSupport)));
+  const reopened=$('#column-schemes319 section.notice');
+  check('Reopened model displays the persistent support-review panel',reopened?.textContent.includes('已套用方案 · 承托仍需核對')&&supportMatches(reopened,currentSupport()));
+  await click('#undo');check('Reopen test Undo returns to the original model exactly',snapshot()===initial);
+  check('Injected private source fixture was never mutated',stable(window.transfer330Fixture)===supplied);
+  await generate();await click('[data-scheme319-preview="'+balanced.id+'"]');const finalCard=$('[data-scheme319-preview="'+balanced.id+'"]').closest('section');if(finalCard.querySelector('details'))finalCard.querySelector('details').open=true;finalCard.scrollIntoView({block:'start'});await tick();
+  check('Final isolated screenshot shows preview without applying changes',snapshot()===initial&&StudioHost.get().floor===initialFloor);
+  o.metrics={key,floor:initialFloor,schemes:report.schemes.map(s=>({id:s.id,family:s.family,count:s.columns.length,maxReach:s.metrics.maxReach})),balancedId:balanced.id,balancedColumns:balanced.columns.length,supportReviews:balanced.support330.filter(review).length,orangeCurrentFloor:expected.filter(r=>r.colour==='#b96712').length,previewFootprints:expected.length,originalModelRestored:snapshot()===initial,screenshotScope:'isolated preview; original user tab untouched'};o.uiOK=true;
+ }catch(error){o.error=error.stack||String(error);}
+ finally{Drawing.plan=originalPlan;proto.fillRect=originalFill;proto.strokeRect=originalStroke;proto.clip=originalClip;proto.rect=originalRect;o.done=true;}
+})();

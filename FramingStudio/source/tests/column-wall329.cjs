@@ -45,8 +45,8 @@ function pass(s){passed.push(s);console.log('PASS '+s);}
 {
  const p=fixture(),m=model(p),expected=[['AC1',.25,.25],['AC3',.25,12],['AC9',12,.25],['AC11',12,12]];
  assert.deepEqual(clone(m.columns.map(q=>[q.id,physical(q).x,physical(q).y])),expected);
- const {report}=search(p);assert.deepEqual(clone(report.schemes.map(s=>[s.label,s.columns.length])),[['沿用建築軸網 · 優先對齊',8],['均勻柱網 · 優先對齊',9],['保留現有柱位',4]]);
- pass('No-wall automatic columns and ranked schemes retain the E2.328 geometry');
+ const {report}=search(p);assert(report.schemes.some(s=>s.unchanged&&s.columns.length===expected.length));for(const scheme of report.schemes)verifyPhysical(p,'F1',scheme.columns);
+ pass('No-wall automatic columns retain E2.328 geometry; E2.330 alternatives remain legal with a preservation option');
 }
 
 for(const horizontal of [false,true])for(const thickness of [200,700])for(const reverse of [false,true])for(const position of horizontal?['up','center','down']:['left','center','right']){

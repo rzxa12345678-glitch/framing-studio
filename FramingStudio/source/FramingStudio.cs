@@ -14,8 +14,8 @@ using Microsoft.Web.WebView2.WinForms;
 [assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.8",FrameworkDisplayName=".NET Framework 4.8")]
 
 [assembly: System.Reflection.AssemblyTitle("Framing Studio")]
-[assembly: System.Reflection.AssemblyVersion("2.331.0.0")]
-[assembly: System.Reflection.AssemblyFileVersion("2.331.0.0")]
+[assembly: System.Reflection.AssemblyVersion("2.332.0.0")]
+[assembly: System.Reflection.AssemblyFileVersion("2.332.0.0")]
 
 static class Program {
     [STAThread] static int Main(string[] args) {
@@ -49,7 +49,7 @@ sealed class Studio : Form {
     readonly string BrowserRequest251;
     bool BrowserStarted251;
     int BrowserEvent251;
-    bool Ready, ClosingConfirmed, ClosingReview203, Saving316;
+    bool Ready, ClosingConfirmed, ClosingReview203, Saving316, Opening332;
     int PageChoiceId316;
     readonly Dictionary<string,TaskCompletionSource<string>> PageChoices316 = new Dictionary<string,TaskCompletionSource<string>>();
     // Set by each autosave (project edit); cleared only after a confirmed .framing.json save.
@@ -66,7 +66,7 @@ sealed class Studio : Form {
         Profile = Path.Combine(Data, "WebView2"); Directory.CreateDirectory(Data);
         if (TestDir != null) { Directory.CreateDirectory(TestDir); Opacity = .01; ShowInTaskbar = false; }
         if (BrowserRequest251 != null) { Opacity = 0; ShowInTaskbar = false; }
-        Text = "Framing Studio · E2.331 Desktop"; Width = 1500; Height = 950;
+        Text = "Framing Studio · E2.332 Desktop"; Width = 1500; Height = 950;
         MinimumSize = new Size(900, 650); StartPosition = FormStartPosition.CenterScreen;
         if (File.Exists(Path.Combine(Root,"FramingStudio.ico"))) Icon = new Icon(Path.Combine(Root,"FramingStudio.ico"));
         var menu = new MenuStrip(); var file = new ToolStripMenuItem("项目");
@@ -139,7 +139,7 @@ sealed class Studio : Form {
             await web.AddScriptToExecuteOnDocumentCreatedAsync(File.ReadAllText(Path.Combine(Root,"desktop-bridge.js")));
             web.NavigationCompleted += async delegate(object s, CoreWebView2NavigationCompletedEventArgs e) {
                 if (!e.IsSuccess) { Log("Navigation: " + e.WebErrorStatus); Status.Text = "页面加载失败：" + e.WebErrorStatus; return; }
-                Ready = true; Status.Text = "离线模式 · E2.331 · 项目请保存为 .framing.json";
+                Ready = true; Status.Text = "离线模式 · E2.332 · 项目请保存为 .framing.json";
                 if (TestDir != null && TestNavigation++ == 0) await SelfTest();
                 if (BrowserRequest251 != null && !BrowserStarted251) {
                     BrowserStarted251=true;
@@ -313,6 +313,7 @@ sealed class Studio : Form {
             string kind = Convert.ToString(m["kind"]);
             if(kind=="page-choice316") { string id=Convert.ToString(m["id"]);TaskCompletionSource<string> choice;if(PageChoices316.TryGetValue(id,out choice)){PageChoices316.Remove(id);choice.TrySetResult(Convert.ToString(m["value"]));}return; }
             if(kind=="export-file"){SaveExport(m);return;}
+            if(kind=="open-project332"){OpenProjectDialog();return;}
             if(kind.StartsWith("excel-")){ExcelMessage(m);return;}
             if (kind == "error") { string error = Convert.ToString(m["value"]); Errors.Add(error); Log("JS: " + error); }
             if (kind == "backup") {
@@ -381,10 +382,16 @@ sealed class Studio : Form {
     }
     async void SetSaveStatus(string text) { await JS("document.getElementById('savestatus').textContent=" + Json.Serialize(text)); }
     async void OpenProjectDialog() {
-        if (!Ready || Saving316 || ClosingReview203 || await JS("Boolean(document.querySelector('dialog[open]'))") == "true") return;
-        using (var dialog = new OpenFileDialog { Title = "打开 Framing 项目", Filter = "Framing 项目 (*.json)|*.json" }) {
-            if (dialog.ShowDialog(this) == DialogResult.OK) try { await ImportProject(dialog.FileName); } catch (Exception ex) { ShowNotice316(ex.Message,"無法打開項目"); }
-        }
+        if (!Ready || Opening332 || Saving316 || ClosingReview203 || IsDisposed) return;
+        // Set before awaiting: menu and renderer requests must share one picker.
+        Opening332 = true;
+        try {
+            if (await JS("Boolean(document.querySelector('dialog[open]'))") != "false") return;
+            using (var dialog = new OpenFileDialog { Title = "打开 Framing 项目", Filter = "Framing 项目 (*.json)|*.json" }) {
+                if (dialog.ShowDialog(this) == DialogResult.OK) await ImportProject(dialog.FileName);
+            }
+        } catch (Exception ex) { ShowNotice316(ex.Message,"無法打開項目"); }
+        finally { Opening332 = false; }
     }
     async Task ImportProject(string path) {
         if (new FileInfo(path).Length > 10485760) throw new Exception("项目文件超过 10 MB。");

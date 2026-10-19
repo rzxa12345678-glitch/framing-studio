@@ -5,7 +5,7 @@ c.run(fs.readFileSync(path.join(__dirname,'loading115-browser.js'),'utf8'));
 const functions=app.slice(app.indexOf(' function gridPoint(q)'),app.indexOf(' function tileAt(q)'));
 const creation=app.slice(app.indexOf("  if(['walls','beams','beamLayout'].includes(tab)&&g){"),app.indexOf("  if(['beams','beamLayout'].includes(tab)&&start&&!g)"));
 const result=c.run(`(()=>{
- const base=loading115Tests().projects.slab;let p=Engine.clone(base),key='F1',floor=1,tab='beamLayout',beamKind='CB',start=[2,1.5],showColumnGrid=true,mode='plan',selectOnly=false,sbAreaDrawing=false,visible={};
+ const base=loading115Tests().projects.slab;let p=Engine.clone(base),key='F1',floor=1,tab='beamLayout',beamKind='CB',beamDiagonal337=false,start=[2,1.5],showColumnGrid=true,mode='plan',selectOnly=false,sbAreaDrawing=false,visible={};
  let plot={scale:50,ox:0,oy:0},result;
  const reset=()=>{p=Engine.clone(base);p.types.F1.beams=[];p.types.F1.walls=[];p.types.F1.columns=[{id:'ROOT',x:2,y:1.5,b:250,d:250,on:true,status:'上下贯通'}];start=[2,1.5];result=Engine.generate(p);};reset();
  ${functions}

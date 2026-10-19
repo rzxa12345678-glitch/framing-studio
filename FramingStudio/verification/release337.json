@@ -1,0 +1,83 @@
+{
+  "version": "E2.337",
+  "baseline": "7a2da5a553c1cb88ed0fe8365b37d336ad3a2e22",
+  "publish": "User hold: local only, no push or PR update",
+  "regressionSuites": [
+    {
+      "suite": "beam-direction337",
+      "exitCode": 0
+    },
+    {
+      "suite": "grid-snap217",
+      "exitCode": 0
+    },
+    {
+      "suite": "wall-beam-snap301",
+      "exitCode": 0
+    },
+    {
+      "suite": "wall-beam-junction301",
+      "exitCode": 0
+    },
+    {
+      "suite": "desktop-shortcuts332",
+      "exitCode": 0
+    }
+  ],
+  "browser": {
+    "errors": [],
+    "externalRequests": [],
+    "screenshots": [
+      "browser-replan-manual-beam-switch.png"
+    ],
+    "done": true,
+    "uiOK": true,
+    "passed": [
+      "Fixture accepted",
+      "Default off",
+      "Switch styled without duplicate checkbox",
+      "Switch on",
+      "Mode survives beam-kind change",
+      "Switch does not edit current project",
+      "Fixture accepted",
+      "Off rejects diagonal pointer endpoint",
+      "Slightly offset pointer creates vertical beam",
+      "On creates exact diagonal through canvas",
+      "Switch off preserves existing diagonal",
+      "Switch cancels unfinished draft",
+      "Fixture accepted",
+      "Original project restored in isolated test"
+    ],
+    "originalFileUnchanged": true,
+    "ok": true
+  },
+  "EXE": {
+    "compiledVersion": "2.337.0.0",
+    "x64PE": true,
+    "unchangedDependencies": [
+      "Microsoft.Web.WebView2.Core.dll",
+      "Microsoft.Web.WebView2.WinForms.dll",
+      "WebView2Loader.dll",
+      "FramingStudio.exe.config",
+      "desktop-bridge.js",
+      "Excel/ExcelBridge.exe"
+    ],
+    "launched": false,
+    "limitation": "Native runtime not tested per user instruction."
+  },
+  "preservation": {
+    "otherExistingSourceFilesIdentical": 420,
+    "engineAndReportSourcesUnchanged": true,
+    "HTMLOutsideAuthorizedUIAndVersionUnchanged": true,
+    "nativeHostOnlyVersionChanged": true,
+    "E2318SHA256": "3acbe8bd68aea46c008620d79b03ff63fe99c43c2a09c310a7d9389de4c54d00",
+    "modelBackupSHA256": "32c6fcdcf08303e6d43212a0dce13148eb589b63665f88534fbecdcd82f4faac",
+    "originalTabNotReloaded": true
+  },
+  "preview": {
+    "url": "http://127.0.0.1:8783/",
+    "servedVersion": "E2.337",
+    "servedBytesMatch": true,
+    "cacheControl": "no-store"
+  }
+}

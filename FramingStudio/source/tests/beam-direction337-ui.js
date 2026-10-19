@@ -1,0 +1,17 @@
+window.confirmSmoke316={done:false,uiOK:false,passed:[]};
+(async()=>{const o=window.confirmSmoke316,$=s=>document.querySelector(s),clone=x=>JSON.parse(JSON.stringify(x)),snap=()=>JSON.stringify(StudioHost.get().p),check=(s,b)=>{if(!b)throw Error(s);o.passed.push(s);},tick=()=>new Promise(r=>requestAnimationFrame(()=>setTimeout(r,40))),guard=()=>{if($('dialog[open]'))throw Error('Unexpected dialog; not answered');};
+ const click=async s=>{guard();$(s).click();await tick();guard();},load=async p=>{check('Fixture accepted',StudioHost.transact(()=>{const dest=StudioHost.get().p;Object.keys(dest).forEach(k=>delete dest[k]);Object.assign(dest,clone(p));},null,false,true));StudioHost.navigate('beamLayout');await tick();$('[data-bl-fold="manual"]').open=true;await tick();};
+ const originalDraw=Drawing.plan;Drawing.plan=(...args)=>window.beam337Plot=originalDraw(...args);
+ try{
+ await load(window.replan331Fixture);const before=snap();check('Default off',!$('#beam-diagonal337').checked);check('Switch styled without duplicate checkbox',getComputedStyle($('#beam-diagonal337')).opacity==='0');await click('#beam-diagonal337');check('Switch on', $('#beam-diagonal337').checked);$('#beamkind').value='TB';$('#beamkind').dispatchEvent(new Event('change',{bubbles:true}));await tick();check('Mode survives beam-kind change',$('#beam-diagonal337').checked);await click('#beam-diagonal337');check('Switch does not edit current project',snap()===before);await window.replan331Checkpoint('manual-beam-switch');
+ const p={format:'framing-app',version:1,name:'Manual drawing regression',total:1,axes:{x:[{id:'1',gap:0},{id:'2',gap:6}],y:[{id:'A',gap:0},{id:'B',gap:4}]},defaults:{cb:250,cd:250,gap:3000,direction:'自动',mb:250,sb:250,tb:600,tbd:1200,slab:200,wall:300},groups:[{end:'顶层',h:3.5,type:'F1',sh:1500,min:0,headroom:1.5,em:.5}],types:{F1:{mode:'manual',cbColumnWidth171:true,autoBeams101:false,building:{'0,0':true},opening:{},columns:[{id:'A',x:2,y:1.5,b:250,d:250,on:true,status:'上下贯通'},{id:'D',x:4,y:3,b:250,d:250,on:true,status:'上下贯通'}],walls:[],beams:[],suppressed:[],beamDepth:350}}};LoadData.setFloor(p,1,{dl:10,sdl:0,ll:2});
+ await load(p);$('#beamkind').value='MB';$('#beamkind').dispatchEvent(new Event('change',{bubbles:true}));await tick();await click('#drawtool');await tick();
+ await window.beam337Click([2,1.5]);await window.beam337Click([4,3]);await tick();check('Off rejects diagonal pointer endpoint',StudioHost.get().p.types.F1.beams.length===0);
+ await window.beam337Click([2.08,4]);await tick();let b=StudioHost.get().p.types.F1.beams[0];check('Slightly offset pointer creates vertical beam',!!b&&b.a.x===b.z.x&&b.z.y===4);
+ await click('#beam-diagonal337');await window.beam337Click([2,1.5]);await window.beam337Click([4,3]);await tick();b=StudioHost.get().p.types.F1.beams[1];check('On creates exact diagonal through canvas',!!b&&b.a.x!==b.z.x&&b.a.y!==b.z.y);
+ const withDiagonal=snap();await click('#beam-diagonal337');check('Switch off preserves existing diagonal',snap()===withDiagonal);
+ // Toggling cancels an unfinished segment: next click starts afresh.
+ await window.beam337Click([4,3]);await click('#beam-diagonal337');await window.beam337Click([2,1.5]);await tick();check('Switch cancels unfinished draft',StudioHost.get().p.types.F1.beams.length===2);await click('[data-action=endline]');
+ await load(window.replan331Fixture);check('Original project restored in isolated test',snap()===before);o.uiOK=true;
+ }catch(e){o.error=e.stack||String(e);}finally{Drawing.plan=originalDraw;o.done=true;}
+})();

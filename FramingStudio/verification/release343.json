@@ -1,0 +1,158 @@
+{
+  "version": "E2.343",
+  "baseline": "f510ab2734af7a377818bab38965f8f06997a0d7",
+  "publish": "User hold: local only, no push or PR update",
+  "regressionSuites": [
+    {
+      "suite": "column-corners343",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-rows341",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-inherit340",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-planning336",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-schemes319",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-replan331",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-controls311",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-wall329",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-spacing325",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-direction335",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-tb-routes334",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-transfer330",
+      "exitCode": 0
+    },
+    {
+      "suite": "beam-direction337",
+      "exitCode": 0
+    },
+    {
+      "suite": "desktop-shortcuts332",
+      "exitCode": 0
+    }
+  ],
+  "browser": {
+    "errors": [],
+    "externalRequests": [],
+    "screenshots": [
+      "browser-replan-GF-common-rows.png"
+    ],
+    "done": true,
+    "uiOK": true,
+    "passed": [
+      "Private current model accepted in isolated profile",
+      "F01 preview preserves exact project",
+      "F01 has candidates",
+      "F01 details start closed",
+      "F01 preview/apply above details",
+      "F01 compact summary reports both support directions",
+      "G/F has three distinct common-axis alternatives, not forced four",
+      "Every G/F card exposes four unresolved upper positions",
+      "G/F scheme 1 preview leaves project intact",
+      "G/F scheme 1 explains minimum-spacing conflict",
+      "G/F scheme 1 applies without confirmation",
+      "G/F scheme 1 applied centres equal preview",
+      "G/F scheme 1 keeps four physical corners",
+      "G/F scheme 1 JSON reopen retains exact centres",
+      "Applied G/F still reports upper discontinuities",
+      "G/F scheme 1 undo restores exact model",
+      "G/F scheme 2 preview leaves project intact",
+      "G/F scheme 2 explains minimum-spacing conflict",
+      "G/F scheme 2 applies without confirmation",
+      "G/F scheme 2 applied centres equal preview",
+      "G/F scheme 2 keeps four physical corners",
+      "G/F scheme 2 JSON reopen retains exact centres",
+      "Applied G/F still reports upper discontinuities",
+      "G/F scheme 2 undo restores exact model",
+      "G/F scheme 3 preview leaves project intact",
+      "G/F scheme 3 explains minimum-spacing conflict",
+      "G/F scheme 3 applies without confirmation",
+      "G/F scheme 3 applied centres equal preview",
+      "G/F scheme 3 keeps four physical corners",
+      "G/F scheme 3 JSON reopen retains exact centres",
+      "Applied G/F still reports upper discontinuities",
+      "G/F scheme 3 undo restores exact model",
+      "F03 preview preserves exact project",
+      "F03 has candidates",
+      "F03 details start closed",
+      "F03 preview/apply above details",
+      "F03 compact summary reports both support directions",
+      "F03 current protected arrangement is retained",
+      "F03 reference-only preview preserves project",
+      "F04 preview preserves exact project",
+      "F04 has candidates",
+      "F04 details start closed",
+      "F04 preview/apply above details",
+      "F04 compact summary reports both support directions",
+      "F04 current protected arrangement is retained",
+      "F04 reference-only preview preserves project",
+      "F08 preview preserves exact project",
+      "F08 has candidates",
+      "F08 details start closed",
+      "F08 preview/apply above details",
+      "F08 compact summary reports both support directions",
+      "F08 current protected arrangement is retained",
+      "F08 reference-only preview preserves project"
+    ],
+    "originalFileUnchanged": true,
+    "ok": true
+  },
+  "EXE": {
+    "compiledVersion": "2.343.0.0",
+    "x64PE": true,
+    "unchangedDependencies": [
+      "Microsoft.Web.WebView2.Core.dll",
+      "Microsoft.Web.WebView2.WinForms.dll",
+      "WebView2Loader.dll",
+      "FramingStudio.exe.config",
+      "desktop-bridge.js",
+      "Excel/ExcelBridge.exe"
+    ],
+    "launched": false,
+    "limitation": "Native runtime not tested per user instruction."
+  },
+  "preservation": {
+    "otherExistingSourceFilesIdentical": 432,
+    "engineAndReportSourcesUnchanged": true,
+    "HTMLOutsideAuthorizedUIAndVersionUnchanged": true,
+    "nativeHostOnlyVersionChanged": true,
+    "E2318SHA256": "3acbe8bd68aea46c008620d79b03ff63fe99c43c2a09c310a7d9389de4c54d00",
+    "modelBackupSHA256": "8d4a21d00195a3529b77cf9cbe59cc87df0dea9a7708e6606ea8bca6e7a7e057",
+    "originalTabNotReloaded": true
+  },
+  "preview": {
+    "url": "http://127.0.0.1:8783/",
+    "servedVersion": "E2.343",
+    "servedBytesMatch": true,
+    "cacheControl": "no-store"
+  }
+}

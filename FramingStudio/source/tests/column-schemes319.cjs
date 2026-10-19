@@ -112,10 +112,10 @@ if(require.main===module){
   passed.push('A newly proposed column removed by the '+removePath+' delete path stays deleted until explicit replan, whose candidates ignore the old record');
  }
  {
-  // Obtain distinct starting layouts at the base, where no lower route limits
-  // apply. A dense supported upper floor need not invent a second TB layout.
+  // A fully populated inherited grid need not invent a second layout merely
+  // to fill another card. Use its legal centres to verify both-side alignment.
   const p=fixture({levels:3,spacing:{x:4,y:4}}),neutral=requireSchemes(search(p,'F1',{targetX:7,targetY:7}));
-  assert(neutral.report.schemes.length>=2,'alignment fixture needs distinct layouts');const chosen=neutral.report.schemes.at(-1);
+  const chosen=neutral.report.schemes.at(-1);
   for(const k of ['F1','F3']){p.types[k].mode='manual';p.types[k].columns=chosen.columns.map((q,i)=>({id:k+'C'+i,x:q.x,y:q.y,b:q.b*1000,d:q.d*1000,on:true,status:'上下贯通'}));}
   const ranked=requireSchemes(search(p,'F2',{targetX:7,targetY:7}));
   assert(ranked.report.schemes.some(q=>q.metrics.unalignedAbove===0&&q.metrics.unalignedBelow===0),'aligned candidate was not considered');

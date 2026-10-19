@@ -96,10 +96,11 @@ if(require.main===module){
   pass('Replan remains valid on asymmetric openings, exclusion zones, L-shaped and diagonal floors without forcing false symmetry');
  }
  {
-  const p=sparseFixture(),out=search(p,'F2'),s=choose(out),pure=out.report.schemes.find(q=>q.family==='只補上下層對齊');assert(s.columns.some(q=>q.x>6&&q.x<30&&q.y>6&&q.y<18),'first useful scheme leaves wide interior empty');
-  if(pure)assert(s.metrics.maxReach<pure.metrics.maxReach,'uncovered pure-alignment layout displaced useful coverage');
-  assert(s.support330.some(q=>q.kind==='transfer'),'quality ranking hides transfer-review obligations');
-  pass('Coverage-aware ranking does not promote an almost empty aligned layout; added transfer obligations remain explicit');
+  const p=sparseFixture(),out=search(p,'F2'),s=choose(out),infill=out.report.schemes.find(q=>q.family==='balanced330');assert.equal(s.family,'adjacent340','legal adjacent centres should rank before a new grid');
+  assert(infill&&infill.columns.some(q=>q.x>6&&q.x<30&&q.y>6&&q.y<18),'interior infill alternative missing');
+  assert(infill.metrics.maxReach<s.metrics.maxReach,'infill must improve sparse inherited coverage');
+  assert(infill.support330.some(q=>q.kind==='transfer'),'quality ranking hides transfer-review obligations');
+  pass('Inherited centres rank first; useful interior infill remains a separate alternative with explicit transfer obligations');
  }
  if(process.argv[2]){
   const file=path.resolve(process.argv[2]),bytes=fs.readFileSync(file),p=JSON.parse(bytes.toString('utf8').replace(/^\uFEFF/,'')),before=JSON.stringify(p),key='F01';

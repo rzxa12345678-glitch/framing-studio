@@ -52,7 +52,7 @@ if(require.main===module){
  const balanced=out=>{const s=out.report.schemes.find(s=>s.family==='balanced330');assert(s,'coverage/transfer family was lost: '+JSON.stringify(out.report.messages));return s;};
  const pass=s=>{passed.push(s);console.log('PASS '+s);};
  {
-  const p=sparseFixture(),out=search(p),s=balanced(out),aligned=out.report.schemes.find(q=>['只補上下層對齊','reuse336'].includes(q.family));
+  const p=sparseFixture(),out=search(p),s=balanced(out),aligned=out.report.schemes.find(q=>['只補上下層對齊','reuse336','adjacent340'].includes(q.family));
   assert(aligned,'pure alignment comparison missing');
   assert(s.columns.filter(q=>q.x>6&&q.x<30&&q.y>6&&q.y<18).length>=1,'large central region is still empty');
   assert(s.metrics.maxReach<aligned.metrics.maxReach-1,'interior infill does not materially improve coverage');
@@ -128,24 +128,23 @@ if(require.main===module){
   const original=clone(p),out=search(p),s=balanced(out),source=JSON.stringify(p),other=JSON.stringify([p.types.F1,p.types.F3,p.axes,p.defaults,p.groups,p.explorer]);
   assert(s.columns.some(q=>q.id==='KEEP'&&q.locked&&near(q.b,.7)&&near(q.d,.8)));
   assert(!s.columns.some(q=>near(q.x,18)&&near(q.y,12)),'disabled manual column repopulated');
-  assert(!s.columns.some(q=>near(q.x,12)&&near(q.y,6)),'suppressed grid repopulated');
   const trial=clone(p);apply(trial,'F2',s,out);
   assert.equal(JSON.stringify(p),source);assert.equal(JSON.stringify([trial.types.F1,trial.types.F3,trial.axes,trial.defaults,trial.groups,trial.explorer]),other);
-  assert.deepEqual(clone(trial.types.F2.suppressedColumns),t.suppressedColumns);
+  assert.deepEqual(clone(trial.types.F2.suppressedColumns),[],'E2.338 explicit apply clears obsolete grid deletion records');
   assert.deepEqual(clone(trial.types.F2.transferColumns||[]),t.transferColumns||[],'proposal inferred manual Transfer overrides');
   assert(trial.types.F2.columns.find(q=>q.id==='KEEP').transferColumn,'explicit manual Transfer mark lost');
   assert(!trial.types.F2.columns.some(q=>q.id!=='KEEP'&&(q.transferManual||q.transferColumn)),'proposal wrote a guessed manual transfer flag');
   const reopened=generate(clone(trial));assert.equal(signature(reopened.models.F2.columns.filter(q=>q.status!=='上层柱')),signature(s.columns));
   assert.equal(JSON.stringify(original),source,'undo snapshot changed');
-  pass('Manual geometry, disabled columns, grid deletions, other Framing and load/report inputs survive apply and save/reopen; no manual Transfer flags are guessed');
+  pass('Manual geometry, disabled columns, other Framing and load/report inputs survive apply/reopen; obsolete deletion records clear only on apply');
  }
  {
   const p=sparseFixture(),out=search(p),s=balanced(out),trial=clone(p);apply(trial,'F2',s,out);
   const result=generate(trial),target=result.models.F2.columns.find(q=>q.scheme319);assert(target);
   const removed=position(target);c.run('FloorColumns101.removeMany(argument.p,argument.r,"F2",2,[{kind:"COL",id:argument.id,f:2}])',{p:trial,r:result,id:target.id});
   assert(trial.types.F2.columnSchemeDeleted319?.length,'applied proposal deletion was not recorded');
-  const again=search(trial);for(const next of again.report.schemes)assert(!next.columns.some(q=>Math.abs(q.x-removed.x)<(q.b+removed.b)/2-1e-7&&Math.abs(q.y-removed.y)<(q.d+removed.d)/2-1e-7),'deleted proposal reappears');
-  pass('Deleting an applied scheme column reserves its actual footprint across subsequent proposals');
+  const again=search(trial);assert(again.report.schemes.some(next=>next.columns.some(q=>near(q.x,removed.x)&&near(q.y,removed.y))),'explicit new search should allow reusing the deleted position');
+  pass('E2.338 deletion remains in the model until an explicit new proposal is applied; subsequent proposals may reuse that centre');
  }
  {
   for(const shape of ['L','triangle','opening','disjoint','exclusion','wall']){

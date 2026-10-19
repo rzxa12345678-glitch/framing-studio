@@ -12,6 +12,9 @@ const InputContinuity326=(()=>{
   return e.tagName.toLowerCase()+attrs.map(a=>'['+CSS.escape(a.name)+'="'+CSS.escape(a.value)+'"]').join('');
  }
  const find=(root,k)=>{if(!k)return null;const a=root.querySelectorAll(k);return a.length===1?a[0]:null;};
+ // Scheme cards change count/order between searches. Restore only the same
+ // disclosure identity, never a previous card's open state at the same index.
+ const foldKey340=e=>{const owner=e.closest('[data-fold340]');return owner?owner.dataset.fold340+':'+[owner,...owner.querySelectorAll('details')].indexOf(e):null;};
  function snapshot(root){
   const active=root.contains(document.activeElement)?document.activeElement:null;
   const scroll=[];for(let e=root;e;e=e.parentElement)scroll.push([e,e.scrollLeft,e.scrollTop]);
@@ -19,7 +22,7 @@ const InputContinuity326=(()=>{
   const errors=[...root.querySelectorAll('[data-feedback172][aria-invalid=true]')].filter(e=>rejected.has(e)).map(e=>({source:e,key:key(e),value:e.value,id:e.dataset.feedback172,desc:e.getAttribute('aria-describedby'),note:document.getElementById(e.dataset.feedback172)?.cloneNode(true)}));
   const bounds=root.getBoundingClientRect(),r=active?.getBoundingClientRect();
   return {active,key:key(active),value:active?.value,draft:drafts.has(active),start:active?.selectionStart,end:active?.selectionEnd,direction:active?.selectionDirection,
-   anchor:r&&r.top>=bounds.top&&r.bottom<=bounds.bottom?r.top:null,scroll,errors,folds:[...root.querySelectorAll('details')].map(e=>e.open)};
+   anchor:r&&r.top>=bounds.top&&r.bottom<=bounds.bottom?r.top:null,scroll,errors,folds:[...root.querySelectorAll('details')].map(e=>e.open),folds340:new Map([...root.querySelectorAll('details')].filter(e=>foldKey340(e)).map(e=>[foldKey340(e),e.open]))};
  }
  // Keep the active control and its ancestor chain connected. Number inputs do
  // not expose selectionStart/End, so detach/refocus cannot preserve selection.
@@ -59,7 +62,7 @@ const InputContinuity326=(()=>{
  }
  function paint(root,context,render,preserveErrors=false){
   const same=contexts.get(root)===context,s=same?snapshot(root):null;contexts.set(root,context);renderConnected328(root,s,render);if(!s)return;
-  [...root.querySelectorAll('details')].forEach((e,i)=>{if(i<s.folds.length)e.open=s.folds[i];});
+  [...root.querySelectorAll('details')].forEach((e,i)=>{const k=foldKey340(e);if(k){if(s.folds340.has(k))e.open=s.folds340.get(k);}else if(i<s.folds.length)e.open=s.folds[i];});
   for(const err of preserveErrors?s.errors:[]){rejected.delete(err.source);const e=find(root,err.key);if(!e||!err.note||e.hasAttribute('aria-invalid'))continue;e.value=err.value;e.dataset.feedback172=err.id;e.setAttribute('aria-invalid','true');e.setAttribute('aria-describedby',err.desc||err.id);e.after(err.note);}
   const e=find(root,s.key);
   // An explicit modal or a deliberately focused different control wins.

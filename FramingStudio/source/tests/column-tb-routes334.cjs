@@ -8,7 +8,8 @@ const network=(p,r,key='F2')=>run('ColumnSchemes319.tbRoutes334(argument.p,argum
 const search=(p,r,key)=>run('ColumnSchemes319.search(argument.p,argument.r,argument.key)',{p,r,key});
 const near=(a,b)=>Math.abs(a-b)<1e-6;
 function checkScheme(p,r,key,s){
- if(s.planning336){assert.equal(s.routes334.length,0,'local planning must not invent a TB route');assert(s.label.includes('下層待配合'));assert.equal(s.unresolved334,s.support330.filter(q=>['transfer','missing','ambiguous'].includes(q.kind)&&!q.tb334).length);return;}
+ if(s.planning336){assert.equal(s.routes334.length,0,'local planning must not invent a TB route');assert.equal(s.unresolved334,s.support330.filter(q=>['transfer','missing','ambiguous'].includes(q.kind)&&!q.tb334).length);return;}
+ if(s.adjacent340){assert.equal(s.unresolved334,s.support330.filter(q=>['transfer','missing','ambiguous'].includes(q.kind)&&!q.tb334).length);for(const row of s.support330.filter(q=>q.tb334))assert(s.routes334.some(q=>q.id===row.tb334&&q.at===row.at));return;}
 
  for(const row of s.support330){if(['base','shared'].includes(row.kind))continue;const col=s.columns.find(q=>near(q.x,row.x)&&near(q.y,row.y));if(col.locked)continue;
   assert(!['missing','ambiguous'].includes(row.kind),'new unsupported or ambiguous point');
@@ -30,12 +31,12 @@ function checkScheme(p,r,key,s){
 {
  const p=sparseFixture(),r=gen(p),before=JSON.stringify(p),report=search(p,r,'F2'),s=report.schemes.find(q=>q.family==='balanced330');assert(s&&s.routes334.length);for(const s of report.schemes)checkScheme(p,r,'F2',s);assert.equal(JSON.stringify(p),before);passed.push('All newly proposed upper transfer columns have a finite lower-floor route, including the balanced interior candidate');
  const base=search(p,r,'F1');assert(base.schemes.every(q=>!q.routes334.length));passed.push('Model base floor has no invented lower supports or TB routes');
- const noLower=clone(p);noLower.types.F1.columns=[];noLower.types.F1.walls=[];noLower.types.F1.beams=[];const empty=search(noLower,gen(noLower),'F2');assert(empty.schemes.some(q=>q.planning336&&q.columns.length&&!q.routes334.length&&q.unresolved334>0));assert(empty.schemes.filter(q=>!q.planning336).every(q=>q.columns.every(c=>c.locked)));passed.push('Without lower supports only explicit local planning may contain unresolved new columns; no fictitious TB routes');
+ const noLower=clone(p);noLower.types.F1.columns=[];noLower.types.F1.walls=[];noLower.types.F1.beams=[];const empty=search(noLower,gen(noLower),'F2');assert(empty.schemes.some(q=>q.planning336&&q.columns.length&&!q.routes334.length&&q.unresolved334>0));assert(empty.schemes.filter(q=>!q.planning336&&!q.adjacent340).every(q=>q.columns.every(c=>c.locked)));passed.push('Without lower supports inherited centres and explicit local planning retain unresolved support; no fictitious TB routes');
 }
 {
  const p=wideFixture({levels:4,spacing:{}});p.groups[3].type='F2';p.types.F1.columns=[{id:'A',x:6,y:6,b:500,d:500,on:true},{id:'B',x:30,y:6,b:500,d:500,on:true}];p.types.F3.columns=[{id:'C',x:6,y:18,b:500,d:500,on:true},{id:'D',x:30,y:18,b:500,d:500,on:true}];
  for(const key of ['F1','F3'])for(const col of p.types[key].columns)col.status='上下贯通';
- const r=gen(p),report=search(p,r,'F2');assert.deepEqual(clone(report.affectedFloors),[2,4]);assert(report.schemes.filter(s=>!s.planning336).every(s=>s.columns.every(q=>q.locked)),'a shared Framing cannot use a route supported at only one occurrence');passed.push('Nonconsecutive shared Framing checks every actual lower floor, not only the first occurrence');
+ const r=gen(p),report=search(p,r,'F2');assert.deepEqual(clone(report.affectedFloors),[2,4]);assert(report.schemes.filter(s=>!s.planning336&&!s.adjacent340).every(s=>s.columns.every(q=>q.locked)),'a shared Framing cannot use a route supported at only one occurrence');const inherited=report.schemes.find(s=>s.adjacent340);assert(inherited&&inherited.unresolved334>0);assert.equal(inherited.support330.length,inherited.columns.length*2);passed.push('Nonconsecutive shared Framing checks every actual lower floor and explicitly reports unresolved inherited support at the other occurrence');
 }
 if(process.argv[2]){
  const bytes=fs.readFileSync(process.argv[2]),p=JSON.parse(bytes.toString('utf8').replace(/^\uFEFF/,'')),before=JSON.stringify(p),r=gen(p),metrics=[];

@@ -1,0 +1,125 @@
+{
+  "version": "E2.340",
+  "baseline": "0213b89bb22771d99ee8f6c68555767230c09cbe",
+  "publish": "User hold: local only, no push or PR update",
+  "regressionSuites": [
+    {
+      "suite": "column-inherit340",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-planning336",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-schemes319",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-replan331",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-controls311",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-wall329",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-spacing325",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-direction335",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-tb-routes334",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-transfer330",
+      "exitCode": 0
+    },
+    {
+      "suite": "beam-direction337",
+      "exitCode": 0
+    },
+    {
+      "suite": "desktop-shortcuts332",
+      "exitCode": 0
+    }
+  ],
+  "browser": {
+    "errors": [],
+    "externalRequests": [],
+    "screenshots": [
+      "browser-replan-F04-compact-aligned.png"
+    ],
+    "done": true,
+    "uiOK": true,
+    "passed": [
+      "Private current model accepted",
+      "F04 preview preserves exact project",
+      "F04 has candidates",
+      "F04 all technical details initially closed",
+      "F04 preview/apply above details",
+      "F04 compact main summary",
+      "F04 first scheme retains 28 upper positions",
+      "Unresolved support remains visible outside details",
+      "Expanded details retain support information",
+      "F04 applies without confirmation",
+      "F04 applied column count matches preview",
+      "F04 undo restores exact model",
+      "F01 preview preserves exact project",
+      "F01 has candidates",
+      "F01 all technical details initially closed",
+      "F01 preview/apply above details",
+      "F01 compact main summary",
+      "F01 applies without confirmation",
+      "F01 applied column count matches preview",
+      "F01 undo restores exact model",
+      "F03 preview preserves exact project",
+      "F03 has candidates",
+      "F03 all technical details initially closed",
+      "F03 preview/apply above details",
+      "F03 compact main summary",
+      "F03 applies without confirmation",
+      "F03 applied column count matches preview",
+      "F03 undo restores exact model"
+    ],
+    "originalFileUnchanged": true,
+    "ok": true
+  },
+  "EXE": {
+    "compiledVersion": "2.340.0.0",
+    "x64PE": true,
+    "unchangedDependencies": [
+      "Microsoft.Web.WebView2.Core.dll",
+      "Microsoft.Web.WebView2.WinForms.dll",
+      "WebView2Loader.dll",
+      "FramingStudio.exe.config",
+      "desktop-bridge.js",
+      "Excel/ExcelBridge.exe"
+    ],
+    "launched": false,
+    "limitation": "Native runtime not tested per user instruction."
+  },
+  "preservation": {
+    "otherExistingSourceFilesIdentical": 424,
+    "engineAndReportSourcesUnchanged": true,
+    "HTMLOutsideAuthorizedUIAndVersionUnchanged": true,
+    "nativeHostOnlyVersionChanged": true,
+    "E2318SHA256": "3acbe8bd68aea46c008620d79b03ff63fe99c43c2a09c310a7d9389de4c54d00",
+    "modelBackupSHA256": "a0625b4550482680a80ffcfcdb0807f89663c0ea0ebdde13a8e6bf5c72e2367a",
+    "originalTabNotReloaded": true
+  },
+  "preview": {
+    "url": "http://127.0.0.1:8783/",
+    "servedVersion": "E2.340",
+    "servedBytesMatch": true,
+    "cacheControl": "no-store"
+  }
+}

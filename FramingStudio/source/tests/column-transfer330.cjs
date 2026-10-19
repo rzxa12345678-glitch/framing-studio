@@ -112,7 +112,7 @@ if(require.main===module){
   pass('Diagonal lower-wall landings use the finite physical strip, excluding bounding-box corners and end extensions');
  }
  {
-  const p=supportFixture();p.total=3;p.groups[1].end='顶层';const out=search(p),s=balanced(out);
+  const p=supportFixture();p.total=3;p.groups[1].end='顶层';const out=search(p),s=out.report.schemes.find(s=>s.family==='balanced330')||out.report.schemes.find(s=>s.unchanged);assert(s,'shared protected layout must remain available even when no extra supported position exists');
   assert.deepEqual(clone(out.report.affectedFloors),[2,3]);
   assert(s.support330.filter(q=>q.at===2).some(q=>q.kind==='transfer'),'first occurrence lost its real lower support gap');
   assert(s.support330.filter(q=>q.at===3).every(q=>q.kind==='shared'&&q.below===2),'shared next floor was classified against unrelated lower Framing');

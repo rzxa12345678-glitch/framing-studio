@@ -13,7 +13,7 @@ let browser,server;const result={errors:[],externalRequests:[],screenshots:[]};
  await page.exposeFunction('replan331Checkpoint',async tag=>{if(!/^[A-Za-z0-9_-]+$/.test(tag))throw Error('Invalid QA screenshot tag');const file='browser-replan-'+tag+'.png';await page.screenshot({path:path.join(out,file),fullPage:false});result.screenshots.push(file);});
  await page.goto(origin);await page.waitForFunction(()=>window.StudioHost);
  await page.evaluate(({fixture,keys})=>{window.replan331Fixture=fixture;window.replan331Keys=keys;},{fixture,keys});
- await page.addScriptTag({content:fs.readFileSync(path.join(__dirname,'column-replan331-ui.js'),'utf8')});
+ await page.addScriptTag({content:fs.readFileSync(path.join(__dirname,process.env.FRAMING_UI_TEST||'column-replan331-ui.js'),'utf8')});
  await page.waitForFunction(()=>window.confirmSmoke316?.done,{},{timeout:240000});
  Object.assign(result,await page.evaluate(()=>window.confirmSmoke316));
  result.originalFileUnchanged=bytes.equals(fs.readFileSync(input));result.ok=result.uiOK&&result.originalFileUnchanged&&result.errors.length===0&&result.externalRequests.length===0;

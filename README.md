@@ -1,5 +1,7 @@
 # Framing Studio
 
+E2.334 · **按下層支承線排轉換柱**：先從每層實際柱／牆建立 X／Y 向兩端支承的 TB 候選線，再沿線補柱；預覽顯示虛線、支承名稱／坐標與中心線跨度。保留手動柱，未找到路線明示待核對。套用不自動建立 TB，不改計算及 A/B 格式。詳見 [E2.334 驗證](FramingStudio/verification/release334.json)。
+
 E2.333 · **重新試排直接套用**：解除刪柱記錄的數量顯示在套用按鈕旁，按一次即套用，取消額外確認視窗。完成後提供「撤銷套用」，還原柱位及刪柱記錄；其他修改後隱藏此捷徑，保留全域撤銷。原計算及 A/B 格式不變。詳見 [E2.333 驗證](FramingStudio/verification/release333.json)。
 
 E2.332 · **EXE Ctrl+O 開檔修正**：焦點在 WebView2 畫面或輸入格時，Ctrl+O 會轉交現有 Windows 開檔流程；重複按鍵及頁面內確認期間不會疊開視窗。保留未儲存替換確認、取消、模型資料及原計算／A/B 格式。詳見 [E2.332 驗證](FramingStudio/verification/release332.json)。

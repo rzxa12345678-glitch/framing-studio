@@ -1,0 +1,107 @@
+{
+  "version": "E2.344",
+  "baseline": "ae7345e942cb46a8978fe384283451d4b06a08bf",
+  "publish": "User hold: local only, no push or PR update",
+  "regressionSuites": [
+    {
+      "suite": "column-schemes319",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-rows341",
+      "exitCode": 0
+    },
+    {
+      "suite": "beam-direction337",
+      "exitCode": 0
+    }
+  ],
+  "browser": {
+    "errors": [],
+    "externalRequests": [],
+    "screenshots": [
+      "browser-replan-06-TC-on-zones-off.png",
+      "browser-replan-06-final-controls.png"
+    ],
+    "done": true,
+    "uiOK": true,
+    "passed": [
+      "Current model copy loaded in isolated profile",
+      "floors Structural Zone default is true",
+      "floors actual zone overlay follows default",
+      "columns Structural Zone default is true",
+      "columns actual zone overlay follows default",
+      "columnMove Structural Zone default is false",
+      "columnMove actual zone overlay follows default",
+      "beamLayout Structural Zone default is false",
+      "beamLayout actual zone overlay follows default",
+      "axes Structural Zone default is false",
+      "axes actual zone overlay follows default",
+      "regions Structural Zone default is false",
+      "regions actual zone overlay follows default",
+      "walls Structural Zone default is false",
+      "walls actual zone overlay follows default",
+      "parameters Structural Zone default is false",
+      "parameters actual zone overlay follows default",
+      "beams Structural Zone default is false",
+      "beams actual zone overlay follows default",
+      "checks Structural Zone default is false",
+      "checks actual zone overlay follows default",
+      "TC default off: checkbox and actual labels hidden",
+      "Current model has real TC landings to verify",
+      "TC on forwards unchanged landing records",
+      "TC on paints one label for every actual landing",
+      "TC switch changes neither project nor computed results",
+      "TC preference is stored separately from model",
+      "06 structural zone initially off",
+      "06 can explicitly enable Structural Zone",
+      "06 and TC controls work independently",
+      "TC off removes labels but keeps structural zone",
+      "Hidden TC landing calculation remains available",
+      "06 enable does not enable 07",
+      "06 explicit preference survives navigation",
+      "02 starts on with both synchronized controls",
+      "02 original toggle updates legend and overlay",
+      "02 off does not switch 05 off",
+      "02 remembers its own off preference",
+      "02 legend updates original toggle",
+      "Only explicitly chosen pages have stored structural preferences",
+      "3D disables both plan overlay switches",
+      "Plan restores selected overlays",
+      "Loading hides unrelated legend overlays",
+      "Returning restores independent TC and Structural choices",
+      "All display operations preserve the initialized project"
+    ],
+    "originalFileUnchanged": true,
+    "ok": true
+  },
+  "EXE": {
+    "compiledVersion": "2.344.0.0",
+    "x64PE": true,
+    "unchangedDependencies": [
+      "Microsoft.Web.WebView2.Core.dll",
+      "Microsoft.Web.WebView2.WinForms.dll",
+      "WebView2Loader.dll",
+      "FramingStudio.exe.config",
+      "desktop-bridge.js",
+      "Excel/ExcelBridge.exe"
+    ],
+    "launched": false,
+    "limitation": "Native runtime not tested per user instruction."
+  },
+  "preservation": {
+    "otherExistingSourceFilesIdentical": 434,
+    "engineAndReportSourcesUnchanged": true,
+    "HTMLOutsideAuthorizedUIAndVersionUnchanged": true,
+    "nativeHostOnlyVersionChanged": true,
+    "E2318SHA256": "3acbe8bd68aea46c008620d79b03ff63fe99c43c2a09c310a7d9389de4c54d00",
+    "modelBackupSHA256": "0ea725193e63c17659e8b36efa22ea8e9dc504563c9f4480094bdfc2c2eb0783",
+    "originalTabNotReloaded": true
+  },
+  "preview": {
+    "url": "http://127.0.0.1:8783/",
+    "servedVersion": "E2.344",
+    "servedBytesMatch": true,
+    "cacheControl": "no-store"
+  }
+}

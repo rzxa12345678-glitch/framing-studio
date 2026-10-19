@@ -1,0 +1,841 @@
+{
+  "version": "E2.331",
+  "baseline": "53e9b567ea8d702eb74d452812090c83ded6b6aa",
+  "precedingPRCommit": "902ec0a7b8db0511dcd044aadb4a0550df773de3",
+  "web": {
+    "errors": [],
+    "externalRequests": [],
+    "screenshots": [
+      "browser-replan-F01-reset-preview.png",
+      "browser-replan-F01-reset-confirmation.png",
+      "browser-replan-F03-reset-preview.png",
+      "browser-replan-F03-reset-confirmation.png"
+    ],
+    "done": true,
+    "ok": true,
+    "uiOK": true,
+    "passed": [
+      "F01: normal Generate leaves current model and deletion records unchanged",
+      "F01: default report accurately counts current resettable deletion records",
+      "F01: deleted-record count is visible beside the default workflow",
+      "F01: reset control is enabled only when resettable deletion records exist",
+      "F01: reset/replan only previews and does not clear live records",
+      "F01: normal Generate after reset preview returns to deletion-preserving default mode",
+      "F01: displayed candidate order follows coverage/coherence ranking",
+      "F01: reset preview provides an applicable scheme",
+      "F01: candidate card identifies the actual affected floor labels",
+      "F01: absent neighboring columns show N/A rather than a successful zero-alignment count",
+      "F01: per-floor comparison labels match actual project floor names",
+      "F01: per-floor support rows cover each proposed column exactly once",
+      "F01: preview keeps the warning that unbuilt transfer support is not complete",
+      "F01: selecting a reset proposal keeps every source field unchanged",
+      "F01: before Cancel, reset dialog states concrete Framing, scheme and deletion count",
+      "F01: before Cancel, reset dialog has Confirm-left / Cancel-right and explicit choices",
+      "F01: explicit Cancel leaves all fields, geometry and deletion records unchanged",
+      "F01: before Confirm, reset dialog states concrete Framing, scheme and deletion count",
+      "F01: before Confirm, reset dialog has Confirm-left / Cancel-right and explicit choices",
+      "F01: confirmed reset clears only resettable records in the selected Framing",
+      "F01: confirmed reset preserves disabled manual records",
+      "F01: confirmed Apply exactly matches the displayed physical columns",
+      "F01: one Undo restores geometry and all deletion records exactly",
+      "F01: Undo invalidates the applied status message",
+      "F01: applied model reopens with exact geometry and cleared deletion records",
+      "F01: reopened model preserves other Framing and input settings",
+      "F01: reopen test Undo restores the pre-reset snapshot",
+      "F03: normal Generate leaves current model and deletion records unchanged",
+      "F03: default report accurately counts current resettable deletion records",
+      "F03: deleted-record count is visible beside the default workflow",
+      "F03: reset control is enabled only when resettable deletion records exist",
+      "F03: no-deletion Framing still offers usable normal proposals",
+      "F03: disabled manual record is distinguished from resettable deletions",
+      "F03: reset/replan only previews and does not clear live records",
+      "F03: normal Generate after reset preview returns to deletion-preserving default mode",
+      "F03: displayed candidate order follows coverage/coherence ranking",
+      "F03: reset preview provides an applicable scheme",
+      "F03: candidate card identifies the actual affected floor labels",
+      "F03: absent neighboring columns show N/A rather than a successful zero-alignment count",
+      "F03: per-floor comparison labels match actual project floor names",
+      "F03: per-floor support rows cover each proposed column exactly once",
+      "F03: preview keeps the warning that unbuilt transfer support is not complete",
+      "F03: selecting a reset proposal keeps every source field unchanged",
+      "F03: before Cancel, reset dialog states concrete Framing, scheme and deletion count",
+      "F03: before Cancel, reset dialog has Confirm-left / Cancel-right and explicit choices",
+      "F03: explicit Cancel leaves all fields, geometry and deletion records unchanged",
+      "F03: before Confirm, reset dialog states concrete Framing, scheme and deletion count",
+      "F03: before Confirm, reset dialog has Confirm-left / Cancel-right and explicit choices",
+      "F03: confirmed reset clears only resettable records in the selected Framing",
+      "F03: confirmed reset preserves disabled manual records",
+      "F03: confirmed Apply exactly matches the displayed physical columns",
+      "F03: one Undo restores geometry and all deletion records exactly",
+      "F03: Undo invalidates the applied status message",
+      "F03: applied model reopens with exact geometry and cleared deletion records",
+      "F03: reopened model preserves other Framing and input settings",
+      "F03: reopen test Undo restores the pre-reset snapshot",
+      "Final isolated preview restores the supplied current model exactly",
+      "Injected private fixture was never mutated"
+    ],
+    "metrics": {
+      "cases": [
+        {
+          "key": "F01",
+          "floor": 1,
+          "floorLabel": "G/F",
+          "originalDefaultDeletionCount": 38,
+          "isolatedDeletionSeeded": false,
+          "resettableCount": 38,
+          "disabledManualPreserved": 0,
+          "schemes": [
+            {
+              "id": 1,
+              "family": "balanced330",
+              "columns": 38
+            },
+            {
+              "id": 2,
+              "family": "較疏柱網",
+              "columns": 28
+            },
+            {
+              "id": 3,
+              "family": "沿用建築軸網",
+              "columns": 4
+            }
+          ],
+          "appliedColumns": 38,
+          "undoExact": true,
+          "reopenExact": true
+        },
+        {
+          "key": "F03",
+          "floor": 3,
+          "floorLabel": "2/F",
+          "originalDefaultDeletionCount": 0,
+          "isolatedDeletionSeeded": true,
+          "resettableCount": 3,
+          "disabledManualPreserved": 1,
+          "schemes": [
+            {
+              "id": 1,
+              "family": "balanced330",
+              "columns": 50
+            },
+            {
+              "id": 2,
+              "family": "均勻柱網",
+              "columns": 74
+            },
+            {
+              "id": 3,
+              "family": "沿用建築軸網",
+              "columns": 16
+            }
+          ],
+          "appliedColumns": 50,
+          "undoExact": true,
+          "reopenExact": true
+        }
+      ],
+      "originalModelRestored": true,
+      "screenshotScope": "isolated preview only; original user tab untouched"
+    },
+    "originalFileUnchanged": true
+  },
+  "packagedEXE": {
+    "done": true,
+    "metrics": {
+      "cases": [
+        {
+          "appliedColumns": 38,
+          "disabledManualPreserved": 0,
+          "floor": 1,
+          "floorLabel": "G/F",
+          "isolatedDeletionSeeded": false,
+          "key": "F01",
+          "originalDefaultDeletionCount": 38,
+          "reopenExact": true,
+          "resettableCount": 38,
+          "schemes": [
+            {
+              "columns": 38,
+              "family": "balanced330",
+              "id": 1
+            },
+            {
+              "columns": 28,
+              "family": "較疏柱網",
+              "id": 2
+            },
+            {
+              "columns": 4,
+              "family": "沿用建築軸網",
+              "id": 3
+            }
+          ],
+          "undoExact": true
+        },
+        {
+          "appliedColumns": 50,
+          "disabledManualPreserved": 1,
+          "floor": 3,
+          "floorLabel": "2/F",
+          "isolatedDeletionSeeded": true,
+          "key": "F03",
+          "originalDefaultDeletionCount": 0,
+          "reopenExact": true,
+          "resettableCount": 3,
+          "schemes": [
+            {
+              "columns": 50,
+              "family": "balanced330",
+              "id": 1
+            },
+            {
+              "columns": 74,
+              "family": "均勻柱網",
+              "id": 2
+            },
+            {
+              "columns": 16,
+              "family": "沿用建築軸網",
+              "id": 3
+            }
+          ],
+          "undoExact": true
+        }
+      ],
+      "originalModelRestored": true,
+      "screenshotScope": "isolated preview only; original user tab untouched"
+    },
+    "ok": false,
+    "passed": [
+      "F01: normal Generate leaves current model and deletion records unchanged",
+      "F01: default report accurately counts current resettable deletion records",
+      "F01: deleted-record count is visible beside the default workflow",
+      "F01: reset control is enabled only when resettable deletion records exist",
+      "F01: reset/replan only previews and does not clear live records",
+      "F01: normal Generate after reset preview returns to deletion-preserving default mode",
+      "F01: displayed candidate order follows coverage/coherence ranking",
+      "F01: reset preview provides an applicable scheme",
+      "F01: candidate card identifies the actual affected floor labels",
+      "F01: absent neighboring columns show N/A rather than a successful zero-alignment count",
+      "F01: per-floor comparison labels match actual project floor names",
+      "F01: per-floor support rows cover each proposed column exactly once",
+      "F01: preview keeps the warning that unbuilt transfer support is not complete",
+      "F01: selecting a reset proposal keeps every source field unchanged",
+      "F01: before Cancel, reset dialog states concrete Framing, scheme and deletion count",
+      "F01: before Cancel, reset dialog has Confirm-left / Cancel-right and explicit choices",
+      "F01: explicit Cancel leaves all fields, geometry and deletion records unchanged",
+      "F01: before Confirm, reset dialog states concrete Framing, scheme and deletion count",
+      "F01: before Confirm, reset dialog has Confirm-left / Cancel-right and explicit choices",
+      "F01: confirmed reset clears only resettable records in the selected Framing",
+      "F01: confirmed reset preserves disabled manual records",
+      "F01: confirmed Apply exactly matches the displayed physical columns",
+      "F01: one Undo restores geometry and all deletion records exactly",
+      "F01: Undo invalidates the applied status message",
+      "F01: applied model reopens with exact geometry and cleared deletion records",
+      "F01: reopened model preserves other Framing and input settings",
+      "F01: reopen test Undo restores the pre-reset snapshot",
+      "F03: normal Generate leaves current model and deletion records unchanged",
+      "F03: default report accurately counts current resettable deletion records",
+      "F03: deleted-record count is visible beside the default workflow",
+      "F03: reset control is enabled only when resettable deletion records exist",
+      "F03: no-deletion Framing still offers usable normal proposals",
+      "F03: disabled manual record is distinguished from resettable deletions",
+      "F03: reset/replan only previews and does not clear live records",
+      "F03: normal Generate after reset preview returns to deletion-preserving default mode",
+      "F03: displayed candidate order follows coverage/coherence ranking",
+      "F03: reset preview provides an applicable scheme",
+      "F03: candidate card identifies the actual affected floor labels",
+      "F03: absent neighboring columns show N/A rather than a successful zero-alignment count",
+      "F03: per-floor comparison labels match actual project floor names",
+      "F03: per-floor support rows cover each proposed column exactly once",
+      "F03: preview keeps the warning that unbuilt transfer support is not complete",
+      "F03: selecting a reset proposal keeps every source field unchanged",
+      "F03: before Cancel, reset dialog states concrete Framing, scheme and deletion count",
+      "F03: before Cancel, reset dialog has Confirm-left / Cancel-right and explicit choices",
+      "F03: explicit Cancel leaves all fields, geometry and deletion records unchanged",
+      "F03: before Confirm, reset dialog states concrete Framing, scheme and deletion count",
+      "F03: before Confirm, reset dialog has Confirm-left / Cancel-right and explicit choices",
+      "F03: confirmed reset clears only resettable records in the selected Framing",
+      "F03: confirmed reset preserves disabled manual records",
+      "F03: confirmed Apply exactly matches the displayed physical columns",
+      "F03: one Undo restores geometry and all deletion records exactly",
+      "F03: Undo invalidates the applied status message",
+      "F03: applied model reopens with exact geometry and cleared deletion records",
+      "F03: reopened model preserves other Framing and input settings",
+      "F03: reopen test Undo restores the pre-reset snapshot",
+      "Final isolated preview restores the supplied current model exactly",
+      "Injected private fixture was never mutated"
+    ],
+    "uiOK": true
+  },
+  "nativeLifecycle": {
+    "version": "E2.331",
+    "status": "passed_with_known_issue",
+    "exeSha256": "0C1B27413853DA22F749DC4A09E0E19A423F4C1CB8C405D79133FC463DBD251D",
+    "htmlSha256": "F7D74ECEF8DF964E6E346C200051B055C5346AFC3FD0A371C7FD2D39578C1A84",
+    "testedAtLocalDate": "2026-10-19",
+    "method": "Visible isolated Windows EXE operated through computer-use @oai/sky. Each confirmation was inspected and answered explicitly. No automatic dialog acceptor was used.",
+    "webView2": "155.0.4283.62",
+    "scopes": [
+      {
+        "build": "pre-final E2.331 candidate",
+        "exeSha256": "7ACE6BC553589E78E116B589E4B0D17B316D84D370C46AF4F0F0A015DAB19C3F",
+        "passedFlows": [
+          "Fresh isolated startup and native Project > Open imported the QA-named model copy.",
+          "Reset preview retained 0 live columns and 38 deletion records and displayed N/A for empty adjacent column models.",
+          "Inspected reset dialog named F01, scheme 1, 38 columns and 38 deletion records; explicit Cancel preserved the model.",
+          "Explicit reset Confirm produced 38 columns and cleared only the current resettable records.",
+          "Ctrl+S opened the OS Save picker; explicit Cancel showed cancellation feedback and created no file.",
+          "Close after Save cancellation displayed an in-page dirty prompt; Return continued editing.",
+          "Saving wrote the QA target successfully.",
+          "Ctrl+Z restored 0 columns and 38 deletion records.",
+          "Explicit overwrite Cancel preserved the original saved file SHA256.",
+          "Explicit overwrite Confirm saved the Undo-restored model exactly equal to the QA input.",
+          "Successful save permitted clean Close."
+        ],
+        "issuesFoundAndFixedBeforeFinal": [
+          "Native host overwrite prompt used Cancel-left / Confirm-right; final candidate reverses the two buttons.",
+          "Undo retained the old applied-status text; final candidate invalidates the status against the model stamp."
+        ]
+      },
+      {
+        "build": "final E2.331 candidate matching top-level hashes",
+        "passedFlows": [
+          "Reopened the same isolated profile; inspected and explicitly confirmed the in-page backup-recovery prompt.",
+          "Recovery restored QA331 native lifecycle with 0 columns and the original 38 deletion records.",
+          "Reset Apply followed by Ctrl+Z restored 0 columns and 38 records; status now reads 模型已變更，請重新產生柱位方案。",
+          "Native overwrite is an in-page studio-confirm316 dialog with Confirm left and Cancel right.",
+          "Explicit overwrite Cancel preserved the prior target hash.",
+          "Explicit overwrite Confirm saved the recovered/Undo-restored model byte-identically to the QA input.",
+          "Final clean Close exited the QA process; no test process remains.",
+          "Retained native backup parses identically to the final saved QA file."
+        ]
+      }
+    ],
+    "finalAutomatedUi": {
+      "browser": "output/E2.331-verification/browser-replan-result.json",
+      "browserPassedChecks": 58,
+      "externalRequests": 0,
+      "packagedWebView2": "output/E2.331-verification/exe-ui-final/result.json",
+      "packagedPassedChecks": 58,
+      "uiOK": true,
+      "note": "The injected harness deliberately keeps ok=false to skip the legacy host automatic-confirmation sweep; its explicit uiOK result is true."
+    },
+    "knownIssues": [
+      {
+        "id": "native-ctrl-o-observed",
+        "observedBuild": "pre-final candidate",
+        "observed": "Ctrl+O with the WebView page active did not open a file picker. Native Project > Open worked. Ctrl+S and Ctrl+Z worked.",
+        "workaround": "Use native Project > Open project.",
+        "scope": "Previously observed in E2.330, not fixed in this change. Not re-exercised after the final button-order-only host revision. Root cause, including any automation-specific keyboard routing, is unproved."
+      }
+    ],
+    "modelChecks": {
+      "originalFixtureSha256": "0E37325685F5B6F339ECB66580B75DB7C2B36C24499342FA448EF269CD53174B",
+      "originalFixtureHandling": "Read-only; a separate QA-named input file was used.",
+      "firstSavedAppliedSchemeSha256": "214046C40D3F3F1F55E6709F1019F3CD8FC1D8F3155F1B34FCCB65DB7EDD26EC",
+      "afterPreFinalCancelledOverwriteSha256": "214046C40D3F3F1F55E6709F1019F3CD8FC1D8F3155F1B34FCCB65DB7EDD26EC",
+      "finalQaInputAndSavedSha256": "9605068E9CC88BF5A0AEF60FD2088292273DE4F6B113676DEBF3EE294DAD9DF2",
+      "afterFinalCancelledOverwriteSha256": "9605068E9CC88BF5A0AEF60FD2088292273DE4F6B113676DEBF3EE294DAD9DF2",
+      "nativeBackupSha256": "B5C0DC9FF29D65B1AE89624B546C2090720E4602371FA4453469B60F080BB929",
+      "savedByteEqualQaInput": true,
+      "backupParsedEqualSaved": true,
+      "onlyDeliberateDifferenceFromOriginalFixture": "QA project name"
+    },
+    "cleanup": {
+      "visibleQaProcessIds": [
+        45500,
+        25568
+      ],
+      "packagedUiProcessIds": [
+        31176,
+        40304
+      ],
+      "allQaProcessesClosed": true,
+      "qaProfilesAndBackupsRetained": true,
+      "userOriginalBrowserAndExeProfilesUntouched": true
+    },
+    "limitations": [
+      "Process closure was verified by process absence; exit codes were not captured.",
+      "Native lifecycle checks do not independently certify structural calculations or report formats; see separate calculation-parity and protected-file proofs."
+    ]
+  },
+  "regressions": [
+    {
+      "test": "column-replan331",
+      "exit": 0
+    },
+    {
+      "test": "column-transfer330",
+      "exit": 0
+    },
+    {
+      "test": "column-schemes319",
+      "exit": 0
+    },
+    {
+      "test": "column-wall329",
+      "exit": 0
+    },
+    {
+      "test": "column-spacing325",
+      "exit": 0
+    },
+    {
+      "test": "column-controls311",
+      "exit": 0
+    },
+    {
+      "test": "column-transform308",
+      "exit": 0
+    },
+    {
+      "test": "column-spacing258",
+      "exit": 0
+    },
+    {
+      "test": "column-tributary263",
+      "exit": 0
+    },
+    {
+      "test": "wall-follow322",
+      "exit": 0
+    },
+    {
+      "test": "wall-follow322-edge",
+      "exit": 0
+    },
+    {
+      "test": "diagonal318",
+      "exit": 0
+    },
+    {
+      "test": "secondary320",
+      "exit": 0
+    },
+    {
+      "test": "regions319",
+      "exit": 0
+    },
+    {
+      "test": "summary-sections205",
+      "exit": 0
+    },
+    {
+      "test": "summary-deflection211",
+      "exit": 0
+    },
+    {
+      "test": "report-cache277",
+      "exit": 0
+    },
+    {
+      "test": "report-adoption254",
+      "exit": 0
+    }
+  ],
+  "calculationParity": {
+    "ok": true,
+    "baseline": "E2.329",
+    "passed": [
+      {
+        "name": "current unmodified project",
+        "modelAndLoadingSHA256": "7bbb296a51a2afe43864598f4d175e2ade89b6523cdcfd1788d1d5872a3152bb"
+      },
+      {
+        "name": "beam/slab/column fixture",
+        "modelAndLoadingSHA256": "734308f431a8c1ce8f30ab248a9cf5a7b3fa0da4ac43593efc92e08e67c4fea4"
+      }
+    ]
+  },
+  "protected": {
+    "baseline": "53e9b567ea8d702eb74d452812090c83ded6b6aa",
+    "precedingPRCommit": "902ec0a7b8db0511dcd044aadb4a0550df773de3",
+    "files": [
+      {
+        "path": "FramingStudio/Excel/ExcelBridge.exe",
+        "sha256": "6b6cb8662338a9f4a5cefea4814fbec1ec5fb6c4b9b05df4e21660fe7a4dd36a"
+      },
+      {
+        "path": "FramingStudio/Excel/Foundation_Design_Checking_v8.xlsm",
+        "sha256": "5ac9bd9f306a48766dc8e3b74394a70f838dba1a1915a8ed9390d797ff50d947"
+      },
+      {
+        "path": "FramingStudio/Excel/ReportImages/horizontal-load-path.png",
+        "sha256": "08a71210e4050bc2c5375d7ca0d06995540754a4f2a4e472c32a11f484fd770f"
+      },
+      {
+        "path": "FramingStudio/Excel/ReportImages/vertical-load-path.png",
+        "sha256": "9c50b2115b6a1cfc21b759b8c05cea71193a0c8f7142bedf5a5e63df0c1afabd"
+      },
+      {
+        "path": "FramingStudio/Excel/Section A RC - Section B v106 Loading.xlsm",
+        "sha256": "3c8871a10b77766eecda627cf04aa741216e00caa35ca831f87953a760b199e9"
+      },
+      {
+        "path": "FramingStudio/Excel/Section A RC - Section B v107 Full Loads.xlsm",
+        "sha256": "fd8f180637f68ff8743e2f0d7ede2259993cce9ac973e707f5d16c83b19f8be0"
+      },
+      {
+        "path": "FramingStudio/Excel/Section A RC - Section B v108 Area Loads.xlsm",
+        "sha256": "f056f9b568b3442696444584048b9ba8c11558d2b5d23ef1dddc75554078eb42"
+      },
+      {
+        "path": "FramingStudio/Excel/Section A RC - Section B v109 Compact Copy.xlsm",
+        "sha256": "30f8e3fb744b21b03f9e2b0eb175c4494d9ce6e2d58263cd40bcf1e0aa4db9a5"
+      },
+      {
+        "path": "FramingStudio/Excel/Steel Beam design V095.xlsm",
+        "sha256": "eed7a449b1f32dc5eda3ea23723f09f3623f8f5272ab915360822d0a130a0971"
+      },
+      {
+        "path": "FramingStudio/Excel/deflection_core_wall_BD_layered.xlsm",
+        "sha256": "c784181bc032584c3454fcfd9f22965ef54089bd427a9483bd74345b416baba2"
+      },
+      {
+        "path": "FramingStudio/Excel/overall_checking_BD_copy_ruled.xlsm",
+        "sha256": "9c7008656287c9664df08f459f3728601d9dccd0ba7c10f4304dc121d30460d5"
+      },
+      {
+        "path": "FramingStudio/Excel/templates.json",
+        "sha256": "f2227072fb7a3ea4fb9e57a2ec0c7dbb64860ae4c567456287d602c0cd6236d8"
+      },
+      {
+        "path": "FramingStudio/source/ExcelBridge.cs",
+        "sha256": "f8e5f204bc19a945027062ab853e58133015553780039ab549f447b04893f517"
+      },
+      {
+        "path": "FramingStudio/source/app.js",
+        "sha256": "4d9f3c817fdd6fab74fe528314cac0b8729506f9dabd3c39afff2d44779cfc16"
+      },
+      {
+        "path": "FramingStudio/source/audit-runner132.js",
+        "sha256": "ca0acb1aa3e2ab1535f48798a0a6ec0fe1d84689ba5b2a71b91e98ce69d9f04c"
+      },
+      {
+        "path": "FramingStudio/source/beam-layout116.js",
+        "sha256": "82991f8b6d6058d23dcc9f0d7d8575cd63fab2639bce28b60b41c44dc1acd199"
+      },
+      {
+        "path": "FramingStudio/source/beam-load-ui.js",
+        "sha256": "278e31497e214dd416707464a137cefa8370a35eb2ff1c155e5dffe60458b515"
+      },
+      {
+        "path": "FramingStudio/source/beam-loads.js",
+        "sha256": "7ad4d2b87e8bea44ebf80b5dc948be98ffa601f28097ea4c76a70cc8104ca9ff"
+      },
+      {
+        "path": "FramingStudio/source/beam-rebar116.js",
+        "sha256": "435db12a8bde0ecdcf75a051f4cbb992cdf6fbc4659a652a244b2405bd083ec7"
+      },
+      {
+        "path": "FramingStudio/source/beam-sizing.js",
+        "sha256": "9ac3203cee50a3a1a7c80433b63f25343c6e04a9175bbfcac898db96d5d325cc"
+      },
+      {
+        "path": "FramingStudio/source/build-floor-names.py",
+        "sha256": "86d69584aca4332fa644a3bff99d574c2c6ff69ef4d1c279a49bf93e3f0cc60c"
+      },
+      {
+        "path": "FramingStudio/source/checks.js",
+        "sha256": "e4e393148116879ddcf426f9a2268fc2c0f800d977749d9d512f8f71a259c04d"
+      },
+      {
+        "path": "FramingStudio/source/column-alignment-ui.js",
+        "sha256": "c44e5a881e4879c0f02f60a012bb9d89a87cc6e956735d750c819eb70d596fcb"
+      },
+      {
+        "path": "FramingStudio/source/column-alignment.js",
+        "sha256": "fe829e08a0be54e995a8447ee0d75bb9f204a3bf7b7668a06ebcfe41204f389a"
+      },
+      {
+        "path": "FramingStudio/source/column-areas103.js",
+        "sha256": "bdce8bf485bda9928df9b13bd1d6c569e65b2e9d0c3034ff1b27c1cbb6769f40"
+      },
+      {
+        "path": "FramingStudio/source/column-loads101.js",
+        "sha256": "bf49027612f6d5b17455f0bd2d195653b70d7eb2ce77d9121c54e806be6fd194"
+      },
+      {
+        "path": "FramingStudio/source/column-panel123.js",
+        "sha256": "c7e867a4b88a3d8aabe4b3e9060441ed81af4283ebb6540052b34fc52a08ff05"
+      },
+      {
+        "path": "FramingStudio/source/deflection-ui.js",
+        "sha256": "6397ab9a4d6ad9b5ad68ecc52ab6003f17012ee51441239c188eb21eb437487c"
+      },
+      {
+        "path": "FramingStudio/source/deflection.js",
+        "sha256": "143f71fa1cc63523e716227e40de45f40e7b9e3d71965a4b7bc5bf8b76a19e7a"
+      },
+      {
+        "path": "FramingStudio/source/diagonal-loads315.js",
+        "sha256": "ba2f34c60b6edb8d55d216066931319995a1aa26d53b706044f752ab69f21a60"
+      },
+      {
+        "path": "FramingStudio/source/diagonal-transfer315.js",
+        "sha256": "6c0d1876828538bca6af2c9b1576ecbeb6c41c0ac6a039978e073a1041ed8c43"
+      },
+      {
+        "path": "FramingStudio/source/diagonal-ui315.js",
+        "sha256": "e54f03f4dbc5524fbdaa63b487dd715e3509b53edb0abc2e71110654ea2ab268"
+      },
+      {
+        "path": "FramingStudio/source/diagonal315.js",
+        "sha256": "61bc5af5add96d62234d3d66b1a47dc347e93f5a64a6d8a7320478a6838a1dc5"
+      },
+      {
+        "path": "FramingStudio/source/display-quality.js",
+        "sha256": "14d06f5f4284724f0b819c20812db0b833f14da5086c585fc45beb0c50afbf53"
+      },
+      {
+        "path": "FramingStudio/source/drawing.js",
+        "sha256": "f937d93d990d7995dd863fb5a1fa9a1a2d0e15f9e35a3c63d4c0795116e02d28"
+      },
+      {
+        "path": "FramingStudio/source/engine.js",
+        "sha256": "4c1a0f550c170b1623951e9964e383ae155cad1b3cc818a5396ef2419901ed58"
+      },
+      {
+        "path": "FramingStudio/source/excel-formulas.js",
+        "sha256": "54553ee5676fc17180b515a06b00592a3e0aba8389fb9ce35dcd40907a5ad3ba"
+      },
+      {
+        "path": "FramingStudio/source/excel-sync.js",
+        "sha256": "288e417b8fde769bff85a155c6fa56cd01757de0ca2e1bae188e6cdcaf46979a"
+      },
+      {
+        "path": "FramingStudio/source/explorer-ui.js",
+        "sha256": "39309d429b400720f1cc9832b6bda5029a03c7305399634f5e59f7ca0cb6c1f0"
+      },
+      {
+        "path": "FramingStudio/source/floor-levels.js",
+        "sha256": "71fbfe6778d29a249d4c2f58bce53cc2050631a2ac2d56b5626fee07e1b9a4c4"
+      },
+      {
+        "path": "FramingStudio/source/floor-tools101.js",
+        "sha256": "7472389e12787d42b865601101589b3ba85a074ca5d5efff86f3a22f93c9aa52"
+      },
+      {
+        "path": "FramingStudio/source/foundation.js",
+        "sha256": "1b6236fcce2175766397014d5df4dce2f9ef2387065463acfc8fc3301c571f03"
+      },
+      {
+        "path": "FramingStudio/source/framing-fold91.js",
+        "sha256": "837cb0fa71d463f71fc0313d3bf9adc3704643fa4bbdb279c0a3ff6c688c783b"
+      },
+      {
+        "path": "FramingStudio/source/framing-symbols98.js",
+        "sha256": "8ad4c6b62a1b6f623791009ffd81d4d60b5603e0c053f08a595c6ae0b82c9a61"
+      },
+      {
+        "path": "FramingStudio/source/geometry-issues-local.js",
+        "sha256": "f6d45e434b62ba350347d052c2d8457ded52bf650f30d61704e387e3c1f03e9f"
+      },
+      {
+        "path": "FramingStudio/source/horizontal-path133.js",
+        "sha256": "73ded3c9f92943e7d8873070b4edeee5b6d3da63fd22daca1a7d33df9a85a032"
+      },
+      {
+        "path": "FramingStudio/source/input-feedback172.js",
+        "sha256": "430a52506a41581f7259056533278e3999ea1516c3230794bc835a4d771b5532"
+      },
+      {
+        "path": "FramingStudio/source/load-data.js",
+        "sha256": "fe5eb0136034e9dd3ac5679f7d9bac735c95f7bde1266718940e2eb409f6f74a"
+      },
+      {
+        "path": "FramingStudio/source/load-path84.js",
+        "sha256": "5ba97f807c94209e8ca4d85dcbc72a737149efc0c1d58d08e2b74c3687046638"
+      },
+      {
+        "path": "FramingStudio/source/load-regions.js",
+        "sha256": "82c7219c66648102bc5cf39302ca9152f0ef5c92f9a2c8363e9985bc356baea1"
+      },
+      {
+        "path": "FramingStudio/source/loading.js",
+        "sha256": "c80713926fe1782ac6b0deb5d6044beeb3d6349969ebab2917886c1a124192f0"
+      },
+      {
+        "path": "FramingStudio/source/local-heights96.js",
+        "sha256": "575d3aea3ce465719345ef573f467f1f447256d235e1a0537313be420af5c964"
+      },
+      {
+        "path": "FramingStudio/source/measure189.js",
+        "sha256": "06d203a95632e5da3d11efbced6bc65534c540aefbe604768658d55a6551021f"
+      },
+      {
+        "path": "FramingStudio/source/mobile.js",
+        "sha256": "ff37fd15abf069ead68fad41b04985ff679f57505e36a5fa4fbbf26c633acdc9"
+      },
+      {
+        "path": "FramingStudio/source/optimize-report-calculation252.py",
+        "sha256": "bd9dc95004e6d1fa2ddfbbb8d1635c481e9ef65d0fd32c213e953a9a23b84885"
+      },
+      {
+        "path": "FramingStudio/source/overall-report.js",
+        "sha256": "d481ac8cf5803e628b04aa3708ce97ffb70c60371c0ae65a0bfb8ce735e359df"
+      },
+      {
+        "path": "FramingStudio/source/overall-runtime.js",
+        "sha256": "d0e6b607a2b1a6ce89dfb080d54573f30ac8669d190dc2616828b36f019ccf72"
+      },
+      {
+        "path": "FramingStudio/source/overall-source.js",
+        "sha256": "e0774866f90664112574268a5de7027d310e7e82f27d9b0d7924c256493ec837"
+      },
+      {
+        "path": "FramingStudio/source/preview-server251.py",
+        "sha256": "a1ad27f9265bdac7c44d0c2243111221289271c6d712fdc4c0690bcbef55378e"
+      },
+      {
+        "path": "FramingStudio/source/rc-plan.js",
+        "sha256": "851bd69794b5f820c1fb8159dbe52529c3dc67226d3237c4f4016d50767b8b92"
+      },
+      {
+        "path": "FramingStudio/source/repair-report-sheet251.py",
+        "sha256": "118ef2f38fafdceada49c724a828244cdb160be1159b16a77092eb712218ca46"
+      },
+      {
+        "path": "FramingStudio/source/report-compose.js",
+        "sha256": "4038b99c52f11a95dfcfb18efb653a85be0218169fe18b77073dcdde85e71758"
+      },
+      {
+        "path": "FramingStudio/source/report-content.js",
+        "sha256": "f423439d01fea2ce8a1f3f53961655995b74b4c868f259c46f04929aed17b2b4"
+      },
+      {
+        "path": "FramingStudio/source/report-extras.js",
+        "sha256": "bd3f3c980406fe9b2c6eafc889d39173f2db30d189a4746d7945aab53a19e83f"
+      },
+      {
+        "path": "FramingStudio/source/report-paper.js",
+        "sha256": "46eefbda2ddad503811f2fd07ce3a07cbf00847e995fec461ee380b5a71e9e90"
+      },
+      {
+        "path": "FramingStudio/source/reports.js",
+        "sha256": "77f1272fab54fcdab9027e1070abddf5fae3846d2f982a3ea208f1e7d37906a5"
+      },
+      {
+        "path": "FramingStudio/source/review-layout191.js",
+        "sha256": "4cc0b62200528c933867aea113c27f3a044c38329275d6bab58277b2531ab667"
+      },
+      {
+        "path": "FramingStudio/source/right-inputs.js",
+        "sha256": "aab4e5992ba0aa050221667707c7eb80a28f7645d1304fd1a049dbe8843884a7"
+      },
+      {
+        "path": "FramingStudio/source/slab-geometry120.js",
+        "sha256": "9c9864585691202f47a1ca8a8435e36d05bcbece087f8621597247687f8440d6"
+      },
+      {
+        "path": "FramingStudio/source/slab-marks.js",
+        "sha256": "2f441e341c5b1e53996ed14ab4591f3e4e8cd288572a4c4c059e64ba096dcf05"
+      },
+      {
+        "path": "FramingStudio/source/slab-panel121.js",
+        "sha256": "1b2c74e2f237cec0bc09a172471a75c9a7b2db4f6ebf8f0f1bedc2b07512459e"
+      },
+      {
+        "path": "FramingStudio/source/slab-support-ui132.js",
+        "sha256": "82e9be79c135eebf82ebb58154f788f38165dd17ad9b99d50652e2888cb31e65"
+      },
+      {
+        "path": "FramingStudio/source/slab-support132.js",
+        "sha256": "127c8f286591f590b4a6098893a6bff35f68dbb4779cdd79383dc1256ed2606b"
+      },
+      {
+        "path": "FramingStudio/source/steel-catalog.js",
+        "sha256": "7a971e623bd412e0d2a89eac9e54fa361517fc82cf4fda8cda7e58d42e4bc78e"
+      },
+      {
+        "path": "FramingStudio/source/steel.js",
+        "sha256": "99e33c0516b230332c28b9c9159ac8f1457113b9143449eec0253589285da920"
+      },
+      {
+        "path": "FramingStudio/source/sync-web.py",
+        "sha256": "c76ee3c8cd2e2d968a15fdf567c6063dedd26bf226c72c75a2dad6e63a9f2bd4"
+      },
+      {
+        "path": "FramingStudio/source/transfer-markers.js",
+        "sha256": "451034ce0626e41f607dae3aff32ce943f5d71a86b2c80c28d2f5baceb045d0b"
+      },
+      {
+        "path": "FramingStudio/source/transfer-truss.js",
+        "sha256": "633b3960d9a2daacd158a196b2af26c09810f9493fb8bb1421d2651850d6b1df"
+      },
+      {
+        "path": "FramingStudio/source/truss-analysis.js",
+        "sha256": "c801a85d1e8c5efc57897dbab66eeab71f61f43824353bd4de53bbf2264c7c8b"
+      },
+      {
+        "path": "FramingStudio/source/truss-catalog.js",
+        "sha256": "3e2418cabb0466a24630abca9d35c690d332be16dda4db50edf7c7fbdc3f94ba"
+      },
+      {
+        "path": "FramingStudio/source/truss-model.js",
+        "sha256": "4944cb25cc614d94228994053400657a543f8c841503fff88dc5059acea739fb"
+      },
+      {
+        "path": "FramingStudio/source/truss-reports.js",
+        "sha256": "06e3d174d39945f07d9061ff92374d2733d12af2d354448017b09c167b3383ff"
+      },
+      {
+        "path": "FramingStudio/source/truss-ui.js",
+        "sha256": "18569a7288e73acb2152d72f2983daa6b009d227d323a9410f06c3496bcc1cf0"
+      },
+      {
+        "path": "FramingStudio/source/truss-zone.js",
+        "sha256": "c8f1231876830cba4a79897c9a75dbde196c04d94b37eaa6fe97f81f4cd7801b"
+      },
+      {
+        "path": "FramingStudio/source/ui-polish173.js",
+        "sha256": "e77e274bd6e10e8983da12be78e5f50121c85b76eec530f506ddcc73c8d8ddc0"
+      },
+      {
+        "path": "FramingStudio/source/usage.js",
+        "sha256": "e7a00f21ea6f35f0316aab19cb33e9a0c7195d787287f43c1d9eef401205c182"
+      },
+      {
+        "path": "FramingStudio/source/view-helpers87.js",
+        "sha256": "5722a4460e1c50e25e760a4328b1c96171867d5228004d04a56d22e768c10040"
+      },
+      {
+        "path": "FramingStudio/source/wall-follow322.js",
+        "sha256": "c2513b6d87fd94e706973c072c27226e9687cafdeba022fd7117c3dc88153af8"
+      },
+      {
+        "path": "FramingStudio/source/wind-average93.js",
+        "sha256": "2acf7cec87b9733100ccc6971274358f2940b3241654a7da06b14ffb9559cd1c"
+      },
+      {
+        "path": "FramingStudio/source/workspace-pages.js",
+        "sha256": "698b3f705d4cf7fbb7f17f4bb9f56efa7fe24f8a28772bf4bd77683c2d115cee"
+      }
+    ],
+    "nativeHostChanges": [
+      "Version labels",
+      "Default in-page confirmation pair ordered Confirm left, Cancel right; cancellation focus and behavior retained"
+    ],
+    "rollbackE2318SHA256": "3acbe8bd68aea46c008620d79b03ff63fe99c43c2a09c310a7d9389de4c54d00",
+    "currentModelSHA256": "0e37325685f5b6f339ecb66580b75db7c2b36c24499342fa448ef269cd53174b"
+  },
+  "originalModelRestoredAndExportedEqual": true,
+  "originalTab": "http://127.0.0.1:8783/",
+  "liveState": "Preview only; no candidate applied to user model",
+  "limits": [
+    "Finite offline search compares layouts; coverage distances and row regularity are not structural-capacity, beam-span or foundation checks.",
+    "Reset preview does not change data. Only explicitly confirmed apply releases the displayed current-Framing deleted-position exclusions. Inactive manual columns remain inactive.",
+    "Applied scheme changes geometry but does not change calculation formulas or manual Transfer flags. Support diagnostics do not create or verify TBs.",
+    "Native Excel/VBA recalculation and A/B native PDF export were not rerun; their source/templates are unchanged.",
+    "Packaged EXE harness uiOK=true indicates feature pass; ok=false deliberately skips the legacy automated confirmation sweep."
+  ],
+  "verifiedFilesSHA256": {
+    "FramingStudio.exe": "0c1b27413853da22f749dc4a09e0e19a423f4c1cb8c405d79133fc463dbd251d",
+    "assets/index.html": "f7d74ecef8df964e6e346c200051b055c5346afc3fd0a371c7fd2d39578c1a84",
+    "source/column-schemes319.js": "46af51c7597e3d44569dec866b0ddaf5a8377f9d169a34fdf38f50b39c4fe28a",
+    "source/FramingStudio.cs": "7da516c4f200e2df45a1935aae841b6a2ec250da822e5678ef891c3b98531636",
+    "source/tests/column-replan331-ui.js": "0dfc6182235be640cbccd01a12eafcf35fa3bb363c5e3208ab789e458327c8ba"
+  }
+}

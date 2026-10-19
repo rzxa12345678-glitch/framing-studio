@@ -1,5 +1,7 @@
 # Framing Studio
 
+E2.331 · **重新由零試排及整排對齊**：顯示已刪柱位置數量，預設仍避開這些位置；可先預覽重新試排，明確確認套用才解除當前 Framing 的刪柱限制，已停用手動柱仍保留。候選按覆蓋及整排／整列一致性排序；無鄰層柱時不再用「未對齊 0」表示成功。保留 E2.330 的轉換承托提示，原計算及 A/B 格式不變。詳見 [E2.331 驗證](FramingStudio/verification/release331.json)。
+
 E2.330 · **上下層優先對齊＋補空位／轉換承托**：離線比較不同柱網，合併相似候選並補中間空位；逐層列出待核對承托，原模型不會在預覽時改動。保留最小柱距、手動柱、刪柱記錄及 A/B 原格式。詳見 [E2.330 驗證](FramingStudio/verification/release330.json)。
 
 E2.329 正式發布核對：Q5 柱距缺陷已有隨庫測試，包含套用與保存重開。完整原 Q5 模型未提供，不宣稱已完成原模型核驗；可用 `FRAMING_Q5_MODEL` 明確指定。A/B 格式及原 Excel/VBA 保留。詳見 [合併驗證與限制](FramingStudio/verification/merge329.md)及[測試用法](FramingStudio/source/tests/fixtures/README.md)。

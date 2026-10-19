@@ -1,0 +1,873 @@
+{
+  "version": "E2.335",
+  "baseline": "ff8867e4aa0a0fc2dca06e5f467b0a92b14c1166",
+  "remote": {
+    "lastVerifiedOfficialMain": "53e9b567ea8d702eb74d452812090c83ded6b6aa",
+    "officialRepositoryAndPR30": "HTTP 404 via authenticated API, connector, Git and public API; latest official state could not be verified",
+    "existingPRBranchHeadAtPrepublication": "ff8867e4aa0a0fc2dca06e5f467b0a92b14c1166",
+    "forkMain": "e674c9c02813ad7e28b49b660f99bf8a6b5217c9 (E2.143, verified local ancestor)",
+    "PRUpdate": "Blocked by unavailable original repository; existing branch can be updated without overwriting remote work"
+  },
+  "regressionSuitesPassed": [
+    "column-direction335",
+    "column-tb-routes334",
+    "column-schemes319",
+    "column-wall329",
+    "column-spacing325",
+    "column-replan331",
+    "column-transfer330",
+    "desktop-shortcuts332"
+  ],
+  "currentModelAtTaskStart": [
+    {
+      "key": "F01",
+      "candidates": [
+        {
+          "id": 1,
+          "axis": "direct/existing",
+          "columns": 38,
+          "maxTB": 0,
+          "totalTB": 0,
+          "routes": [],
+          "uncovered": 0
+        }
+      ]
+    },
+    {
+      "key": "F03",
+      "candidates": [
+        {
+          "id": 1,
+          "axis": "Y",
+          "columns": 50,
+          "maxTB": 33,
+          "totalTB": 198,
+          "routes": [
+            {
+              "axis": "Y",
+              "span": 33,
+              "ends": [
+                "SC5",
+                "SC6"
+              ]
+            },
+            {
+              "axis": "Y",
+              "span": 33,
+              "ends": [
+                "SC7",
+                "SC8"
+              ]
+            },
+            {
+              "axis": "Y",
+              "span": 33,
+              "ends": [
+                "SC9",
+                "SC10"
+              ]
+            },
+            {
+              "axis": "Y",
+              "span": 33,
+              "ends": [
+                "SC11",
+                "SC12"
+              ]
+            },
+            {
+              "axis": "Y",
+              "span": 33,
+              "ends": [
+                "SC13",
+                "SC14"
+              ]
+            },
+            {
+              "axis": "Y",
+              "span": 33,
+              "ends": [
+                "SC15",
+                "SC16"
+              ]
+            }
+          ],
+          "rows": [
+            0.5,
+            6,
+            11.5,
+            17,
+            22.5,
+            28,
+            33.5
+          ],
+          "uncovered": 105
+        },
+        {
+          "id": 2,
+          "axis": "X",
+          "columns": 32,
+          "maxTB": 42,
+          "totalTB": 84,
+          "routes": [
+            {
+              "axis": "X",
+              "span": 42,
+              "ends": [
+                "W1",
+                "W5"
+              ]
+            },
+            {
+              "axis": "X",
+              "span": 42,
+              "ends": [
+                "W3",
+                "W7"
+              ]
+            }
+          ],
+          "rows": [
+            0.5,
+            7.785714,
+            15.071429,
+            22.357143,
+            29.642857,
+            36.928571,
+            44.214286,
+            51.5
+          ],
+          "uncovered": 219
+        },
+        {
+          "id": 3,
+          "axis": "direct/existing",
+          "columns": 20,
+          "maxTB": 0,
+          "totalTB": 0,
+          "routes": [],
+          "uncovered": 0
+        }
+      ]
+    }
+  ],
+  "browser": {
+    "passed": [
+      "Fixture transaction accepted",
+      "F01 preview does not change the model",
+      "F01 offers candidates",
+      "F01 route diagnostics visible",
+      "F01 line count matches preview",
+      "F01 route explicitly remains an unbuilt/unverified proposal",
+      "G/F has no invented lower-floor TB routes",
+      "F03 preview does not change the model",
+      "F03 offers candidates",
+      "F03 route diagnostics visible",
+      "F03 line count matches preview",
+      "F03 T3-29 shows physical support IDs, floor and span",
+      "F03 T3-30 shows physical support IDs, floor and span",
+      "F03 T3-31 shows physical support IDs, floor and span",
+      "F03 T3-32 shows physical support IDs, floor and span",
+      "F03 T3-33 shows physical support IDs, floor and span",
+      "F03 T3-34 shows physical support IDs, floor and span",
+      "F03 route explicitly remains an unbuilt/unverified proposal",
+      "F03 compares separate X and Y layouts",
+      "F03 shorter Y 33m precedes X 42m",
+      "Direction, maximum span and regular-row explanation visible",
+      "F03 Y new transfer routes never mix the other direction",
+      "F03 Y new transfer points share common row positions",
+      "F03 X new transfer routes never mix the other direction",
+      "F03 X new transfer points share common row positions",
+      "F03 has proposed TB routes",
+      "F03 new transfer points reference preview routes",
+      "F03 applies once without confirmation",
+      "F03 route preview did not create beams",
+      "F03 other Framing and report settings preserved",
+      "F03 applied route diagnostics remain available",
+      "F03 undo restores whole model",
+      "Fixture transaction accepted",
+      "F03 saved model reopens and preview does not mutate it",
+      "F03 reopen undo restores previous model",
+      "Fixture transaction accepted",
+      "Alternative X layout also keeps applied support diagnostics",
+      "Alternative layout undo restores original model",
+      "Final model and supplied fixture unchanged"
+    ],
+    "metrics": {
+      "cases": [
+        {
+          "key": "F01",
+          "columns": 38,
+          "routes": [],
+          "unchanged": true
+        },
+        {
+          "key": "F03",
+          "columns": 50,
+          "axis": "Y",
+          "maximumSpan": 33,
+          "rows": [
+            0.5,
+            6,
+            11.5,
+            17,
+            22.5,
+            28,
+            33.5
+          ],
+          "routes": [
+            {
+              "id": "T3-29",
+              "axis": "Y",
+              "ends": [
+                "SC5",
+                "SC6"
+              ],
+              "span": 33
+            },
+            {
+              "id": "T3-30",
+              "axis": "Y",
+              "ends": [
+                "SC7",
+                "SC8"
+              ],
+              "span": 33
+            },
+            {
+              "id": "T3-31",
+              "axis": "Y",
+              "ends": [
+                "SC9",
+                "SC10"
+              ],
+              "span": 33
+            },
+            {
+              "id": "T3-32",
+              "axis": "Y",
+              "ends": [
+                "SC11",
+                "SC12"
+              ],
+              "span": 33
+            },
+            {
+              "id": "T3-33",
+              "axis": "Y",
+              "ends": [
+                "SC13",
+                "SC14"
+              ],
+              "span": 33
+            },
+            {
+              "id": "T3-34",
+              "axis": "Y",
+              "ends": [
+                "SC15",
+                "SC16"
+              ],
+              "span": 33
+            }
+          ],
+          "unchanged": false
+        }
+      ]
+    },
+    "externalRequests": [],
+    "errors": [],
+    "sourceFileUnchanged": true
+  },
+  "actualWindowsEXE": {
+    "passed": [
+      "Fixture transaction accepted",
+      "F01 preview does not change the model",
+      "F01 offers candidates",
+      "F01 route diagnostics visible",
+      "F01 line count matches preview",
+      "F01 route explicitly remains an unbuilt/unverified proposal",
+      "G/F has no invented lower-floor TB routes",
+      "F03 preview does not change the model",
+      "F03 offers candidates",
+      "F03 route diagnostics visible",
+      "F03 line count matches preview",
+      "F03 T3-29 shows physical support IDs, floor and span",
+      "F03 T3-30 shows physical support IDs, floor and span",
+      "F03 T3-31 shows physical support IDs, floor and span",
+      "F03 T3-32 shows physical support IDs, floor and span",
+      "F03 T3-33 shows physical support IDs, floor and span",
+      "F03 T3-34 shows physical support IDs, floor and span",
+      "F03 route explicitly remains an unbuilt/unverified proposal",
+      "F03 compares separate X and Y layouts",
+      "F03 shorter Y 33m precedes X 42m",
+      "Direction, maximum span and regular-row explanation visible",
+      "F03 Y new transfer routes never mix the other direction",
+      "F03 Y new transfer points share common row positions",
+      "F03 X new transfer routes never mix the other direction",
+      "F03 X new transfer points share common row positions",
+      "F03 has proposed TB routes",
+      "F03 new transfer points reference preview routes",
+      "F03 applies once without confirmation",
+      "F03 route preview did not create beams",
+      "F03 other Framing and report settings preserved",
+      "F03 applied route diagnostics remain available",
+      "F03 undo restores whole model",
+      "Fixture transaction accepted",
+      "F03 saved model reopens and preview does not mutate it",
+      "F03 reopen undo restores previous model",
+      "Fixture transaction accepted",
+      "Alternative X layout also keeps applied support diagnostics",
+      "Alternative layout undo restores original model",
+      "Final model and supplied fixture unchanged"
+    ],
+    "metrics": {
+      "cases": [
+        {
+          "columns": 38,
+          "key": "F01",
+          "routes": [],
+          "unchanged": true
+        },
+        {
+          "axis": "Y",
+          "columns": 50,
+          "key": "F03",
+          "maximumSpan": 33,
+          "routes": [
+            {
+              "axis": "Y",
+              "ends": [
+                "SC5",
+                "SC6"
+              ],
+              "id": "T3-29",
+              "span": 33
+            },
+            {
+              "axis": "Y",
+              "ends": [
+                "SC7",
+                "SC8"
+              ],
+              "id": "T3-30",
+              "span": 33
+            },
+            {
+              "axis": "Y",
+              "ends": [
+                "SC9",
+                "SC10"
+              ],
+              "id": "T3-31",
+              "span": 33
+            },
+            {
+              "axis": "Y",
+              "ends": [
+                "SC11",
+                "SC12"
+              ],
+              "id": "T3-32",
+              "span": 33
+            },
+            {
+              "axis": "Y",
+              "ends": [
+                "SC13",
+                "SC14"
+              ],
+              "id": "T3-33",
+              "span": 33
+            },
+            {
+              "axis": "Y",
+              "ends": [
+                "SC15",
+                "SC16"
+              ],
+              "id": "T3-34",
+              "span": 33
+            }
+          ],
+          "rows": [
+            0.5,
+            6,
+            11.5,
+            17,
+            22.5,
+            28,
+            33.5
+          ],
+          "unchanged": false
+        }
+      ]
+    },
+    "method": "Final release binary in isolated WebView2 --self-test profiles; uiOK=true. Script deliberately leaves ok=false to bypass legacy automatic dialog answers; exit 1 expected.",
+    "nativeVisible": "E2.335 window opened and accessibility showed the correct version. It exited before Ctrl+O could be operated; a second independent launch also exited with code 0. Open/save/cancel/overwrite/dirty-close/recovery were not completed and are not counted as passed. No inference about cause."
+  },
+  "userEditedModelDuringWork": {
+    "browserPassed": [
+      "Latest fixture accepted in isolated profile",
+      "F01 no unexpected confirmation",
+      "F01 latest model unchanged by preview",
+      "G/F deletion count retained and shown",
+      "G/F does not invent lower-floor routes",
+      "All deleted G/F positions stay excluded",
+      "F03 no unexpected confirmation",
+      "F03 latest model unchanged by preview",
+      "F03 still has finite wall-to-wall candidates",
+      "F03 does not invent deleted column endpoints or Y routes",
+      "F03 wall-only support keeps explicit X direction label"
+    ],
+    "EXEPassed": [
+      "Latest fixture accepted in isolated profile",
+      "F01 no unexpected confirmation",
+      "F01 latest model unchanged by preview",
+      "G/F deletion count retained and shown",
+      "G/F does not invent lower-floor routes",
+      "All deleted G/F positions stay excluded",
+      "F03 no unexpected confirmation",
+      "F03 latest model unchanged by preview",
+      "F03 still has finite wall-to-wall candidates",
+      "F03 does not invent deleted column endpoints or Y routes",
+      "F03 wall-only support keeps explicit X direction label"
+    ],
+    "metrics": {
+      "cases": [
+        {
+          "key": "F01",
+          "deleted": 38,
+          "candidates": [
+            {
+              "columns": 24,
+              "routes": []
+            },
+            {
+              "columns": 4,
+              "routes": []
+            }
+          ]
+        },
+        {
+          "key": "F03",
+          "deleted": 0,
+          "candidates": [
+            {
+              "columns": 14,
+              "axis": "X",
+              "routes": [
+                {
+                  "axis": "X",
+                  "span": 42,
+                  "kinds": [
+                    "wall",
+                    "wall"
+                  ]
+                },
+                {
+                  "axis": "X",
+                  "span": 42,
+                  "kinds": [
+                    "wall",
+                    "wall"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "result": "Latest snapshot retains 38 G/F deleted positions; lower columns absent but walls retained. F03 only proposes X wall-to-wall routes of 42 m; does not invent deleted column endpoints or Y routes. Original user page was not restored or reloaded."
+  },
+  "preservation": {
+    "protectedFiles": [
+      {
+        "path": "FramingStudio/Excel/ExcelBridge.exe",
+        "sha256": "6b6cb8662338a9f4a5cefea4814fbec1ec5fb6c4b9b05df4e21660fe7a4dd36a"
+      },
+      {
+        "path": "FramingStudio/Excel/Foundation_Design_Checking_v8.xlsm",
+        "sha256": "5ac9bd9f306a48766dc8e3b74394a70f838dba1a1915a8ed9390d797ff50d947"
+      },
+      {
+        "path": "FramingStudio/Excel/ReportImages/horizontal-load-path.png",
+        "sha256": "08a71210e4050bc2c5375d7ca0d06995540754a4f2a4e472c32a11f484fd770f"
+      },
+      {
+        "path": "FramingStudio/Excel/ReportImages/vertical-load-path.png",
+        "sha256": "9c50b2115b6a1cfc21b759b8c05cea71193a0c8f7142bedf5a5e63df0c1afabd"
+      },
+      {
+        "path": "FramingStudio/Excel/Section A RC - Section B v106 Loading.xlsm",
+        "sha256": "3c8871a10b77766eecda627cf04aa741216e00caa35ca831f87953a760b199e9"
+      },
+      {
+        "path": "FramingStudio/Excel/Section A RC - Section B v107 Full Loads.xlsm",
+        "sha256": "fd8f180637f68ff8743e2f0d7ede2259993cce9ac973e707f5d16c83b19f8be0"
+      },
+      {
+        "path": "FramingStudio/Excel/Section A RC - Section B v108 Area Loads.xlsm",
+        "sha256": "f056f9b568b3442696444584048b9ba8c11558d2b5d23ef1dddc75554078eb42"
+      },
+      {
+        "path": "FramingStudio/Excel/Section A RC - Section B v109 Compact Copy.xlsm",
+        "sha256": "30f8e3fb744b21b03f9e2b0eb175c4494d9ce6e2d58263cd40bcf1e0aa4db9a5"
+      },
+      {
+        "path": "FramingStudio/Excel/Steel Beam design V095.xlsm",
+        "sha256": "eed7a449b1f32dc5eda3ea23723f09f3623f8f5272ab915360822d0a130a0971"
+      },
+      {
+        "path": "FramingStudio/Excel/deflection_core_wall_BD_layered.xlsm",
+        "sha256": "c784181bc032584c3454fcfd9f22965ef54089bd427a9483bd74345b416baba2"
+      },
+      {
+        "path": "FramingStudio/Excel/overall_checking_BD_copy_ruled.xlsm",
+        "sha256": "9c7008656287c9664df08f459f3728601d9dccd0ba7c10f4304dc121d30460d5"
+      },
+      {
+        "path": "FramingStudio/Excel/templates.json",
+        "sha256": "f2227072fb7a3ea4fb9e57a2ec0c7dbb64860ae4c567456287d602c0cd6236d8"
+      },
+      {
+        "path": "FramingStudio/source/ExcelBridge.cs",
+        "sha256": "f8e5f204bc19a945027062ab853e58133015553780039ab549f447b04893f517"
+      },
+      {
+        "path": "FramingStudio/source/app.js",
+        "sha256": "4d9f3c817fdd6fab74fe528314cac0b8729506f9dabd3c39afff2d44779cfc16"
+      },
+      {
+        "path": "FramingStudio/source/audit-runner132.js",
+        "sha256": "ca0acb1aa3e2ab1535f48798a0a6ec0fe1d84689ba5b2a71b91e98ce69d9f04c"
+      },
+      {
+        "path": "FramingStudio/source/beam-layout116.js",
+        "sha256": "82991f8b6d6058d23dcc9f0d7d8575cd63fab2639bce28b60b41c44dc1acd199"
+      },
+      {
+        "path": "FramingStudio/source/beam-load-ui.js",
+        "sha256": "278e31497e214dd416707464a137cefa8370a35eb2ff1c155e5dffe60458b515"
+      },
+      {
+        "path": "FramingStudio/source/beam-loads.js",
+        "sha256": "7ad4d2b87e8bea44ebf80b5dc948be98ffa601f28097ea4c76a70cc8104ca9ff"
+      },
+      {
+        "path": "FramingStudio/source/beam-rebar116.js",
+        "sha256": "435db12a8bde0ecdcf75a051f4cbb992cdf6fbc4659a652a244b2405bd083ec7"
+      },
+      {
+        "path": "FramingStudio/source/beam-sizing.js",
+        "sha256": "9ac3203cee50a3a1a7c80433b63f25343c6e04a9175bbfcac898db96d5d325cc"
+      },
+      {
+        "path": "FramingStudio/source/build-floor-names.py",
+        "sha256": "86d69584aca4332fa644a3bff99d574c2c6ff69ef4d1c279a49bf93e3f0cc60c"
+      },
+      {
+        "path": "FramingStudio/source/checks.js",
+        "sha256": "e4e393148116879ddcf426f9a2268fc2c0f800d977749d9d512f8f71a259c04d"
+      },
+      {
+        "path": "FramingStudio/source/column-alignment-ui.js",
+        "sha256": "c44e5a881e4879c0f02f60a012bb9d89a87cc6e956735d750c819eb70d596fcb"
+      },
+      {
+        "path": "FramingStudio/source/column-alignment.js",
+        "sha256": "fe829e08a0be54e995a8447ee0d75bb9f204a3bf7b7668a06ebcfe41204f389a"
+      },
+      {
+        "path": "FramingStudio/source/column-areas103.js",
+        "sha256": "bdce8bf485bda9928df9b13bd1d6c569e65b2e9d0c3034ff1b27c1cbb6769f40"
+      },
+      {
+        "path": "FramingStudio/source/column-loads101.js",
+        "sha256": "bf49027612f6d5b17455f0bd2d195653b70d7eb2ce77d9121c54e806be6fd194"
+      },
+      {
+        "path": "FramingStudio/source/column-panel123.js",
+        "sha256": "c7e867a4b88a3d8aabe4b3e9060441ed81af4283ebb6540052b34fc52a08ff05"
+      },
+      {
+        "path": "FramingStudio/source/deflection-ui.js",
+        "sha256": "6397ab9a4d6ad9b5ad68ecc52ab6003f17012ee51441239c188eb21eb437487c"
+      },
+      {
+        "path": "FramingStudio/source/deflection.js",
+        "sha256": "143f71fa1cc63523e716227e40de45f40e7b9e3d71965a4b7bc5bf8b76a19e7a"
+      },
+      {
+        "path": "FramingStudio/source/diagonal-loads315.js",
+        "sha256": "ba2f34c60b6edb8d55d216066931319995a1aa26d53b706044f752ab69f21a60"
+      },
+      {
+        "path": "FramingStudio/source/diagonal-transfer315.js",
+        "sha256": "6c0d1876828538bca6af2c9b1576ecbeb6c41c0ac6a039978e073a1041ed8c43"
+      },
+      {
+        "path": "FramingStudio/source/diagonal-ui315.js",
+        "sha256": "e54f03f4dbc5524fbdaa63b487dd715e3509b53edb0abc2e71110654ea2ab268"
+      },
+      {
+        "path": "FramingStudio/source/diagonal315.js",
+        "sha256": "61bc5af5add96d62234d3d66b1a47dc347e93f5a64a6d8a7320478a6838a1dc5"
+      },
+      {
+        "path": "FramingStudio/source/display-quality.js",
+        "sha256": "14d06f5f4284724f0b819c20812db0b833f14da5086c585fc45beb0c50afbf53"
+      },
+      {
+        "path": "FramingStudio/source/drawing.js",
+        "sha256": "f937d93d990d7995dd863fb5a1fa9a1a2d0e15f9e35a3c63d4c0795116e02d28"
+      },
+      {
+        "path": "FramingStudio/source/engine.js",
+        "sha256": "4c1a0f550c170b1623951e9964e383ae155cad1b3cc818a5396ef2419901ed58"
+      },
+      {
+        "path": "FramingStudio/source/excel-formulas.js",
+        "sha256": "54553ee5676fc17180b515a06b00592a3e0aba8389fb9ce35dcd40907a5ad3ba"
+      },
+      {
+        "path": "FramingStudio/source/excel-sync.js",
+        "sha256": "288e417b8fde769bff85a155c6fa56cd01757de0ca2e1bae188e6cdcaf46979a"
+      },
+      {
+        "path": "FramingStudio/source/explorer-ui.js",
+        "sha256": "39309d429b400720f1cc9832b6bda5029a03c7305399634f5e59f7ca0cb6c1f0"
+      },
+      {
+        "path": "FramingStudio/source/floor-levels.js",
+        "sha256": "71fbfe6778d29a249d4c2f58bce53cc2050631a2ac2d56b5626fee07e1b9a4c4"
+      },
+      {
+        "path": "FramingStudio/source/floor-tools101.js",
+        "sha256": "7472389e12787d42b865601101589b3ba85a074ca5d5efff86f3a22f93c9aa52"
+      },
+      {
+        "path": "FramingStudio/source/foundation.js",
+        "sha256": "1b6236fcce2175766397014d5df4dce2f9ef2387065463acfc8fc3301c571f03"
+      },
+      {
+        "path": "FramingStudio/source/framing-fold91.js",
+        "sha256": "837cb0fa71d463f71fc0313d3bf9adc3704643fa4bbdb279c0a3ff6c688c783b"
+      },
+      {
+        "path": "FramingStudio/source/framing-symbols98.js",
+        "sha256": "8ad4c6b62a1b6f623791009ffd81d4d60b5603e0c053f08a595c6ae0b82c9a61"
+      },
+      {
+        "path": "FramingStudio/source/geometry-issues-local.js",
+        "sha256": "f6d45e434b62ba350347d052c2d8457ded52bf650f30d61704e387e3c1f03e9f"
+      },
+      {
+        "path": "FramingStudio/source/horizontal-path133.js",
+        "sha256": "73ded3c9f92943e7d8873070b4edeee5b6d3da63fd22daca1a7d33df9a85a032"
+      },
+      {
+        "path": "FramingStudio/source/input-feedback172.js",
+        "sha256": "430a52506a41581f7259056533278e3999ea1516c3230794bc835a4d771b5532"
+      },
+      {
+        "path": "FramingStudio/source/load-data.js",
+        "sha256": "fe5eb0136034e9dd3ac5679f7d9bac735c95f7bde1266718940e2eb409f6f74a"
+      },
+      {
+        "path": "FramingStudio/source/load-path84.js",
+        "sha256": "5ba97f807c94209e8ca4d85dcbc72a737149efc0c1d58d08e2b74c3687046638"
+      },
+      {
+        "path": "FramingStudio/source/load-regions.js",
+        "sha256": "82c7219c66648102bc5cf39302ca9152f0ef5c92f9a2c8363e9985bc356baea1"
+      },
+      {
+        "path": "FramingStudio/source/loading.js",
+        "sha256": "c80713926fe1782ac6b0deb5d6044beeb3d6349969ebab2917886c1a124192f0"
+      },
+      {
+        "path": "FramingStudio/source/local-heights96.js",
+        "sha256": "575d3aea3ce465719345ef573f467f1f447256d235e1a0537313be420af5c964"
+      },
+      {
+        "path": "FramingStudio/source/measure189.js",
+        "sha256": "06d203a95632e5da3d11efbced6bc65534c540aefbe604768658d55a6551021f"
+      },
+      {
+        "path": "FramingStudio/source/mobile.js",
+        "sha256": "ff37fd15abf069ead68fad41b04985ff679f57505e36a5fa4fbbf26c633acdc9"
+      },
+      {
+        "path": "FramingStudio/source/optimize-report-calculation252.py",
+        "sha256": "bd9dc95004e6d1fa2ddfbbb8d1635c481e9ef65d0fd32c213e953a9a23b84885"
+      },
+      {
+        "path": "FramingStudio/source/overall-report.js",
+        "sha256": "d481ac8cf5803e628b04aa3708ce97ffb70c60371c0ae65a0bfb8ce735e359df"
+      },
+      {
+        "path": "FramingStudio/source/overall-runtime.js",
+        "sha256": "d0e6b607a2b1a6ce89dfb080d54573f30ac8669d190dc2616828b36f019ccf72"
+      },
+      {
+        "path": "FramingStudio/source/overall-source.js",
+        "sha256": "e0774866f90664112574268a5de7027d310e7e82f27d9b0d7924c256493ec837"
+      },
+      {
+        "path": "FramingStudio/source/preview-server251.py",
+        "sha256": "a1ad27f9265bdac7c44d0c2243111221289271c6d712fdc4c0690bcbef55378e"
+      },
+      {
+        "path": "FramingStudio/source/rc-plan.js",
+        "sha256": "851bd69794b5f820c1fb8159dbe52529c3dc67226d3237c4f4016d50767b8b92"
+      },
+      {
+        "path": "FramingStudio/source/repair-report-sheet251.py",
+        "sha256": "118ef2f38fafdceada49c724a828244cdb160be1159b16a77092eb712218ca46"
+      },
+      {
+        "path": "FramingStudio/source/report-compose.js",
+        "sha256": "4038b99c52f11a95dfcfb18efb653a85be0218169fe18b77073dcdde85e71758"
+      },
+      {
+        "path": "FramingStudio/source/report-content.js",
+        "sha256": "f423439d01fea2ce8a1f3f53961655995b74b4c868f259c46f04929aed17b2b4"
+      },
+      {
+        "path": "FramingStudio/source/report-extras.js",
+        "sha256": "bd3f3c980406fe9b2c6eafc889d39173f2db30d189a4746d7945aab53a19e83f"
+      },
+      {
+        "path": "FramingStudio/source/report-paper.js",
+        "sha256": "46eefbda2ddad503811f2fd07ce3a07cbf00847e995fec461ee380b5a71e9e90"
+      },
+      {
+        "path": "FramingStudio/source/reports.js",
+        "sha256": "77f1272fab54fcdab9027e1070abddf5fae3846d2f982a3ea208f1e7d37906a5"
+      },
+      {
+        "path": "FramingStudio/source/review-layout191.js",
+        "sha256": "4cc0b62200528c933867aea113c27f3a044c38329275d6bab58277b2531ab667"
+      },
+      {
+        "path": "FramingStudio/source/right-inputs.js",
+        "sha256": "aab4e5992ba0aa050221667707c7eb80a28f7645d1304fd1a049dbe8843884a7"
+      },
+      {
+        "path": "FramingStudio/source/slab-geometry120.js",
+        "sha256": "9c9864585691202f47a1ca8a8435e36d05bcbece087f8621597247687f8440d6"
+      },
+      {
+        "path": "FramingStudio/source/slab-marks.js",
+        "sha256": "2f441e341c5b1e53996ed14ab4591f3e4e8cd288572a4c4c059e64ba096dcf05"
+      },
+      {
+        "path": "FramingStudio/source/slab-panel121.js",
+        "sha256": "1b2c74e2f237cec0bc09a172471a75c9a7b2db4f6ebf8f0f1bedc2b07512459e"
+      },
+      {
+        "path": "FramingStudio/source/slab-support-ui132.js",
+        "sha256": "82e9be79c135eebf82ebb58154f788f38165dd17ad9b99d50652e2888cb31e65"
+      },
+      {
+        "path": "FramingStudio/source/slab-support132.js",
+        "sha256": "127c8f286591f590b4a6098893a6bff35f68dbb4779cdd79383dc1256ed2606b"
+      },
+      {
+        "path": "FramingStudio/source/steel-catalog.js",
+        "sha256": "7a971e623bd412e0d2a89eac9e54fa361517fc82cf4fda8cda7e58d42e4bc78e"
+      },
+      {
+        "path": "FramingStudio/source/steel.js",
+        "sha256": "99e33c0516b230332c28b9c9159ac8f1457113b9143449eec0253589285da920"
+      },
+      {
+        "path": "FramingStudio/source/sync-web.py",
+        "sha256": "c76ee3c8cd2e2d968a15fdf567c6063dedd26bf226c72c75a2dad6e63a9f2bd4"
+      },
+      {
+        "path": "FramingStudio/source/transfer-markers.js",
+        "sha256": "451034ce0626e41f607dae3aff32ce943f5d71a86b2c80c28d2f5baceb045d0b"
+      },
+      {
+        "path": "FramingStudio/source/transfer-truss.js",
+        "sha256": "633b3960d9a2daacd158a196b2af26c09810f9493fb8bb1421d2651850d6b1df"
+      },
+      {
+        "path": "FramingStudio/source/truss-analysis.js",
+        "sha256": "c801a85d1e8c5efc57897dbab66eeab71f61f43824353bd4de53bbf2264c7c8b"
+      },
+      {
+        "path": "FramingStudio/source/truss-catalog.js",
+        "sha256": "3e2418cabb0466a24630abca9d35c690d332be16dda4db50edf7c7fbdc3f94ba"
+      },
+      {
+        "path": "FramingStudio/source/truss-model.js",
+        "sha256": "4944cb25cc614d94228994053400657a543f8c841503fff88dc5059acea739fb"
+      },
+      {
+        "path": "FramingStudio/source/truss-reports.js",
+        "sha256": "06e3d174d39945f07d9061ff92374d2733d12af2d354448017b09c167b3383ff"
+      },
+      {
+        "path": "FramingStudio/source/truss-ui.js",
+        "sha256": "18569a7288e73acb2152d72f2983daa6b009d227d323a9410f06c3496bcc1cf0"
+      },
+      {
+        "path": "FramingStudio/source/truss-zone.js",
+        "sha256": "c8f1231876830cba4a79897c9a75dbde196c04d94b37eaa6fe97f81f4cd7801b"
+      },
+      {
+        "path": "FramingStudio/source/ui-polish173.js",
+        "sha256": "e77e274bd6e10e8983da12be78e5f50121c85b76eec530f506ddcc73c8d8ddc0"
+      },
+      {
+        "path": "FramingStudio/source/usage.js",
+        "sha256": "e7a00f21ea6f35f0316aab19cb33e9a0c7195d787287f43c1d9eef401205c182"
+      },
+      {
+        "path": "FramingStudio/source/view-helpers87.js",
+        "sha256": "5722a4460e1c50e25e760a4328b1c96171867d5228004d04a56d22e768c10040"
+      },
+      {
+        "path": "FramingStudio/source/wall-follow322.js",
+        "sha256": "c2513b6d87fd94e706973c072c27226e9687cafdeba022fd7117c3dc88153af8"
+      },
+      {
+        "path": "FramingStudio/source/wind-average93.js",
+        "sha256": "2acf7cec87b9733100ccc6971274358f2940b3241654a7da06b14ffb9559cd1c"
+      },
+      {
+        "path": "FramingStudio/source/workspace-pages.js",
+        "sha256": "698b3f705d4cf7fbb7f17f4bb9f56efa7fe24f8a28772bf4bd77683c2d115cee"
+      }
+    ],
+    "otherExistingSourceFilesIdentical": 418,
+    "transactionalApplyOnlyChange": "Enable existing support-review UI flag for both directional alternatives",
+    "nativeHostOnlyVersionChanged": true,
+    "E2318SHA256": "3acbe8bd68aea46c008620d79b03ff63fe99c43c2a09c310a7d9389de4c54d00",
+    "startingModelBackupSHA256": "2faf2383e9cf825df178f73830556098fd02119812c16d32fcc0e8005e7e6d42",
+    "latestModelBackupSHA256": "26c22f9e6932cf3de28a830c7ce6d3857e89b8f9f1e266e5db232274f13bd3de",
+    "originalModelNotAppliedOrReplaced": true,
+    "originalBrowserTabNotReloaded": true
+  },
+  "preview": {
+    "url": "http://127.0.0.1:8783/",
+    "servedVersion": "E2.335",
+    "servedBytesMatch": true,
+    "cacheControl": "no-store",
+    "originalLoadedVersionAtLastObservation": "E2.334",
+    "reloadDeferredBecauseUserIsEditing": true
+  },
+  "limitations": [
+    "Geometric layout comparison only, not TB capacity/design verification. Upper columns remain loads, not intermediate supports.",
+    "Search is bounded and uses two common station sets per axis; it does not claim a global optimum, mixed-direction, skew or cantilever solution.",
+    "Initial current model Y spans remain 33 m and require design checks; shorter does not imply feasible.",
+    "Manual/protected columns remain exact and can retain unresolved support cases.",
+    "Native lifecycle testing incomplete as described above.",
+    "Original GitHub repository and PR unavailable (404); no claim that PR was updated.",
+    "Excel/VBA calculations and native A/B exports not rerun; protected source/templates unchanged."
+  ]
+}

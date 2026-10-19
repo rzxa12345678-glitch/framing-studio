@@ -110,10 +110,10 @@ const ColumnSchemes319=(()=>{
   return {floors,routes,limited};
  }
  function routeAt334(routes,c){return routes.filter(q=>{const i=q.axis==='X'?0:1,j=1-i,pt=[c.x,c.y];return Math.abs(pt[j]-q.a.point[j])<1e-6&&pt[i]>q.a.point[i]+eps&&pt[i]<q.z.point[i]-eps;}).sort((a,b)=>a.span-b.span||a.id.localeCompare(b.id))[0];}
- function routeDiagnostics334(p,result,key,columns,network=tbRoutes334(p,result,key)){
+ function routeDiagnostics334(p,result,key,columns,network=tbRoutes334(p,result,key),axis335=''){
   const supports=support330(p,result,key,columns),used=new Map();
   for(const row of supports)if(['transfer','missing'].includes(row.kind)){
-   const route=routeAt334(network.routes.filter(q=>q.at===row.at),row);
+   const locked=columns.find(c=>same(c,row))?.locked,route=routeAt334(network.routes.filter(q=>q.at===row.at&&(!axis335||locked||q.axis===axis335)),row);
    if(route){row.tb334=route.id;used.set(route.id,route);}
   }
   return {supports,routes:[...used.values()],unresolved:supports.filter(q=>['transfer','missing','ambiguous'].includes(q.kind)&&!q.tb334).length};
@@ -132,6 +132,59 @@ const ColumnSchemes319=(()=>{
  }
 
  const pointDistance330=(s,c)=>Math.hypot(c.x-s[0],c.y-s[1]);
+ // Compare complete orthogonal layouts, never combine X/Y routes to fill holes.
+ // Stations are shared across all parallel routes, including split/unequal spans.
+ // These are geometry proposals only; an upper column never splits a TB span.
+ function directional335(p,r,key,network,fixed,adj,samples,contexts,min,o,b,d,allowed,existing,xs,ys){
+  const empty={...network,routes:[],floors:network.floors.map(f=>({...f,routes:[]}))};
+  const original=c=>{const old=existing.find(q=>same(physical(q),c));return old?physical(old):{x:round(c.x),y:round(c.y),b,d,grid331:true};};
+  const direct=routePool334(empty,[...adj.below,...adj.above,...existing.map(physical)].map(original),b,d,o,p).filter(allowed);
+  const base=supplement330(direct,fixed,adj,samples,contexts,min,o).columns,threshold=Math.hypot(o.targetX,o.targetY)/2;
+  const distance=cols=>samples.map(s=>Math.min(...cols.map(c=>pointDistance330(s,c)),Math.max(...contexts.map(m=>Math.min(...m.walls.map(w=>wallDistance330(s,w)))))));
+  const baseline=distance(base),penalty=a=>a.reduce((s,v)=>s+Math.max(0,Math.min(v,threshold*8)-threshold)**2,0),variants=[];let limited=false;
+  for(const axis of ['X','Y']){
+   const along=axis==='X'?'x':'y',cross=axis==='X'?'y':'x',index=axis==='X'?0:1,axes=axis==='X'?xs:ys,width=axis==='X'?b:d,step=axis==='X'?o.targetX:o.targetY;
+   const routes=network.routes.filter(q=>q.axis===axis),net={...network,routes:[],floors:network.floors.map(f=>({...f,routes:f.routes.filter(q=>q.axis===axis)}))};
+   const lo=axes[0]+width/2,hi=axes.at(-1)-width/2,n=Math.min(39,Math.max(1,Math.floor((hi-lo)/step)));if(!routes.length||hi<=lo)continue;
+   const uniform=Array.from({length:n+1},(_,i)=>round(lo+(hi-lo)*i/n));
+   // Direct-support rows are an alternative common station set, not extra points
+   // interleaved with the regular grid. Evaluate both whole layouts separately.
+   const aligned=unique(base.map(c=>c[along])).filter(v=>v>=lo-eps&&v<=hi+eps),stationSets=[uniform];
+   if(aligned.length>2&&aligned.every((v,i)=>!i||v-aligned[i-1]>=(min[along]||step)-eps))stationSets.push(aligned);
+   const axisVariants=[];
+   for(const stations of stationSets){
+    const groups=new Map();
+    for(const route of routes)for(const v of stations){if(v<=route.a.point[index]+eps||v>=route.z.point[index]-eps)continue;const c=original({[along]:v,[cross]:route.a.point[1-index]});if(!allowed(c))continue;
+     const group=groups.get(round(c[cross]))||[];if(!group.some(q=>same(q,c)))group.push(c);groups.set(round(c[cross]),group);
+    }
+    let examined=0;const bundles=[];
+    for(const [crossValue,points]of groups){if((examined+=points.length)>Math.min(4000,o.maxCandidates)){limited=true;break;}
+     const valid=routePool334(net,points,b,d,o,p);if(!valid.length)continue;
+     const diagnostic=routeDiagnostics334(p,r,key,valid,network,axis),span=Math.max(0,...diagnostic.routes.map(q=>q.span));
+     if(diagnostic.unresolved)continue;bundles.push({points:valid.sort((a,z)=>a[along]-z[along]),span,crossValue});
+    }
+    bundles.sort((a,z)=>a.span-z.span||a.crossValue-z.crossValue);
+    const columns=base.map(clone);let distances=baseline.slice();
+    for(const bundle of bundles){
+     const additions=[];for(const c of bundle.points)if(![...columns,...additions].some(q=>same(c,q)||spacingProblem(c,q,min)||Engine.overlap(rect(c),rect(q))||Math.hypot((c.x-q.x)/o.targetX,(c.y-q.y)/o.targetY)<.85))additions.push(c);
+     if(!additions.length)continue;
+     const next=distances.map((v,i)=>Math.min(v,...additions.map(c=>pointDistance330(samples[i],c))));
+     // Add the entire feasible row, preserving gaps for constraints. Never shift
+     // isolated points or add a longer route once sampled coverage is adequate.
+     if(penalty(next)>=penalty(distances)-eps)continue;
+     columns.push(...additions);distances=next;
+    }
+    const diagnostic=routeDiagnostics334(p,r,key,columns,network,axis),newRoutes=new Set(diagnostic.supports.filter(row=>!columns.find(c=>same(c,row))?.locked&&row.tb334).map(row=>row.tb334)),used=diagnostic.routes.filter(q=>newRoutes.has(q.id));
+    if(!used.length||columns.length===base.length)continue;
+    axisVariants.push({axis335:axis,columns,stations335:stations,maxTB335:Math.max(...used.map(q=>q.span)),totalTB335:used.reduce((s,q)=>s+q.span,0),routeCount335:used.length,coverageTarget330:threshold,coverageUnresolved330:distances.filter(v=>v>threshold+eps).length,coveragePenalty335:penalty(distances),coverageGain335:penalty(baseline)-penalty(distances)});
+   }
+   // Same direction: prefer shorter spans, then common rows with better coverage.
+   axisVariants.sort((a,z)=>a.maxTB335-z.maxTB335||a.coveragePenalty335-z.coveragePenalty335||a.totalTB335-z.totalTB335);
+   if(axisVariants.length)variants.push(axisVariants[0]);
+  }
+  variants.sort((a,z)=>a.maxTB335-z.maxTB335||a.totalTB335-z.totalTB335||a.coveragePenalty335-z.coveragePenalty335||a.axis335.localeCompare(z.axis335));
+  return {variants,base,limited};
+ }
  function wallDistance330(s,w){const [a,z]=[w.a,w.z],dx=z[0]-a[0],dy=z[1]-a[1],u=Math.max(0,Math.min(1,((s[0]-a[0])*dx+(s[1]-a[1])*dy)/(dx*dx+dy*dy||1)));return Math.hypot(s[0]-a[0]-u*dx,s[1]-a[1]-u*dy);}
  function supplement330(pool,fixed,adj,samples,contexts,min,o){
   const cols=fixed.map(clone),rank=c=>adj.above.some(q=>same(c,q))+adj.below.some(q=>same(c,q)),canAdd=(c,density)=>!cols.some(q=>same(c,q)||spacingProblem(c,q,min)||Engine.overlap(rect(c),rect(q))||density&&Math.hypot((c.x-q.x)/o.targetX,(c.y-q.y)/o.targetY)<.85);
@@ -162,33 +215,38 @@ const ColumnSchemes319=(()=>{
   const sets=[{label:'只補上下層對齊',x:[],y:[]},{label:'沿用建築軸網',x:xs,y:ys,arch331:true},{label:'均勻柱網',x:grid(xs,b,+o.targetX),y:grid(ys,d,+o.targetY)},{label:'較疏柱網',x:grid(xs,b,+o.targetX*1.2),y:grid(ys,d,+o.targetY*1.2)}],usedSchemes=new Set(),budget=Math.max(1,Math.min(4000,Number(o.maxCandidates)||1800));let evaluated=0;const allPool=[],gridPools=[],network334=tbRoutes334(p,r,key);
   report.messages.push(...wallNotes329(p,r,key));
   const baseline=existing.map(c=>({...physical(c),locked:fixed.some(q=>q.existingKey===Engine.columnPositionKey(c))}));if(baseline.length&&!baseline.some((c,i)=>problemFor(c)||!c.locked&&nearWall329(c,contexts)||baseline.slice(0,i).some(q=>spacingProblem(c,q,min)||Engine.overlap(rect(c),rect(q))))){const mt=metrics(baseline,adj,samples,m.walls);if(!(o.maxX&&mt.maxX>+o.maxX+eps)&&!(o.maxY&&mt.maxY>+o.maxY+eps)){usedSchemes.add(baseline.map(c=>c.x+','+c.y+','+c.b+','+c.d).sort().join(';'));report.schemes.push({id:0,label:'保留現有柱位',family:'existing',columns:baseline,metrics:mt,unchanged:true,score:mt.maxReach*4+mt.meanReach+mt.unalignedAbove*.25+mt.unalignedBelow*.25+baseline.length*.15});}}
-  for(const set of sets){const pool=[],seen=new Set(),gridPoints=coherentGrid331(set,b,d,min,allowed331),anchors=[...adj.above,...adj.below,...(set.label==='沿用建築軸網'||set.label==='只補上下層對齊'?existing.map(physical):[]),...gridPoints],routed334=routePool334(set.label==='只補上下層對齊'?{...network334,routes:[]}:network334,anchors,b,d,o,p);for(const a of routed334){if(++evaluated>budget){report.limited=true;break;}if(fixed.some(c=>same(c,a)))continue;
+  for(const set of (network334.floors.length?sets.slice(0,1):sets)){const pool=[],seen=new Set(),gridPoints=coherentGrid331(set,b,d,min,allowed331),anchors=[...adj.above,...adj.below,...(set.label==='沿用建築軸網'||set.label==='只補上下層對齊'?existing.map(physical):[]),...gridPoints],routed334=routePool334(set.label==='只補上下層對齊'?{...network334,routes:[],floors:network334.floors.map(f=>({...f,routes:[]}))}:network334,anchors,b,d,o,p);for(const a of routed334){if(++evaluated>budget){report.limited=true;break;}if(fixed.some(c=>same(c,a)))continue;
     const old=existing.find(c=>same(physical(c),a)),c=old?physical(old):{x:round(a.x),y:round(a.y),b,d,...(a.grid331?{grid331:true}:{})};if(!allowed331(c))continue;const token=c.x+','+c.y;if(!seen.has(token)){seen.add(token);pool.push(c);if(!allPool.some(q=>same(q,c)))allPool.push(c);}}
     if(set.x.length&&set.y.length)gridPools.push(pool);
     for(const strategy of ['align','forward','reverse']){const cols=fixed.map(clone),pending=[...pool].sort((a,b)=>strategy==='reverse'?b.x-a.x||b.y-a.y:strategy==='forward'?a.x-b.x||a.y-b.y:((adj.above.some(q=>same(q,b))?1:0)+(adj.below.some(q=>same(q,b))?1:0))-((adj.above.some(q=>same(q,a))?1:0)+(adj.below.some(q=>same(q,a))?1:0))||a.x-b.x||a.y-b.y);for(const c of pending)if(!cols.some(q=>same(c,q)||spacingProblem(c,q,min)||Engine.overlap(rect(c),rect(q))||Math.hypot((c.x-q.x)/+o.targetX,(c.y-q.y)/+o.targetY)<.85))cols.push(c);if(!cols.length)continue;
       const mt=metrics(cols,adj,samples,m.walls);if((o.maxX&&mt.maxX>+o.maxX+eps)||(o.maxY&&mt.maxY>+o.maxY+eps))continue;const token=cols.map(c=>c.x+','+c.y+','+c.b+','+c.d).sort().join(';');if(usedSchemes.has(token))continue;usedSchemes.add(token);report.schemes.push({id:report.schemes.length+1,label:set.label+(strategy==='align'?' · 優先對齊':''),family:set.label,columns:cols,metrics:mt,score:mt.maxReach*4+mt.meanReach+mt.unalignedAbove*.25+mt.unalignedBelow*.25+cols.length*.15});}
     if(report.limited)break;
   }
-  const balancedVariants=(gridPools.length?gridPools:[allPool]).map(pool=>supplement330(pool,fixed,adj,samples,contexts,min,o));
+  const directional=network334.floors.length?directional335(p,r,key,network334,fixed,adj,samples,contexts,min,o,b,d,allowed331,existing,xs,ys):null;
+  if(directional?.limited)report.limited=true;
+  const balancedVariants=(directional?[]:(gridPools.length?gridPools:[allPool])).map(pool=>supplement330(pool,fixed,adj,samples,contexts,min,o));
   const quality331=(mt,cols)=>{const c=coherence331(cols,o);return mt.maxReach*4+mt.meanReach+cols.length*.05+(mt.unalignedAbove+mt.unalignedBelow)*.1+(c.shortRows+c.shortColumns)*.5;};
   for(const v of balancedVariants){const mt=metrics(v.columns,adj,samples,m.walls);v.layoutScore330=quality331(mt,v.columns);}
   const balanced=balancedVariants.sort((a,b)=>a.layoutScore330-b.layoutScore330)[0];
   const identical=(a,b)=>a.length===b.length&&a.every(c=>b.some(q=>same(c,q)&&Math.abs(c.b-q.b)<eps&&Math.abs(c.d-q.d)<eps));
-  if(balanced.columns.length&&!identical(balanced.columns,baseline)){ const mt=metrics(balanced.columns,adj,samples,m.walls);report.schemes.push({id:0,label:network334.floors.length?'上下層優先對齊＋沿 TB 支承線補柱':'上下層優先對齊＋補空位／轉換承托',family:'balanced330',...balanced,metrics:mt,score:mt.maxReach*4+mt.meanReach+balanced.columns.length*.15});}
-  for(const s of report.schemes){s.coherence331=coherence331(s.columns,o);s.quality331=quality331(s.metrics,s.columns);s.limitedCoverage331=s.metrics.maxReach>Math.hypot(o.targetX,o.targetY)*.75;if(!adj.above.length&&!adj.below.length){s.label=s.family==='balanced330'?'規則補空位 · 由本層柱網開始':s.label.replace(' · 優先對齊','');}}
+  if(balanced?.columns.length&&!identical(balanced.columns,baseline)){ const mt=metrics(balanced.columns,adj,samples,m.walls);report.schemes.push({id:0,label:network334.floors.length?'上下層優先對齊＋沿 TB 支承線補柱':'上下層優先對齊＋補空位／轉換承托',family:'balanced330',...balanced,metrics:mt,score:mt.maxReach*4+mt.meanReach+balanced.columns.length*.15});}
+  for(const [i,v]of (directional?.variants||[]).entries()){const mt=metrics(v.columns,adj,samples,m.walls);report.schemes.push({id:0,label:v.axis335+' 向 TB · 整排對齊'+(i===0?' · 較短跨度優先':''),family:i===0?'balanced330':'directional335-'+v.axis335,...v,metrics:mt});}
+  report.directions335=(directional?.variants||[]).map(v=>({axis:v.axis335,maxSpan:v.maxTB335,totalSpan:v.totalTB335,routes:v.routeCount335,uncovered:v.coverageUnresolved330}));
+  for(const s of report.schemes){s.coherence331=coherence331(s.columns,o);s.quality331=quality331(s.metrics,s.columns);s.limitedCoverage331=s.metrics.maxReach>Math.hypot(o.targetX,o.targetY)*.75;if(!adj.above.length&&!adj.below.length){s.label=s.family==='balanced330'&&!s.axis335?'規則補空位 · 由本層柱網開始':s.label.replace(' · 優先對齊','');}}
   const aligned=(a,b)=>(a.metrics.unalignedAbove+a.metrics.unalignedBelow)-(b.metrics.unalignedAbove+b.metrics.unalignedBelow)||a.quality331-b.quality331;
   // Reserve different purposes. Multiple traversal orders of one grid no longer
   // crowd out a useful interior arrangement simply because it needs transfers.
-  const chosen=[],families=['existing','只補上下層對齊','沿用建築軸網','均勻柱網','較疏柱網'];
+  const chosen=[],families=['existing','只補上下層對齊','沿用建築軸網','均勻柱網','較疏柱網','directional335-X','directional335-Y'];
   for(const family of families){const variants=report.schemes.filter(s=>s.family===family).sort(family==='只補上下層對齊'?aligned:(a,b)=>a.quality331-b.quality331);if(variants.length)chosen.push(variants[0]);}
   const balancedScheme=report.schemes.find(s=>s.family==='balanced330'),ordered=[...(balancedScheme?[balancedScheme]:[]),...chosen],eligible=[];let rejected=0;
-  const similar=(a,b)=>{const shared=a.columns.filter(c=>b.columns.some(q=>same(c,q)&&Math.abs(c.b-q.b)<eps&&Math.abs(c.d-q.d)<eps)).length,union=a.columns.length+b.columns.length-shared;return shared===union||!a.unchanged&&!b.unchanged&&a.metrics.unalignedAbove===b.metrics.unalignedAbove&&a.metrics.unalignedBelow===b.metrics.unalignedBelow&&shared/union>=.8&&Math.abs(a.metrics.maxReach-b.metrics.maxReach)<.25;};
-  for(const scheme of ordered){if(eligible.some(s=>similar(s,scheme)))continue;try{if(!scheme.unchanged)apply(clone(project),result,key,scheme,report,{confirmReset331:true});const diagnostic334=routeDiagnostics334(p,r,key,scheme.columns,network334);scheme.support330=diagnostic334.supports;scheme.routes334=diagnostic334.routes;scheme.unresolved334=diagnostic334.unresolved;if(!scheme.unchanged&&scheme.support330.some(row=>['missing','transfer','ambiguous'].includes(row.kind)&&!row.tb334&&!scheme.columns.find(c=>same(c,row))?.locked))throw Error('新增柱未找到明確承托路線');eligible.push(scheme);}catch(error){rejected++;}}
-  // Coverage and coherent rows determine display order. A reserved comparison
-  // family is not a recommendation merely because it was generated first.
-  eligible.sort((a,b)=>a.quality331-b.quality331||aligned(a,b));report.schemes=eligible.slice(0,4);const reserved=[eligible.find(s=>s.unchanged),eligible.find(s=>s.family==='只補上下層對齊'),eligible.find(s=>s.family==='balanced330')].filter(Boolean);for(const s of reserved)if(!report.schemes.includes(s)){const replace=report.schemes.findLastIndex(q=>!reserved.includes(q));if(replace>=0)report.schemes[replace]=s;}report.schemes.sort((a,b)=>a.quality331-b.quality331||aligned(a,b));report.blockedByDeleted331=blockedPoints331.size;
-  if(network334.floors.length)report.messages.push('新增柱先核對每個共用樓層的下層支承；沿 X／Y 兩端柱／牆建立 TB 候選線，再沿線補柱。沒有路線不當作已解決。候選線僅為中心線幾何建議，尚未建立 TB 或驗算。');if(network334.limited)report.messages.push('已達 TB 支承線搜尋上限；未列出不代表無解。');if(rejected)report.messages.push('已排除 '+rejected+' 個會改變既有梁或無法完整套用的候選；現有模型未改動。');
-  report.schemes.forEach((s,i)=>s.id=i+1);report.messages.push('先比較樓面覆蓋及整排／整列一致性，再兼顧上下層對齊和柱數；相似方案合併。不是梁跨度或 RC 驗算。');
+  const similar=(a,b)=>{if(a.axis335&&b.axis335&&a.axis335!==b.axis335)return false;const shared=a.columns.filter(c=>b.columns.some(q=>same(c,q)&&Math.abs(c.b-q.b)<eps&&Math.abs(c.d-q.d)<eps)).length,union=a.columns.length+b.columns.length-shared;return shared===union||!a.unchanged&&!b.unchanged&&a.metrics.unalignedAbove===b.metrics.unalignedAbove&&a.metrics.unalignedBelow===b.metrics.unalignedBelow&&shared/union>=.8&&Math.abs(a.metrics.maxReach-b.metrics.maxReach)<.25;};
+  for(const scheme of ordered){if(eligible.some(s=>similar(s,scheme)))continue;try{if(!scheme.unchanged)apply(clone(project),result,key,scheme,report,{confirmReset331:true});const diagnostic334=routeDiagnostics334(p,r,key,scheme.columns,network334,scheme.axis335);scheme.support330=diagnostic334.supports;scheme.routes334=diagnostic334.routes;scheme.unresolved334=diagnostic334.unresolved;if(!scheme.unchanged&&scheme.support330.some(row=>['missing','transfer','ambiguous'].includes(row.kind)&&!row.tb334&&!scheme.columns.find(c=>same(c,row))?.locked))throw Error('新增柱未找到明確承托路線');eligible.push(scheme);}catch(error){rejected++;}}
+  // Compare full directions by maximum span, then total length. Direct-only and
+  // existing arrangements remain explicit alternatives, not zero-span winners.
+  const compare335=(a,b)=>a.axis335&&b.axis335?a.maxTB335-b.maxTB335||a.totalTB335-b.totalTB335||a.quality331-b.quality331:a.axis335?-1:b.axis335?1:a.quality331-b.quality331||aligned(a,b);
+  eligible.sort(compare335);report.schemes=eligible.slice(0,4);const reserved=[eligible.find(s=>s.unchanged),eligible.find(s=>s.family==='只補上下層對齊'),eligible.find(s=>s.family==='balanced330')].filter(Boolean);for(const s of reserved)if(!report.schemes.includes(s)){const replace=report.schemes.findLastIndex(q=>!reserved.includes(q));if(replace>=0)report.schemes[replace]=s;}report.schemes.sort(compare335);report.blockedByDeleted331=blockedPoints331.size;
+  if(network334.floors.length)report.messages.push('分開比較 X／Y 方向：先保留直接支承，再沿平行 TB 線以共同排位整排布柱。優先較短最大 TB 跨度，其次總長；不為填空混加另一方向的長跨 TB。缺口明示待調整下層支承，跨度仍未驗算。');if(network334.limited)report.messages.push('已達 TB 支承線搜尋上限；未列出不代表無解。');if(rejected)report.messages.push('已排除 '+rejected+' 個會改變既有梁或無法完整套用的候選；現有模型未改動。');
+  report.schemes.forEach((s,i)=>s.id=i+1);report.messages.push(network334.floors.length?'直接支承／現況方案另列作比較，不以零條 TB 當作已解決空位。長跨須另核對，橙色上層柱不會縮短下層 TB 跨度。':'先比較樓面覆蓋及整排／整列一致性，再兼顧上下層對齊和柱數；相似方案合併。不是梁跨度或 RC 驗算。');
   if(!adj.above.length&&!adj.below.length)report.messages.push('鄰層未有可比較的柱位；上下對齊未作比較，不代表已完成垂直承托。');
   if(report.limited)report.messages.push('已達候選數上限；可先手動放置關鍵柱再試。');if(!report.schemes.length)report.messages.push('本次未找到符合限制的候選，並非已證明無解。');return report;
  }
@@ -211,7 +269,7 @@ const ColumnSchemes319=(()=>{
    if(fc.length!==scheme.columns.length||scheme.columns.some(c=>!fc.some(q=>same(c,q)&&Math.abs(c.b-q.b)<eps&&Math.abs(c.d-q.d)<eps)))throw Error(f.n+'/F 實際柱位與預覽不同；整批未套用');
    for(const c of fc){const problem=footprintProblem(trial,key,fm,c);if(problem)throw Error(f.n+'/F '+problem+'；整批未套用');if(!scheme.columns.find(q=>same(c,q))?.locked&&nearWall329(c,[fm]))throw Error(f.n+'/F '+c.id+'：新自動柱靠近實際牆位；整批未套用');}
   }
-  if(scheme.family==='balanced330')trial.types[key].columnSchemeReview330=true;project.types[key]=trial.types[key];return {columns:actual.length,added:scheme.columns.filter(c=>!c.existingKey).length};
+  if(scheme.family==='balanced330'||scheme.axis335)trial.types[key].columnSchemeReview330=true;project.types[key]=trial.types[key];return {columns:actual.length,added:scheme.columns.filter(c=>!c.existingKey).length};
  }
  return {defaults,search,apply,support330,deletionInfo331,footprintProblem,spacingProblem,protectedColumn,wallNotes329,tbRoutes334,routeAt334,routeDiagnostics334};
 })();
@@ -224,6 +282,7 @@ const ColumnSchemesUI319=(()=>{
   const review=rows.filter(review330),transfers=review.filter(r=>['transfer','missing'].includes(r.kind));
   return '<p style="color:#8a4a0c">需另設／補建承托 '+transfers.length+' 處；其他承托待核對 '+(review.length-transfers.length)+' 處（按樓層計）</p>'+(review.length?'<details><summary>'+title+' · '+review.length+' 處</summary><div style="max-height:220px;overflow:auto">'+review.map(r=>'<p>'+esc(FloorLevels.name(p,r.at))+' · '+(r.id?esc(r.id)+' · ':'')+'('+fmt(r.x)+', '+fmt(r.y)+') m → '+esc(FloorLevels.name(p,r.below))+'：'+supportLabels330[r.kind]+(r.member?' '+esc(r.member):'')+(r.tb334?'；擬議 TB '+esc(r.tb334)+'（未建立／未驗算）':'')+'</p>').join('')+'</div></details>':'')+'<p class="muted">只識別幾何位置；柱牆承壓、TB 跨度／高度、承載力及穩定系統仍須核對。未建立支承不會當作已完成 Transfer。</p>';
  }
+ function directionPanel335(x){return x.axis335?'<p data-direction335><b>'+x.axis335+' 向整排布柱 · 最大 TB 跨度 '+fmt(x.maxTB335)+' m</b><br>擬議新增 TB '+x.routeCount335+' 條 · 總長 '+fmt(x.totalTB335)+' m<br>共用排位，受限位置留空；不補另一方向的長跨 TB。'+(x.coverageUnresolved330?'仍有 '+x.coverageUnresolved330+' 個樓面抽樣位置超出排柱參考距離，請調整下層支承或手動安排。':'跨度較短僅為方案比較，未代表驗算通過。')+'</p>':'';}
  function routesPanel334(p,routes,unresolved=0){return '<section data-tb334-routes><b>擬議 TB 支承線 · '+routes.length+' 條</b><p class="muted">X／Y 中心線跨度；兩端為下層實際柱／牆。虛線只供布梁，套用柱位不會建立 TB，跨度及承載力未驗算。</p>'+routes.map(q=>'<p data-tb334-route="'+esc(q.id)+'">'+esc(q.id)+' · '+esc(FloorLevels.name(p,q.below))+' · '+q.axis+' 向 · '+esc(q.a.id)+' ('+q.a.point.map(fmt).join(', ')+') → '+esc(q.z.id)+' ('+q.z.point.map(fmt).join(', ')+') · 跨度 '+fmt(q.span)+' m</p>').join('')+(unresolved?'<p role="alert">'+unresolved+' 處未找到明確承托路線；保留原柱並待核對。</p>':'')+'</section>';}
  function create(host){const states=new Map();let busy=false,serial=0;
   function state(){const {p,key}=host.get();if(!states.has(key))states.set(key,{draft:ColumnSchemes319.defaults(p,key),open:false,report:null,preview:0,status:''});return states.get(key);}
@@ -237,7 +296,7 @@ const ColumnSchemesUI319=(()=>{
     +'<label><input type="checkbox" data-scheme319-keep '+(s.draft.keepAll?'checked':'')+' '+(busy?'disabled':'')+'>固定全部現有柱（只建議補柱）</label><div class="row" style="margin-top:10px"><button type="button" data-scheme319-generate '+(busy?'disabled':'')+'>產生柱位方案</button><button type="button" data-scheme319-clear>關閉預覽</button></div><p role="status" style="color:#126579">'+esc(busy?'正在搜尋／核對，請稍候…':status)+'</p>'+(s.applied331?.stamp===stamp&&s.applied331.status===status&&!busy?'<button type="button" data-scheme333-undo>撤銷套用</button>':'')
     +(report?'<p>固定 '+report.lockedCount+' 支柱；影響 '+report.affectedFloors.map(f=>esc(FloorLevels.name(p,f))).join('、')+'。</p><p data-scheme331-blocked>本次候選中 '+report.blockedByDeleted331+' 個位置被刪柱／停用記錄阻擋（不是可用柱數）。</p>'+floorText:'')+(stale?'<p role="alert" style="color:#a33">模型已改變，請重新產生方案。</p>':'')+(report?.messages||[]).map(v=>'<p class="muted">'+esc(v)+'</p>').join('')
     +(p.types[key].columnSchemeReview330&&!report?'<section class="notice"><b>已套用方案 · 承托仍需核對</b>'+(()=>{const q=ColumnSchemes319.routeDiagnostics334(p,result,key,Engine.model(p,key).columns.filter(c=>c.status!=='上层柱').map(c=>({id:c.id,x:Engine.columnRect(c).x,y:Engine.columnRect(c).y})));return supportPanel330(p,q.supports)+routesPanel334(p,q.routes,q.unresolved);})()+'</section>':'')
-    +(report?.schemes||[]).map(x=>{const m=x.metrics;return '<section class="notice" style="margin:10px 0;border-color:'+(s.preview===x.id?'#1b8a71':'#c7dbe3')+'"><b>方案 '+x.id+' · '+esc(x.label)+'</b>'+(x.limitedCoverage331?'<p style="color:#8a4a0c">樓面仍有較大空位；此方案僅供受限佈置比較。</p>':'')+'<p>'+m.count+' 支柱 · 新增 '+x.columns.filter(c=>!c.existingKey).length+' 支<br>實際最小 X／Y：'+fmt(m.minX)+'／'+fmt(m.minY)+' m<br>同排／列最大柱距 X／Y（未扣牆，非梁跨）：'+fmt(m.maxX)+'／'+fmt(m.maxY)+' m<br>'+alignText(m)+'<br>樓面抽樣最遠距柱／牆 '+fmt(m.maxReach)+' m（僅排序）</p>'+(x.family==='balanced330'?'<p class="muted">先保留合法對齊位置；有下層模型時，沿兩端支承的 TB 候選線補柱。'+(x.coverageUnresolved330?'仍有 '+x.coverageUnresolved330+' 個抽樣位置超出排柱參考距離；請檢查受限空間。':'已改善抽樣空位；仍須布梁及驗算。')+'</p>':'')+supportPanel330(p,x.support330||[])+routesPanel334(p,x.routes334||[],x.unresolved334)+(report.resetDeleted331&&!x.unchanged?'<p data-scheme333-apply-note style="color:#8a4a0c">套用此方案會解除 '+report.deletion331.resettableCount+' 個已刪柱位置記錄；可撤銷。</p>':'')+'<div class="row"><button type="button" data-scheme319-preview="'+x.id+'" '+(stale||busy?'disabled':'')+'>預覽方案 '+x.id+'</button><button type="button" data-scheme319-apply="'+x.id+'" '+(stale||busy||x.unchanged?'disabled':'')+'>'+(x.unchanged?'現況，無須套用':'套用方案 '+x.id)+'</button></div></section>';}).join('')+'<p class="muted">棕色虛線＝擬議 TB（白方框為下層兩端支承）；綠色虛線＝建議新增；橙色＝承托待核對（只顯示當層）；藍色＝保留柱；紅色叉＝將移除的未鎖定自動柱。方案柱位固定保存；可一次撤銷。新增柱後仍須檢查梁布置及傳荷。</p></div></details>';
+    +(report?.schemes||[]).map(x=>{const m=x.metrics;return '<section class="notice" style="margin:10px 0;border-color:'+(s.preview===x.id?'#1b8a71':'#c7dbe3')+'"><b>方案 '+x.id+' · '+esc(x.label)+'</b>'+(x.limitedCoverage331?'<p style="color:#8a4a0c">樓面仍有較大空位；此方案僅供受限佈置比較。</p>':'')+'<p>'+m.count+' 支柱 · 新增 '+x.columns.filter(c=>!c.existingKey).length+' 支<br>實際最小 X／Y：'+fmt(m.minX)+'／'+fmt(m.minY)+' m<br>同排／列最大柱距 X／Y（未扣牆，非梁跨）：'+fmt(m.maxX)+'／'+fmt(m.maxY)+' m<br>'+alignText(m)+'<br>樓面抽樣最遠距柱／牆 '+fmt(m.maxReach)+' m（僅排序）</p>'+directionPanel335(x)+(x.family==='balanced330'&&!x.axis335?'<p class="muted">先保留合法對齊位置；有下層模型時，沿兩端支承的 TB 候選線補柱。'+(x.coverageUnresolved330?'仍有 '+x.coverageUnresolved330+' 個抽樣位置超出排柱參考距離；請檢查受限空間。':'已改善抽樣空位；仍須布梁及驗算。')+'</p>':'')+supportPanel330(p,x.support330||[])+routesPanel334(p,x.routes334||[],x.unresolved334)+(report.resetDeleted331&&!x.unchanged?'<p data-scheme333-apply-note style="color:#8a4a0c">套用此方案會解除 '+report.deletion331.resettableCount+' 個已刪柱位置記錄；可撤銷。</p>':'')+'<div class="row"><button type="button" data-scheme319-preview="'+x.id+'" '+(stale||busy?'disabled':'')+'>預覽方案 '+x.id+'</button><button type="button" data-scheme319-apply="'+x.id+'" '+(stale||busy||x.unchanged?'disabled':'')+'>'+(x.unchanged?'現況，無須套用':'套用方案 '+x.id)+'</button></div></section>';}).join('')+'<p class="muted">棕色虛線＝擬議 TB（白方框為下層兩端支承）；綠色虛線＝建議新增；橙色＝承托待核對（只顯示當層）；藍色＝保留柱；紅色叉＝將移除的未鎖定自動柱。方案柱位固定保存；可一次撤銷。新增柱後仍須檢查梁布置及傳荷。</p></div></details>';
   }
   document.addEventListener('toggle',e=>{if(e.target.id==='column-schemes319')state().open=e.target.open;},true);
   document.addEventListener('change',e=>{if(!e.target.matches('[data-scheme319-keep]'))return;const s=state();s.draft.keepAll=e.target.checked;s.report=null;s.preview=0;s.status='輸入已改變，請重新產生方案。';host.refresh();});

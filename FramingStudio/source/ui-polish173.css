@@ -5,6 +5,10 @@ td>.unit-warning173{position:absolute;z-index:5;top:100%;right:0;width:15em;max-
 
 /* E2.287: ordinary screen UI only; original report views and print styles are preserved. */
 @media screen {
+/* Manual numeric entry is the default for all current and future app fields. */
+input[type="number"]{appearance:textfield;-moz-appearance:textfield}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 :where(html[data-ui-scale]) #nav [hidden]{display:none!important;}
 
 
@@ -1215,3 +1219,6 @@ html[data-ui-scale] :is(body > header, #nav, #layout-tools){
 }
 
 }
+
+/* Keep neighbouring fields aligned when an inline validation message wraps. */
+@media screen{#side tr:has([data-feedback172])>td,#workspace-pages tr:has([data-feedback172])>td{vertical-align:top}}

@@ -23,11 +23,13 @@ const InputFeedback172=(()=>{
   const note=document.createElement('span'),id='input-error172-'+(++serial);
   note.id=id;note.className='input-error172';note.setAttribute('role','alert');note.textContent=message+'；此输入尚未应用。';
   e.dataset.feedback172=id;e.setAttribute('aria-invalid','true');e.setAttribute('aria-describedby',[snapshot.description,id].filter(Boolean).join(' '));e.after(note);
-  if(focus)e.focus({preventScroll:true});
+  if(typeof InputContinuity326!=='undefined')InputContinuity326.rejected(e);
+  // A blur/change commit must not steal the next click or Tab target.
+  if(focus&&!current)e.focus({preventScroll:true});
  }
  function ready(){const e=document.querySelector('[data-feedback172][aria-invalid=true]');if(e){e.focus({preventScroll:false});return false;}return true;}
  if(typeof document!=='undefined'){
-  document.addEventListener('change',e=>{if(!editable(e.target))return;current=e.target;queueMicrotask(()=>{if(current===e.target)current=null;});},true);
+  document.addEventListener('change',e=>{if(!editable(e.target))return;current=e.target;setTimeout(()=>{if(current===e.target)current=null;},0);},true);
   document.addEventListener('input',e=>clear(e.target),true);
  }
  return {number,capture,reject,clear,ready};

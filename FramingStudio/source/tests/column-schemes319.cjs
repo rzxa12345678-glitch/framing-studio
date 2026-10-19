@@ -150,8 +150,8 @@ if(require.main===module){
   const original=physical(model(p).models.F1);
   assert.equal(out.report.lockedCount,original.length);
   for(const s of out.report.schemes){assert(s.metrics.maxX<=6+1e-6&&s.metrics.maxY<=6+1e-6);for(const q of original)assert(s.columns.some(z=>z.id===q.id&&near(z.x,q.x)&&near(z.y,q.y)),'keepAll moved/dropped an existing column');}
-  for(const options of [{targetX:0},{targetY:3},{maxX:2},{maxY:-1}])assert.throws(()=>search(p,'F1',options),'invalid target/maximum spacing accepted');
-  passed.push('Keep-all protection and maximum row/column spacing are enforced; impossible numeric settings reject clearly');
+  const fresh=search(p,'F1').report;for(const options of [{targetX:0},{targetY:3},{maxX:2},{maxY:-1}])assert.deepEqual(clone(search(p,'F1',options).report.schemes),clone(fresh.schemes),'retired target/maximum options affect proposals');
+  passed.push('Keep-all protection retained; retired target/maximum inputs cannot override saved minimum spacing');
  }
  if(process.argv[2]){
   const p=JSON.parse(fs.readFileSync(process.argv[2],'utf8').replace(/^\uFEFF/,'')),key='F03',original=model(p).models[key].columns.filter(q=>q.status!=='上层柱'),out=requireSchemes(search(p,key));

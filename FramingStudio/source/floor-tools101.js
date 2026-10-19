@@ -17,6 +17,10 @@ const FloorColumns101=(()=>{
   if(!follow&&!once){freeze311(trial,key,before);}
   else{
    if(t.mode==='manual')for(const c of t.columns)c.autoAdded=true;
+   // Opt in on an explicit update; merely opening an older project never repositions its columns.
+   const protected329=before.columns.filter(c=>c.status!=='上层柱'&&ColumnSchemes319.protectedColumn(trial,key,before,c,false));
+   for(const c of protected329.filter(c=>c.anchorX!==undefined)){const pk=Engine.columnPositionKey(c);if(!t.columnPlacements?.some(q=>q.key===pk)){const r=Engine.columnRect(c);(t.columnPlacements??=[]).push({key:pk,x:r.x,y:r.y,explicit174:true});}}
+   t.columnWallPolicy329=true;
    t.mode='auto';delete t.columnFrozen311;
    const after=Engine.model(trial,key),protectedColumns=before.columns.filter(c=>c.anchorX===undefined||Engine.columnPositionRecord(t,c)||t.columnPlacements?.some(r=>r.key===Engine.columnPositionKey(c)));
    for(const c of protectedColumns){const next=after.columns.find(n=>Engine.columnPositionKey(n)===Engine.columnPositionKey(c));if(!next)throw Error(c.id+' 的手動柱位與自動布柱衝突；未套用，請先核對柱位、牆及邊界');const a=Engine.columnRect(c),b=Engine.columnRect(next);if(['x','y','w','d'].some(k=>Math.abs(a[k]-b[k])>1e-7))throw Error(c.id+' 的手動柱位或尺寸不能保留；未套用');}
@@ -186,6 +190,8 @@ const FloorColumns101=(()=>{
  }
  // E2.308: translate/copy actual column centres within one shared Framing.
  // Work on a clone so any invalid destination leaves the entire batch unchanged.
+ // Shared geometry validation for proposals and manual move/copy; no design equations.
+ function spacingProblem325(a,b,min){const eps=1e-7,fmt=v=>Number(v.toFixed(3));for(const [axis,cross,anchor]of [['x','y','anchorY'],['y','x','anchorX']])if(min[axis]>0&&(Math.abs(a[cross]-b[cross])<eps||a[anchor]!==undefined&&a[anchor]===b[anchor])&&Math.abs(a[axis]-b[axis])<min[axis]-eps)return axis.toUpperCase()+' 中心距 '+fmt(Math.abs(a[axis]-b[axis]))+' m < '+min[axis]+' m';const limit=Math.min(min.x||0,min.y||0),distance=Math.hypot(a.x-b.x,a.y-b.y);return limit>0&&distance<limit-eps?'實際中心距 '+fmt(distance)+' m < '+limit+' m':'';}
  function transform308(p,result,key,f,hits,dx,dy,copy=false){
   if(![dx,dy].every(Number.isFinite)||Math.abs(dx)>10000||Math.abs(dy)>10000||Math.hypot(dx,dy)<1e-8)throw Error('請輸入有效且非零的 ΔX／ΔY（m）');
   if(!hits?.length)throw Error('請先選取當層柱');
@@ -193,6 +199,8 @@ const FloorColumns101=(()=>{
   for(const hit of hits){assertEditable(hit,f);const c=model.columns.find(c=>c.id===hit.id&&c.status!=='上层柱');if(hit.kind!=='COL'||!c)throw Error('只能操作當層柱，請重新選取');const pk=Engine.columnPositionKey(c);if(seen.has(pk))continue;seen.add(pk);const r=Engine.columnRect(c);plan.push({c,pk,r:{...r,x:r.x+dx,y:r.y+dy}});}
   const others=copy?model.columns:model.columns.filter(c=>!seen.has(Engine.columnPositionKey(c))),targets=plan.map(x=>x.r);
   for(let i=0;i<plan.length;i++){const {c,r}=plan[i];let reason='';if(!Engine.rectAllowed(model.ts,r.x,r.y,r.w,r.d,true))reason='柱截面超出建築範圍';else if(Engine.columnZoneConflict314(p.types[key],r))reason='柱截面與禁柱區重疊';else if(model.walls.some(w=>Engine.overlap(r,Engine.rect(w))))reason='與牆重疊';else if(others.some(o=>Engine.overlap(r,Engine.columnRect(o)))||targets.some((o,j)=>j!==i&&Engine.overlap(r,o)))reason='與其他柱重疊';if(reason)throw Error(c.id+'：'+reason+'；整批未'+(copy?'複製':'移動'));}
+  const min=p.types[key].columnSpacing258||{},dest=plan.map(x=>({...x.c,...x.r}));
+  for(let i=0;i<dest.length;i++)for(const other of [...others.filter(c=>c.status!=='上层柱').map(c=>({...c,...Engine.columnRect(c)})),...dest.slice(0,i)]){const problem=spacingProblem325(dest[i],other,min);if(problem)throw Error(dest[i].id+'／'+other.id+'：'+problem+'；整批未'+(copy?'複製':'移動')+'，原柱位保留');}
   const trial=Engine.clone(p),before=Engine.model(p,key),ids=[];
   mutate(trial,key,f,q=>{const t=q.types[key];Engine.freezeAutoBeams(q,key,before);const used=new Set([...t.columns,...before.columns].map(c=>c.id));
    for(const x of plan){let pk=x.pk;if(copy){let n=1,id;do{id='C'+n++;}while(used.has(id));used.add(id);pk='id:'+id;
@@ -226,7 +234,7 @@ const FloorColumns101=(()=>{
  document.addEventListener('click',e=>{const a=e.target.closest('[data-c101-copy]');if(!a||a.disabled)return;const box=a.closest('[data-column-floor]'),f=Number(box.dataset.columnFloor),step=Number(a.dataset.c101Copy),h=StudioHost.get();if(f!==h.floor||box.dataset.columnFraming!==h.key){h&&StudioHost.toast('請先選擇當層柱');return;}const hit={kind:'COL',id:box.dataset.columnId,f};let outcome;if(StudioHost.transact(()=>{const now=StudioHost.get();outcome=copyAdjacent(now.p,now.result,now.key,now.floor,hit,step);}))StudioHost.toast(outcome.message);});
  document.addEventListener('click',e=>{const a=e.target.closest('[data-c101-delete]');if(!a)return;const b=a.closest('[data-column-floor]'),f=+b.dataset.columnFloor;StudioHost.transact(()=>{assertEditable({kind:'COL',f},StudioHost.get().floor);const {p,result}=StudioHost.get(),key=b.dataset.columnFraming;mutate(p,key,f,q=>Engine.removeMember(q,key,{kind:'COL',id:b.dataset.columnId}));});});
  for(const name of ['editSize','removeMember','setTransferColumn']){const original=Engine[name];Engine[name]=function(p,key,hit,...args){if(name==='editSize'&&hit.kind==='COL'){const f=hit.f||Engine.floors(p).find(v=>v.type===key)?.n,k=key||Engine.floors(p)[f-1]?.type;if(!k||!f)throw Error('柱楼层不存在');const size=args[0],df={...p.defaults,...p.types[k].columnDefaults101},result=Engine.generate(p),c=Engine.floorModel(result,f,k).columns.find(c=>c.id===hit.id);return resizeMany(p,result,k,f,[{hit:{...hit,f},b:size.b??df.cb,d:size.d??df.cd,bMode201:size.preserveColumnB201?c?.bMode201??'manual':size.b==null?'default':'manual',dMode201:size.preserveColumnD201?c?.dMode201??'manual':size.d==null?'default':'manual'}]);}if(hit.kind==='COL'&&hit.f){const f=hit.f,k=key||Engine.floors(p)[f-1]?.type;if(!k)throw Error('柱楼层不存在');return mutate(p,k,f,q=>original(q,k,{...hit,f:undefined},...args));}return original(p,key,hit,...args);};}
- return {noColumnGrid313,allNoColumnGrid313,follows311,update311,transform308,positionMany257,resizeMany,recommendationPlan,applyRecommendations,record,view,mutate,defaults,mode,models,panel,copyAdjacent,copyManyAdjacent,removeMany,snap,viewport,isReference,assertEditable};
+ return {spacingProblem325,noColumnGrid313,allNoColumnGrid313,follows311,update311,transform308,positionMany257,resizeMany,recommendationPlan,applyRecommendations,record,view,mutate,defaults,mode,models,panel,copyAdjacent,copyManyAdjacent,removeMany,snap,viewport,isReference,assertEditable};
 })();
 
 // E2.292: copy physical wall geometry to the floor above without inheriting axis names.

@@ -1,0 +1,25 @@
+// Isolated EXE self-test. Fixtures are injected by the runner; no live user profile.
+window.confirmSmoke316={done:false,ok:false,passed:[]};
+(async()=>{const out=window.confirmSmoke316,$=s=>document.querySelector(s),tick=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))),check=(n,v)=>{if(!v)throw Error(n);out.passed.push(n);},click=async s=>{$(s).click();await tick();if(s.startsWith('[data-tab=')&&getComputedStyle($('#side')).display==='none'){$('#mobile-inputs').click();await tick();}},model=()=>JSON.stringify(StudioHost.get().p,(_,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(k=>[k,v[k]])):v),wait=async fn=>{const end=Date.now()+60000;while(!fn()){if(Date.now()>end)throw Error('UI timeout');await new Promise(r=>setTimeout(r,30));}};
+const load=async p=>{const dt=new DataTransfer();dt.items.add(new File([JSON.stringify(p)],'qa325.framing.json',{type:'application/json'}));$('#file').files=dt.files;$('#file').dispatchEvent(new Event('change',{bubbles:true}));await wait(()=>$('#studio-confirm316')||$('#project-name').textContent===p.name);if($('#studio-confirm316'))throw Error('Confirmation requires a fresh isolated test profile');await wait(()=>$('#project-name').textContent===p.name);await tick();};
+const field=d=>$('[data-action=column-spacing258][data-f='+d+']');
+const commit=async(d,value)=>{field(d).focus();field(d).value=value;field(d).dispatchEvent(new Event('input',{bubbles:true}));field(d).blur();await tick();};
+try{
+await load(qaStart325);StudioHost.viewFloor(5);await click('[data-tab=columns]');
+check('No independent spacing page; continuous 05/06 numbers',!$('[data-tab=columnSpacing]')&&$('[data-tab=columns]').textContent.includes('05')&&$('[data-tab=columnMove]').textContent.includes('06'));
+check('Legacy Q5 minimum values restored in column panel',field('x').value==='7'&&field('y').value==='7');
+check('No target/maximum fields or numeric spinner',!$('[data-scheme319-input]')&&field('x').type==='text');
+const initial=model();$('#column-schemes319').open=true;await click('[data-scheme319-generate]');await wait(()=>!$('[data-scheme319-generate]').disabled);check('Offline schemes generated from stored minimum',!!$('[data-scheme319-preview]')&&model()===initial);
+field('x').focus();field('x').value='';field('x').dispatchEvent(new Event('input',{bubbles:true}));check('Empty editing draft allowed before commit',field('x').value===''&&model()===initial);field('x').blur();await tick();check('Blank clears only current X minimum',StudioHost.get().p.types.F05.columnSpacing258.x===undefined&&StudioHost.get().p.types.F05.columnSpacing258.y===7);
+check('Minimum edit invalidates old Apply buttons',[...document.querySelectorAll('[data-scheme319-apply]')].every(x=>x.disabled));
+await commit('x','7');check('Restore minimum recovers exact original model',model()===initial);await commit('y','8');await click('#undo');check('Spacing edit is one undo step',model()===initial);
+await commit('x','-1');check('Invalid value leaves stored settings unchanged',model()===initial&&!!$('[aria-invalid=true]'));await commit('x','7');
+await click('[data-tab=regions]');await click('[data-tab=columns]');check('Settings survive page navigation',field('x').value==='7'&&field('y').value==='7');
+await load(qaMove325);await click('[data-tab=columnMove]');await click('[data-action=select-all-columns101]');
+let step=$('[data-column-draft308=step]');step.value='15';step.dispatchEvent(new Event('input',{bubbles:true}));const beforeMove=model();await click('[data-column-move308=right]');
+check('Boundary conflict retains original model',model()===beforeMove&&!!$('#side [role=alert]'));
+await load({...qaMove325,name:'QA 325 legal move',types:{...qaMove325.types,F2:{...qaMove325.types.F2,columns:[]}}});await click('[data-tab=columnMove]');await click('[data-action=select-all-columns101]');step=$('[data-column-draft308=step]');step.value='1';step.dispatchEvent(new Event('input',{bubbles:true}));const originalMove=model();await click('[data-column-move308=right]');check('Legal batch move succeeds',model()!==originalMove);await click('#undo');check('Move undo restores exact model',model()===originalMove);
+await click('[data-action=select-all-columns101]');let dx=$('[data-column-draft308=dx]'),dy=$('[data-column-draft308=dy]');dx.value='0';dy.value='6';for(const e of [dx,dy])e.dispatchEvent(new Event('input',{bubbles:true}));await click('[data-column-copy308]');check('Copy spacing conflict identifies members and retains original',model()===originalMove&&$('#side [role=alert]')?.textContent.includes('中心距'));
+dy=$('[data-column-draft308=dy]');dy.value='7';dy.dispatchEvent(new Event('input',{bubbles:true}));await click('[data-column-copy308]');check('Legal copy succeeds and clears old conflict',model()!==originalMove&&!$('#side [role=alert]'));
+await load(qaStart325);StudioHost.viewFloor(5);await click('[data-tab=columns]');await click('#save');out.saved=model();out.uiOK=true;StudioDialogs316.notice('E2.325 柱距整合測試完成','本機驗證');
+}catch(e){out.error=e.stack||String(e);}finally{out.done=true;}})();

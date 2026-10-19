@@ -1,5 +1,7 @@
 # Framing Studio
 
+E2.329 正式發布核對：Q5 柱距缺陷已有隨庫測試，包含套用與保存重開。完整原 Q5 模型未提供，不宣稱已完成原模型核驗；可用 `FRAMING_Q5_MODEL` 明確指定。A/B 格式及原 Excel/VBA 保留。詳見 [合併驗證與限制](FramingStudio/verification/merge329.md)及[測試用法](FramingStudio/source/tests/fixtures/README.md)。
+
 E2.329 · **自動柱避牆及實際截面預覽**：避讓牆身／牆端，保留手動和特殊承托柱並提示。舊模型開啟不重排，按自動布柱或套用方案才更新。網頁及 EXE 已用目前模型副本核對，原計算、Excel/VBA 及 A/B 抄不變。詳見 [E2.329 驗證](FramingStudio/verification/release329.json)。
 
 E2.328 · **數字選取保留與逐條 Grid 複製**：修正首次全選被面板更新取消；X／Y 每條軸線可複製至全部 Framing，保留其他軸線及區域，衝突整批提示，可撤銷。網頁及 EXE 已驗證；原計算、Excel/VBA 和 A/B 抄不變。詳見 [E2.328 驗證](FramingStudio/verification/release328.json)。

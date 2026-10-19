@@ -1,0 +1,840 @@
+{
+  "version": "E2.329",
+  "baseline": "70c1ee165395324d90611d58cd049e3bda1340ca",
+  "reviewedPRHead": "a1ce3230d2f04785892430bfe09261acc9152531",
+  "pullRequest": 29,
+  "addedChange": "Portable Q5 spacing regression only; existing E2.329 production app/source/binary unchanged.",
+  "originalQ5Model": {
+    "status": "not supplied",
+    "note": "Synthetic regression is not a full original-Q5 model verification."
+  },
+  "q5": {
+    "passed": [
+      "Same-row, staggered and copied destinations below 7m rejected atomically",
+      "Legal move/copy keeps saved spacing, identities and dimensions",
+      "Wall, no-column zone and exterior remain atomic blockers",
+      "Recorded 6.519m staggered-column defect now produces an explicit conflict",
+      "Portable Q5 defect reproduction: candidate/apply/reopen centres >=7m; inputs and deleted positions preserved",
+      "Recorded 6.519m pair cannot be retained as a legal 7m scheme; source remains intact"
+    ],
+    "synthetic": [
+      {
+        "label": "沿用建築軸網",
+        "count": 20
+      },
+      {
+        "label": "只補上下層對齊 · 優先對齊",
+        "count": 20
+      },
+      {
+        "label": "較疏柱網 · 優先對齊",
+        "count": 29
+      }
+    ],
+    "original": {
+      "status": "not supplied",
+      "note": "Synthetic regression is not a full original-Q5 model verification."
+    }
+  },
+  "passedChecks": 31,
+  "checks": [
+    {
+      "test": "column-spacing325",
+      "exit": 0,
+      "ms": 576
+    },
+    {
+      "test": "column-wall329",
+      "exit": 0,
+      "ms": 1055
+    },
+    {
+      "test": "axis-copy328",
+      "exit": 0,
+      "ms": 60
+    },
+    {
+      "test": "column-schemes319",
+      "exit": 0,
+      "ms": 864
+    },
+    {
+      "test": "pr-integration324",
+      "exit": 0,
+      "ms": 449
+    },
+    {
+      "test": "column-controls311",
+      "exit": 0,
+      "ms": 434
+    },
+    {
+      "test": "column-transform308",
+      "exit": 0,
+      "ms": 321
+    },
+    {
+      "test": "column-spacing258",
+      "exit": 0,
+      "ms": 404
+    },
+    {
+      "test": "column-tributary263",
+      "exit": 0,
+      "ms": 522
+    },
+    {
+      "test": "column-spacing258-parity",
+      "exit": 0
+    },
+    {
+      "test": "column-anchors174",
+      "exit": 0,
+      "ms": 294
+    },
+    {
+      "test": "wall-follow322",
+      "exit": 0,
+      "ms": 328
+    },
+    {
+      "test": "wall-follow322-baseline",
+      "exit": 0
+    },
+    {
+      "test": "wall-follow322-edge",
+      "exit": 0,
+      "ms": 323
+    },
+    {
+      "test": "diagonal318",
+      "exit": 0,
+      "ms": 728
+    },
+    {
+      "test": "secondary320",
+      "exit": 0,
+      "ms": 2235
+    },
+    {
+      "test": "regions319",
+      "exit": 0,
+      "ms": 997
+    },
+    {
+      "test": "cad-selection321",
+      "exit": 0,
+      "ms": 58
+    },
+    {
+      "test": "diagonal315",
+      "exit": 0,
+      "ms": 5968
+    },
+    {
+      "test": "summary-sections205",
+      "exit": 0,
+      "ms": 787
+    },
+    {
+      "test": "summary-deflection211",
+      "exit": 0,
+      "ms": 976
+    },
+    {
+      "test": "report-cache277",
+      "exit": 0
+    },
+    {
+      "test": "report-adoption254",
+      "exit": 0,
+      "ms": 477
+    },
+    {
+      "test": "report-slab-preflight276",
+      "exit": 0,
+      "ms": 1378
+    },
+    {
+      "test": "report-handoff248",
+      "exit": 0,
+      "ms": 4340
+    },
+    {
+      "test": "report-ui-scale302-ui",
+      "exit": 0
+    },
+    {
+      "test": "report-scroll296-ui",
+      "exit": 0
+    },
+    {
+      "test": "input-axis328-browser",
+      "exit": 0,
+      "ms": 4659
+    },
+    {
+      "test": "full-audit-e2324-parity-SB",
+      "exit": 0,
+      "sha256": "f6d8c869a4a5b73aee7ba957bfc3df2eb991c64f36f4c44c498e569eadd890dd"
+    },
+    {
+      "test": "full-audit-e2324-parity-TB",
+      "exit": 0,
+      "sha256": "0582d923231e194f19683d89c5eb266abb2f16c657528259db750d61338d8b0b"
+    },
+    {
+      "test": "legacy-boundary118-baseline-comparison",
+      "exit": 0,
+      "baseline": "fixture has one connected slab",
+      "current": "fixture has one connected slab",
+      "note": "Legacy one-connected-slab fixture already fails in E2.324; not a newly introduced regression."
+    }
+  ],
+  "historicalTestLimitations": {
+    "column-centres159": "Historical test depends on two untracked E2.159 fixture files that are not available. Current column-tributary263 and column-anchors174 tests pass.",
+    "clearance119": "Embedded E2.118 fixture already fails with the same one-connected-slab assertion on E2.324; current clearance327 browser/EXE tests pass.",
+    "audit-performance247": "Embedded E2.246 output hash is stale on E2.324 too. Full SB and TB output and solver/model counts were independently compared with E2.324 and are identical."
+  },
+  "initialAttempts": [
+    {
+      "test": "column-spacing325",
+      "exit": 0,
+      "ms": 576
+    },
+    {
+      "test": "column-wall329",
+      "exit": 0,
+      "ms": 1055
+    },
+    {
+      "test": "axis-copy328",
+      "exit": 0,
+      "ms": 60
+    },
+    {
+      "test": "column-schemes319",
+      "exit": 0,
+      "ms": 864
+    },
+    {
+      "test": "pr-integration324",
+      "exit": 0,
+      "ms": 449
+    },
+    {
+      "test": "column-controls311",
+      "exit": 0,
+      "ms": 434
+    },
+    {
+      "test": "column-transform308",
+      "exit": 0,
+      "ms": 321
+    },
+    {
+      "test": "column-spacing258",
+      "exit": 0,
+      "ms": 404
+    },
+    {
+      "test": "column-tributary263",
+      "exit": 0,
+      "ms": 522
+    },
+    {
+      "test": "column-centres159",
+      "exit": 1,
+      "ms": 2336
+    },
+    {
+      "test": "column-spacing258-parity",
+      "exit": 1,
+      "ms": 3271
+    },
+    {
+      "test": "column-anchors174",
+      "exit": 0,
+      "ms": 294
+    },
+    {
+      "test": "wall-follow322",
+      "exit": 0,
+      "ms": 328
+    },
+    {
+      "test": "wall-follow322-baseline",
+      "exit": 1,
+      "ms": 65
+    },
+    {
+      "test": "wall-follow322-edge",
+      "exit": 0,
+      "ms": 323
+    },
+    {
+      "test": "diagonal318",
+      "exit": 0,
+      "ms": 728
+    },
+    {
+      "test": "secondary320",
+      "exit": 0,
+      "ms": 2235
+    },
+    {
+      "test": "regions319",
+      "exit": 0,
+      "ms": 997
+    },
+    {
+      "test": "cad-selection321",
+      "exit": 0,
+      "ms": 58
+    },
+    {
+      "test": "clearance119",
+      "exit": 1,
+      "ms": 1226
+    },
+    {
+      "test": "diagonal315",
+      "exit": 0,
+      "ms": 5968
+    },
+    {
+      "test": "summary-sections205",
+      "exit": 0,
+      "ms": 787
+    },
+    {
+      "test": "audit-performance247",
+      "exit": 1,
+      "ms": 452
+    },
+    {
+      "test": "summary-deflection211",
+      "exit": 0,
+      "ms": 976
+    },
+    {
+      "test": "report-cache277",
+      "exit": 1,
+      "ms": 230
+    },
+    {
+      "test": "report-adoption254",
+      "exit": 0,
+      "ms": 477
+    },
+    {
+      "test": "report-slab-preflight276",
+      "exit": 0,
+      "ms": 1378
+    },
+    {
+      "test": "report-handoff248",
+      "exit": 0,
+      "ms": 4340
+    },
+    {
+      "test": "report-ui-scale302-ui",
+      "exit": 1,
+      "ms": 387
+    },
+    {
+      "test": "report-scroll296-ui",
+      "exit": 1,
+      "ms": 31271
+    },
+    {
+      "test": "input-axis328-browser",
+      "exit": 0,
+      "ms": 4659
+    }
+  ],
+  "browserChecks": 82,
+  "browser": [
+    {
+      "test": "column-wall329-ui.js",
+      "done": true,
+      "ok": false,
+      "uiOK": true,
+      "passed": [
+        "Private current model loaded on the Columns page",
+        "Automatic wall-clearance guidance is visible",
+        "Generate/preview leaves the current model unchanged",
+        "All proposed ordinary column footprints clear finite wall sides and ends",
+        "Preview fill uses the actual physical column section",
+        "Preview outline has no extra 2px expansion and is clipped to the section",
+        "Applying the preview creates exactly its displayed physical sections",
+        "Applied columns remain clear of walls",
+        "One Undo restores the original model after applying a scheme",
+        "Ordinary automatic placement enables wall avoidance",
+        "Ordinary automatic columns clear actual wall faces and ends",
+        "One Undo restores the original model after automatic placement",
+        "Actual model provides a valid manual touching-wall test position",
+        "Manual touching-wall column remains visible with an explicit warning",
+        "Automatic placement preserves manual touching-wall geometry",
+        "Preserved manual column still has a visible wall warning",
+        "Automatic layout Undo preserves the manual input snapshot",
+        "Temporary manual test Undo restores the current model exactly",
+        "Injected private source model was never mutated"
+      ],
+      "metrics": {
+        "model": "Public synthetic wall-clearance fixture",
+        "key": "F01",
+        "schemes": [
+          {
+            "id": 1,
+            "label": "只補上下層對齊 · 優先對齊",
+            "count": 14
+          },
+          {
+            "id": 2,
+            "label": "均勻柱網 · 優先對齊",
+            "count": 9
+          }
+        ],
+        "automaticCount": 14,
+        "previewFootprints": 14,
+        "originalModelRestored": true
+      },
+      "errors": []
+    },
+    {
+      "test": "input-axis328-ui.js",
+      "done": true,
+      "ok": false,
+      "uiOK": true,
+      "passed": [
+        "axes active number remains connected",
+        "axes first select-all survives update",
+        "floors active number remains connected",
+        "floors first select-all survives update",
+        "parameters active number remains connected",
+        "parameters first select-all survives update",
+        "columns active number remains connected",
+        "columns first select-all survives update",
+        "walls active number remains connected",
+        "walls first select-all survives update",
+        "Each grid row has copy-all button",
+        "UI copies selected grid into every Framing",
+        "Single Undo restores entire batch",
+        "No native/in-page confirmations auto-accepted"
+      ],
+      "errors": []
+    },
+    {
+      "test": "input-continuity326-ui.js",
+      "done": true,
+      "ok": false,
+      "uiOK": true,
+      "passed": [
+        "Floors fields present",
+        "Floors focus retained",
+        "Floors scroll retained",
+        "Floors draft retained",
+        "Incomplete floor clearance fields present",
+        "Incomplete floor clearance focus retained",
+        "Incomplete floor clearance scroll retained",
+        "Incomplete floor clearance draft retained",
+        "Axes fields present",
+        "Axes focus retained",
+        "Axes scroll retained",
+        "Axes draft retained",
+        "Parameters fields present",
+        "Parameters focus retained",
+        "Parameters scroll retained",
+        "Parameters draft retained",
+        "Walls fields present",
+        "Walls focus retained",
+        "Walls scroll retained",
+        "Walls draft retained",
+        "Columns fields present",
+        "Columns focus retained",
+        "Columns scroll retained",
+        "Columns draft retained",
+        "Steel workspace fields present",
+        "Steel workspace focus retained",
+        "Steel workspace scroll retained",
+        "Steel workspace draft retained",
+        "Foundation workspace fields present",
+        "Foundation workspace focus retained",
+        "Foundation workspace scroll retained",
+        "Foundation workspace draft retained",
+        "Rejected input keeps original model",
+        "Rejected input and message survive repaint"
+      ],
+      "errors": []
+    },
+    {
+      "test": "clearance327-ui.js",
+      "done": true,
+      "ok": false,
+      "uiOK": true,
+      "passed": [
+        "Legacy manual structural height retained before editing",
+        "Headroom alone applies with empty E&M as zero",
+        "Next field retains focus",
+        "No paired-input error",
+        "E&M subsequently updates same formula",
+        "Cleared headroom is zero",
+        "Both explicitly cleared become zero",
+        "Undo restores prior clearance",
+        "Excess clearance still rejected",
+        "Correction applies and clears error",
+        "Negative input still rejected",
+        "Clear invalid E&M recovers with zero",
+        "Local clearance input exists",
+        "Explicitly cleared local headroom is zero",
+        "Explicitly cleared local E&M is zero"
+      ],
+      "errors": []
+    }
+  ],
+  "nativeChecks": 82,
+  "native": {
+    "column-wall329": {
+      "done": true,
+      "metrics": {
+        "automaticCount": 14,
+        "key": "F01",
+        "model": "Public synthetic wall-clearance fixture",
+        "originalModelRestored": true,
+        "previewFootprints": 14,
+        "schemes": [
+          {
+            "count": 14,
+            "id": 1,
+            "label": "只補上下層對齊 · 優先對齊"
+          },
+          {
+            "count": 9,
+            "id": 2,
+            "label": "均勻柱網 · 優先對齊"
+          }
+        ]
+      },
+      "ok": false,
+      "passed": [
+        "Private current model loaded on the Columns page",
+        "Automatic wall-clearance guidance is visible",
+        "Generate/preview leaves the current model unchanged",
+        "All proposed ordinary column footprints clear finite wall sides and ends",
+        "Preview fill uses the actual physical column section",
+        "Preview outline has no extra 2px expansion and is clipped to the section",
+        "Applying the preview creates exactly its displayed physical sections",
+        "Applied columns remain clear of walls",
+        "One Undo restores the original model after applying a scheme",
+        "Ordinary automatic placement enables wall avoidance",
+        "Ordinary automatic columns clear actual wall faces and ends",
+        "One Undo restores the original model after automatic placement",
+        "Actual model provides a valid manual touching-wall test position",
+        "Manual touching-wall column remains visible with an explicit warning",
+        "Automatic placement preserves manual touching-wall geometry",
+        "Preserved manual column still has a visible wall warning",
+        "Automatic layout Undo preserves the manual input snapshot",
+        "Temporary manual test Undo restores the current model exactly",
+        "Injected private source model was never mutated"
+      ],
+      "uiOK": true
+    },
+    "input-axis328": {
+      "done": true,
+      "ok": false,
+      "passed": [
+        "axes active number remains connected",
+        "axes first select-all survives update",
+        "floors active number remains connected",
+        "floors first select-all survives update",
+        "parameters active number remains connected",
+        "parameters first select-all survives update",
+        "columns active number remains connected",
+        "columns first select-all survives update",
+        "walls active number remains connected",
+        "walls first select-all survives update",
+        "Each grid row has copy-all button",
+        "UI copies selected grid into every Framing",
+        "Single Undo restores entire batch",
+        "No native/in-page confirmations auto-accepted"
+      ],
+      "uiOK": true
+    },
+    "input-continuity326": {
+      "done": true,
+      "ok": false,
+      "passed": [
+        "Floors fields present",
+        "Floors focus retained",
+        "Floors scroll retained",
+        "Floors draft retained",
+        "Incomplete floor clearance fields present",
+        "Incomplete floor clearance focus retained",
+        "Incomplete floor clearance scroll retained",
+        "Incomplete floor clearance draft retained",
+        "Axes fields present",
+        "Axes focus retained",
+        "Axes scroll retained",
+        "Axes draft retained",
+        "Parameters fields present",
+        "Parameters focus retained",
+        "Parameters scroll retained",
+        "Parameters draft retained",
+        "Walls fields present",
+        "Walls focus retained",
+        "Walls scroll retained",
+        "Walls draft retained",
+        "Columns fields present",
+        "Columns focus retained",
+        "Columns scroll retained",
+        "Columns draft retained",
+        "Steel workspace fields present",
+        "Steel workspace focus retained",
+        "Steel workspace scroll retained",
+        "Steel workspace draft retained",
+        "Foundation workspace fields present",
+        "Foundation workspace focus retained",
+        "Foundation workspace scroll retained",
+        "Foundation workspace draft retained",
+        "Rejected input keeps original model",
+        "Rejected input and message survive repaint"
+      ],
+      "uiOK": true
+    },
+    "clearance327": {
+      "done": true,
+      "ok": false,
+      "passed": [
+        "Legacy manual structural height retained before editing",
+        "Headroom alone applies with empty E&M as zero",
+        "Next field retains focus",
+        "No paired-input error",
+        "E&M subsequently updates same formula",
+        "Cleared headroom is zero",
+        "Both explicitly cleared become zero",
+        "Undo restores prior clearance",
+        "Excess clearance still rejected",
+        "Correction applies and clears error",
+        "Negative input still rejected",
+        "Clear invalid E&M recovers with zero",
+        "Local clearance input exists",
+        "Explicitly cleared local headroom is zero",
+        "Explicitly cleared local E&M is zero"
+      ],
+      "uiOK": true
+    }
+  },
+  "nativeHarness": "uiOK=true is pass. ok=false intentionally prevents legacy automatic confirmation answers; corresponding host exit=1 is expected.",
+  "protectedFiles": [
+    {
+      "path": "FramingStudio/Excel/ExcelBridge.exe",
+      "sha256": "6b6cb8662338a9f4a5cefea4814fbec1ec5fb6c4b9b05df4e21660fe7a4dd36a"
+    },
+    {
+      "path": "FramingStudio/Excel/Foundation_Design_Checking_v8.xlsm",
+      "sha256": "5ac9bd9f306a48766dc8e3b74394a70f838dba1a1915a8ed9390d797ff50d947"
+    },
+    {
+      "path": "FramingStudio/Excel/ReportImages/horizontal-load-path.png",
+      "sha256": "08a71210e4050bc2c5375d7ca0d06995540754a4f2a4e472c32a11f484fd770f"
+    },
+    {
+      "path": "FramingStudio/Excel/ReportImages/vertical-load-path.png",
+      "sha256": "9c50b2115b6a1cfc21b759b8c05cea71193a0c8f7142bedf5a5e63df0c1afabd"
+    },
+    {
+      "path": "FramingStudio/Excel/Section A RC - Section B v106 Loading.xlsm",
+      "sha256": "3c8871a10b77766eecda627cf04aa741216e00caa35ca831f87953a760b199e9"
+    },
+    {
+      "path": "FramingStudio/Excel/Section A RC - Section B v107 Full Loads.xlsm",
+      "sha256": "fd8f180637f68ff8743e2f0d7ede2259993cce9ac973e707f5d16c83b19f8be0"
+    },
+    {
+      "path": "FramingStudio/Excel/Section A RC - Section B v108 Area Loads.xlsm",
+      "sha256": "f056f9b568b3442696444584048b9ba8c11558d2b5d23ef1dddc75554078eb42"
+    },
+    {
+      "path": "FramingStudio/Excel/Section A RC - Section B v109 Compact Copy.xlsm",
+      "sha256": "30f8e3fb744b21b03f9e2b0eb175c4494d9ce6e2d58263cd40bcf1e0aa4db9a5"
+    },
+    {
+      "path": "FramingStudio/Excel/Steel Beam design V095.xlsm",
+      "sha256": "eed7a449b1f32dc5eda3ea23723f09f3623f8f5272ab915360822d0a130a0971"
+    },
+    {
+      "path": "FramingStudio/Excel/deflection_core_wall_BD_layered.xlsm",
+      "sha256": "c784181bc032584c3454fcfd9f22965ef54089bd427a9483bd74345b416baba2"
+    },
+    {
+      "path": "FramingStudio/Excel/overall_checking_BD_copy_ruled.xlsm",
+      "sha256": "9c7008656287c9664df08f459f3728601d9dccd0ba7c10f4304dc121d30460d5"
+    },
+    {
+      "path": "FramingStudio/Excel/templates.json",
+      "sha256": "f2227072fb7a3ea4fb9e57a2ec0c7dbb64860ae4c567456287d602c0cd6236d8"
+    },
+    {
+      "path": "FramingStudio/source/ExcelBridge.cs",
+      "sha256": "f8e5f204bc19a945027062ab853e58133015553780039ab549f447b04893f517"
+    },
+    {
+      "path": "FramingStudio/source/excel-formulas.js",
+      "sha256": "54553ee5676fc17180b515a06b00592a3e0aba8389fb9ce35dcd40907a5ad3ba"
+    },
+    {
+      "path": "FramingStudio/source/excel-sync.js",
+      "sha256": "288e417b8fde769bff85a155c6fa56cd01757de0ca2e1bae188e6cdcaf46979a"
+    },
+    {
+      "path": "FramingStudio/source/loading.js",
+      "sha256": "c80713926fe1782ac6b0deb5d6044beeb3d6349969ebab2917886c1a124192f0"
+    },
+    {
+      "path": "FramingStudio/source/optimize-report-calculation252.py",
+      "sha256": "bd9dc95004e6d1fa2ddfbbb8d1635c481e9ef65d0fd32c213e953a9a23b84885"
+    },
+    {
+      "path": "FramingStudio/source/overall-report.js",
+      "sha256": "d481ac8cf5803e628b04aa3708ce97ffb70c60371c0ae65a0bfb8ce735e359df"
+    },
+    {
+      "path": "FramingStudio/source/repair-report-sheet251.py",
+      "sha256": "118ef2f38fafdceada49c724a828244cdb160be1159b16a77092eb712218ca46"
+    },
+    {
+      "path": "FramingStudio/source/report-compose.js",
+      "sha256": "4038b99c52f11a95dfcfb18efb653a85be0218169fe18b77073dcdde85e71758"
+    },
+    {
+      "path": "FramingStudio/source/report-content.js",
+      "sha256": "f423439d01fea2ce8a1f3f53961655995b74b4c868f259c46f04929aed17b2b4"
+    },
+    {
+      "path": "FramingStudio/source/report-extras.js",
+      "sha256": "bd3f3c980406fe9b2c6eafc889d39173f2db30d189a4746d7945aab53a19e83f"
+    },
+    {
+      "path": "FramingStudio/source/report-paper.js",
+      "sha256": "46eefbda2ddad503811f2fd07ce3a07cbf00847e995fec461ee380b5a71e9e90"
+    },
+    {
+      "path": "FramingStudio/source/reports.js",
+      "sha256": "77f1272fab54fcdab9027e1070abddf5fae3846d2f982a3ea208f1e7d37906a5"
+    },
+    {
+      "path": "FramingStudio/source/tests/loading-column-area.cjs",
+      "sha256": "9588d6da5e696bb4acaf6eac188b3806f9b1fa754120ce8f7c95e3a79f362420"
+    },
+    {
+      "path": "FramingStudio/source/tests/loading-label-position.cjs",
+      "sha256": "bc97e82b8423b914276609770b084780a1c38ab4f25b35c3fedd1ed168735686"
+    },
+    {
+      "path": "FramingStudio/source/tests/loading-legend-edit.cjs",
+      "sha256": "20915e85cc1b566e8977f0bc32f4518af337865f83131dbc8ed9bd73d67f6e15"
+    },
+    {
+      "path": "FramingStudio/source/tests/loading115-browser.js",
+      "sha256": "c721c8bb16c49e5826b2e30c6dc5507fccfd59fab0828e011e00d824ddbece24"
+    },
+    {
+      "path": "FramingStudio/source/tests/loading115.cjs",
+      "sha256": "0af1afe797c8242ea2784107dd44cf1fd57359503c1e701402c4fae957aa8790"
+    },
+    {
+      "path": "FramingStudio/source/tests/loading126-browser.js",
+      "sha256": "8e7a9bb6f63bc119eab17030f2fc9f9e3119114e8f09b26711f9c14ad724f655"
+    },
+    {
+      "path": "FramingStudio/source/tests/loading126.cjs",
+      "sha256": "cbcee6bea575a94b357d528cabdb8708c7e2f672fdcbb1f2e1345510195699f8"
+    },
+    {
+      "path": "FramingStudio/source/tests/loading129.cjs",
+      "sha256": "4412936d0a49f31fb125dcf458f9adef2d7fb11dacbc24228732934a04143b28"
+    },
+    {
+      "path": "FramingStudio/source/tests/local-report251.cjs",
+      "sha256": "6ae21da460634ad2872d6abd799f36391f14f5bbe4886a4501eef2c9f8b2ce6c"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-adoption254.cjs",
+      "sha256": "72c5d0594f98ee699d94d61c4c1758f6ef251d105d9cbe925d38b2d0804b9c99"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-cache-identity278.py",
+      "sha256": "ed0c0c88bd6475d754aa8d5613af4365132d75cac0c9d69a1770d6cce3b78269"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-cache277.cjs",
+      "sha256": "4fe48ace8a0eae07741e67a20edf414448c432d6ca5095624b36f0b8d903deb5"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-calculation252.cs",
+      "sha256": "469ea99b8bb699c562d579b0cef0ea84d33ec259a8ff0a392c866d44ed2ba3e5"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-equivalence253.py",
+      "sha256": "0a1d8e6cdaa8cef662f9e01e89dd9e6582312b7d313cd2d104a62fc6e6cbc8f9"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-equivalence254.py",
+      "sha256": "b6f67cf158da23e0222e7185c0cca288969d2f7e3370ce53bea2da1e613175c6"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-format278.py",
+      "sha256": "27803fbbd6ef41423326922bbef863cedcc8f65f0dd744c550e79b122bd17e61"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-handoff248.cjs",
+      "sha256": "7f04c8f5aebf789b4122f72a97d4c49f6d3af738f7a498bb203ff8ee1448bba7"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-scroll296-ui.cjs",
+      "sha256": "12f9775d7640783b33a38d0a395d8d0b6413474e1bac8a6145afabf17f99aec2"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-slab-preflight276.cjs",
+      "sha256": "bf538691d828e205bf1a5356e0c56c32cdaf4ba11c9cf70b46c29d92b712db8e"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-template251.py",
+      "sha256": "13b1b167461bea54102b4f079f3185f17afc20612b74c21b6b0bac633a15dce7"
+    },
+    {
+      "path": "FramingStudio/source/tests/report-ui-scale302-ui.cjs",
+      "sha256": "b7f24e1fa0bd3a3630645b1104aadf86e85bdeb68e0a6bed6d7c42f158a4010e"
+    },
+    {
+      "path": "FramingStudio/source/tests/slab-excel275.ps1",
+      "sha256": "211bc07438781712acb92189a0e4c893ce4bb537a19c7ae3ca092931235133b9"
+    },
+    {
+      "path": "FramingStudio/source/truss-reports.js",
+      "sha256": "06e3d174d39945f07d9061ff92374d2733d12af2d354448017b09c167b3383ff"
+    }
+  ],
+  "markedModules": 45,
+  "unchangedProductionFilesFromPR": 190,
+  "files": [
+    {
+      "path": "FramingStudio/FramingStudio.exe",
+      "sha256": "7ecaac4d0367775721ca73c3e7bc8ecbab2d311c629675fc7cee75fe67d73b67"
+    },
+    {
+      "path": "FramingStudio/assets/index.html",
+      "sha256": "3e7ed025ce4e72f7ae223736c86c6532445ed806af91b6943cc86ffc8908fc2e"
+    },
+    {
+      "path": "FramingStudio/version.json",
+      "sha256": "ce052e3e118c4a8cd8bf67e265fdfc33b6e5a0c1c00b570edd1dc3fe341eed28"
+    }
+  ],
+  "limitations": [
+    "The original Q5 project file is unavailable; the committed synthetic defect reproduction passed, not the complete original project.",
+    "Native Excel/VBA recalculation and native A/B PDF generation were not rerun.",
+    "Native lifecycle confirmation/file chooser tests were not rerun in this pass. Native host implementation is unchanged from E2.324 apart from version strings; this pass ran isolated packaged-host UI tests without accepting dialogs."
+  ]
+}

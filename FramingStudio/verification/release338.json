@@ -1,0 +1,94 @@
+{
+  "version": "E2.338",
+  "baseline": "66fe091c5bbba84bca711f84309b2afc56d498c3",
+  "publish": "User hold: local only, no push or PR update",
+  "regressionSuites": [
+    {
+      "suite": "column-planning336",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-schemes319",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-replan331",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-controls311",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-wall329",
+      "exitCode": 0
+    },
+    {
+      "suite": "column-spacing325",
+      "exitCode": 0
+    },
+    {
+      "suite": "beam-direction337",
+      "exitCode": 0
+    },
+    {
+      "suite": "desktop-shortcuts332",
+      "exitCode": 0
+    }
+  ],
+  "browser": {
+    "errors": [],
+    "externalRequests": [],
+    "screenshots": [
+      "browser-replan-auto-columns-F08.png"
+    ],
+    "done": true,
+    "uiOK": true,
+    "passed": [
+      "Private current model accepted",
+      "F08 begins with zero columns and 28 deleted positions",
+      "Refresh does not restore deleted columns",
+      "Single Auto Columns click generates 28 columns",
+      "Applied Auto clears only current deletion restrictions",
+      "Other Framings preserved",
+      "Auto undo restores exact whole project",
+      "Reset button and deletion count panel removed",
+      "Ordinary scheme preview ignores deleted positions",
+      "Preview preserves exact original project",
+      "Scheme applies without reset confirmation",
+      "Scheme undo restores exact project including old compatibility records",
+      "Source project is retained"
+    ],
+    "originalFileUnchanged": true,
+    "ok": true
+  },
+  "EXE": {
+    "compiledVersion": "2.338.0.0",
+    "x64PE": true,
+    "unchangedDependencies": [
+      "Microsoft.Web.WebView2.Core.dll",
+      "Microsoft.Web.WebView2.WinForms.dll",
+      "WebView2Loader.dll",
+      "FramingStudio.exe.config",
+      "desktop-bridge.js",
+      "Excel/ExcelBridge.exe"
+    ],
+    "launched": false,
+    "limitation": "Native runtime not tested per user instruction."
+  },
+  "preservation": {
+    "otherExistingSourceFilesIdentical": 420,
+    "engineAndReportSourcesUnchanged": true,
+    "HTMLOutsideAuthorizedUIAndVersionUnchanged": true,
+    "nativeHostOnlyVersionChanged": true,
+    "E2318SHA256": "3acbe8bd68aea46c008620d79b03ff63fe99c43c2a09c310a7d9389de4c54d00",
+    "modelBackupSHA256": "bc209fea083ebe16258889d9f7056d8c93d04a13fe788e2300d5db26124fe8c0",
+    "originalTabNotReloaded": true
+  },
+  "preview": {
+    "url": "http://127.0.0.1:8783/",
+    "servedVersion": "E2.338",
+    "servedBytesMatch": true,
+    "cacheControl": "no-store"
+  }
+}

@@ -24,13 +24,13 @@ function checkQ5(project,label){
   const shape=p=>c.run("Engine.model(argument,'F05').columns.filter(c=>c.status!=='上层柱').map(c=>({x:c.cx??c.x,y:c.cy??c.y,b:c.b,d:c.d}))",p);
   const applied=shape(trial);verify(applied);assert.equal(applied.length,s.columns.length);
   assert.deepEqual(clone(shape(clone(trial))),clone(applied),label+' save/reopen');
-  assert.equal(JSON.stringify(trial.types.F05.suppressedColumns),JSON.stringify(project.types.F05.suppressedColumns),label+' deleted positions');
+  assert.deepEqual(clone(trial.types.F05.suppressedColumns),s.unchanged?project.types.F05.suppressedColumns:[],label+' explicit apply clears old positions');
  }
  assert.equal(JSON.stringify(project),before);assert.equal(report.options.targetX,7);assert.equal(report.options.targetY,7);
  return report.schemes.map(s=>({label:s.label,count:s.columns.length}));
 }
 const synthetic=checkQ5(q5,'Portable Q5 defect reproduction');
-passed.push('Portable Q5 defect reproduction: candidate/apply/reopen centres >=7m; inputs and deleted positions preserved');
+passed.push('Portable Q5 defect reproduction: candidate/apply/reopen centres >=7m; preview inputs preserved; explicit apply clears old restrictions');
 // Explicitly retained close columns must be rejected rather than silently moved.
 const invalid=clone(q5);invalid.types.F05.mode='manual';invalid.types.F05.columns.push({id:'TOO_CLOSE',x:46.5,y:12,b:500,d:500,on:true,status:'上下贯通'});
 const invalidBefore=JSON.stringify(invalid),rejected=c.run("ColumnSchemes319.search(argument,null,'F05')",invalid);

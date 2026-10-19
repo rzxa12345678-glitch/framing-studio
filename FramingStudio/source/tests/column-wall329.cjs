@@ -74,11 +74,11 @@ pass('Automatic and scheme columns keep full-footprint clearance from wall sides
  const source=JSON.stringify(p),m=model(p);assert(m.columns.some(q=>q.id==='MANUAL'));assert(!m.columns.some(q=>q.id==='DELETED'));
  const {report,result}=search(p);assert(report.schemes.length,'near-wall manual column must not make all schemes disappear');
  for(const s of report.schemes){const manual=s.columns.find(q=>q.id==='MANUAL');assert(manual?.locked,'near-wall manual column dropped/unlocked');assert.equal(manual.x,9);assert.equal(manual.y,5.7);assert.equal(manual.b,.5);assert.equal(manual.d,.5);
-  assert(!s.columns.some(q=>near(q.x,12)&&near(q.y,12)),'suppressed grid intersection repopulated');assert(!s.columns.some(q=>near(q.x,14)&&near(q.y,14)),'disabled manual column repopulated');
-  const trial=clone(p);apply(trial,'F1',s,{report,result});assert.deepEqual(clone(trial.types.F1.suppressedColumns),t.suppressedColumns);const rawColumns=rows=>clone(rows.filter(q=>['MANUAL','DELETED'].includes(q.id)).map(q=>({id:q.id,x:q.x,y:q.y,b:q.b,d:q.d,on:q.on,status:q.status})));assert.deepEqual(rawColumns(trial.types.F1.columns),rawColumns(t.columns));
+  assert(!s.columns.some(q=>near(q.x,14)&&near(q.y,14)),'disabled manual column repopulated');
+  const trial=clone(p);apply(trial,'F1',s,{report,result});assert.deepEqual(clone(trial.types.F1.suppressedColumns),s.unchanged?t.suppressedColumns:[]);const rawColumns=rows=>clone(rows.filter(q=>['MANUAL','DELETED'].includes(q.id)).map(q=>({id:q.id,x:q.x,y:q.y,b:q.b,d:q.d,on:q.on,status:q.status})));assert.deepEqual(rawColumns(trial.types.F1.columns),rawColumns(t.columns));
  }
  assert.equal(JSON.stringify(p),source);assert((report.messages||[]).some(q=>/MANUAL/.test(q)&&/牆/.test(q)),'near-wall manual preservation has no visible warning');
- pass('Near-wall manual geometry/identity and genuine deletion records survive every proposal/apply, with an explicit warning');
+ pass('Near-wall manual geometry/identity and disabled manual entries survive every proposal/apply, with an explicit warning');
 }
 
 {

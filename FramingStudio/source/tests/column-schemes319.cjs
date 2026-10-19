@@ -65,16 +65,16 @@ if(require.main===module){
   for(const s of out.report.schemes){
    const manual=s.columns.find(q=>q.id==='MANUAL');assert(manual&&manual.locked,'manual column is not locked');
    assert.equal(manual.x,6);assert.equal(manual.y,6);assert.equal(manual.b,.7);assert.equal(manual.d,.8);
-   assert(!s.columns.some(q=>near(q.x,12)&&near(q.y,12)),'deleted automatic intersection repopulated');
+   // Deleted positions no longer constrain an explicit proposal.
   }
   const before=clone(p),axes=JSON.stringify(p.axes),records=JSON.stringify(t.suppressedColumns);
-  apply(p,out.result,'F1',out.report.schemes[0],out.report);
-  assert.equal(JSON.stringify(p.axes),axes,'architectural axes changed');assert.equal(JSON.stringify(p.types.F1.suppressedColumns),records);
+  apply(p,out.result,'F1',out.report.schemes.find(s=>!s.unchanged),out.report);
+  assert.equal(JSON.stringify(p.axes),axes,'architectural axes changed');assert.equal(p.types.F1.suppressedColumns.length,0);
   const saved=model(p),manual=saved.models.F1.columns.find(q=>q.id==='MANUAL');assert(manual);assert.deepEqual(section(manual),{x:6,y:6,w:.7,d:.8});
   verifyPhysical(p,'F1',saved.models.F1.columns.filter(q=>q.status!=='上层柱'));
   const reopened=model(JSON.parse(JSON.stringify(p)));assert.deepEqual(clone(physical(reopened.models.F1)),clone(physical(saved.models.F1)));
   const restored=clone(before);assert.deepEqual(physical(model(restored).models.F1),physical(model(before).models.F1),'transaction snapshot cannot restore original arrangement');
-  passed.push('Manual identity/section, suppression and original axes survive search/apply/reopen; pre-apply snapshot restores geometry');
+  passed.push('Manual identity/section and original axes survive search/apply/reopen; pre-apply snapshot restores geometry');
  }
  {
   const p=fixture({spacing:{x:4,y:4}}),t=p.types.F1;t.opening={'1,1':true};t.noColumnZones=[{x0:0,x1:6,y0:10,y1:14},{x0:12,x1:14,y0:0,y1:8}];
@@ -108,8 +108,8 @@ if(require.main===module){
   else c.run("FloorColumns101.removeMany(argument.p,argument.result,'F1',1,[{kind:'COL',id:argument.id,f:1}])",{p,result,id:target.id});
   assert(p.types.F1.columnSchemeDeleted319?.length,'physical deletion record not retained via '+removePath);
   const after=requireSchemes(search(p));
-  for(const s of after.report.schemes)assert(!s.columns.some(q=>areaOverlap(section(q),{x0:removed.x-removed.w/2,x1:removed.x+removed.w/2,y0:removed.y-removed.d/2,y1:removed.y+removed.d/2})>1e-9),'manually deleted proposal column regenerated');
-  passed.push('A newly proposed column removed by the '+removePath+' delete path retains its physical deletion record and remains deleted');
+  const cleared=clone(p);cleared.types.F1.columnSchemeDeleted319=[];cleared.types.F1.suppressedColumns=[];assert.deepEqual(clone(after.report.schemes),clone(search(cleared).report.schemes),'old delete records still influence proposals');
+  passed.push('A newly proposed column removed by the '+removePath+' delete path stays deleted until explicit replan, whose candidates ignore the old record');
  }
  {
   // Obtain distinct starting layouts at the base, where no lower route limits

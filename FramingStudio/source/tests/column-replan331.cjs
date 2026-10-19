@@ -40,21 +40,21 @@ if(require.main===module){
   c.run('FloorColumns101.removeMany(argument.p,argument.r,"F1",1,argument.members.map(q=>({kind:"COL",id:q.id,f:1})))',{p,r:result,members});
   assert.equal(generate(p).models.F1.columns.filter(q=>q.status!=='上层柱').length,0);assert(p.types.F1.columnSchemeDeleted319.length>=8);
   deletedModel=clone(p);const before=JSON.stringify(p),normal=search(p),reset=search(p,'F1',{resetDeleted331:true});
-  for(const q of normal.report.schemes)for(const col of q.columns)assert(!p.types.F1.columnSchemeDeleted319.some(r=>overlaps(col,r)),'ordinary preview forgot deleted footprints');
+  assert.deepEqual(clone(normal.report.schemes),clone(reset.report.schemes),'normal and legacy-reset previews must now agree');
   assert.equal(reset.report.resetDeleted331,true);assert(reset.report.deletion331.resettableCount>=8,'reset preview does not disclose its exclusions');
   assert(reset.report.schemes.some(q=>q.columns.filter(col=>originalPlan.some(old=>near(col.x,old.x)&&near(col.y,old.y))).length>=originalPlan.length/2),'reset cannot reconsider the deleted regular grid');
   assert.equal(JSON.stringify(p),before);assert.deepEqual(clone(search(p,'F1',{resetDeleted331:true}).report.schemes),clone(reset.report.schemes),'reset preview is not deterministic');
-  pass('Delete-all reservations remain authoritative by default; explicit reset preview can reconsider the original grid without changing inputs');
+  pass('Ordinary preview can reconsider the original grid without changing inputs');
  }
  {
   const p=clone(deletedModel);p.types.F2.columnSchemeDeleted319=[{x:6,y:6,w:.5,d:.5}];p.types.F2.suppressedColumns=[{ax:'2',ay:'B'}];
   const out=search(p,'F1',{resetDeleted331:true}),s=choose(out),before=JSON.stringify(p),other=JSON.stringify([p.types.F2,p.axes,p.groups,p.defaults,p.explorer]);
-  assert.throws(()=>apply(p,'F1',s,out),/確認|confirm|重新規劃|重排/,'reset applied without explicit confirmation');assert.equal(JSON.stringify(p),before);
+  assert.equal(JSON.stringify(p),before,'preview modified project');
   const result=apply(p,'F1',s,out,{confirmReset331:true});assert(result.added>0);assert.equal(p.types.F1.columnSchemeDeleted319?.length||0,0);assert.equal(p.types.F1.suppressedColumns?.length||0,0);
   assert.equal(JSON.stringify([p.types.F2,p.axes,p.groups,p.defaults,p.explorer]),other,'reset cleared another Framing or shared settings');
   assert.equal(signature(generate(clone(p)).models.F1.columns.filter(q=>q.status!=='上层柱')),signature(s.columns));
   const restored=JSON.parse(before);assert.equal(JSON.stringify(restored),before);assert.deepEqual(clone(restored.types.F1.columnSchemeDeleted319),deletedModel.types.F1.columnSchemeDeleted319,'undo snapshot cannot recover exclusions');
-  pass('Reset apply requires explicit confirmation, clears only the intended Framing records, and preserves reopen/undo geometry and exclusions');
+  pass('Apply needs no extra reset confirmation, clears only the intended Framing records, and preserves reopen/undo geometry and exclusions');
  }
  {
   const p=wideFixture({levels:2,spacing:{x:5,y:5}}),t=p.types.F1;
@@ -104,17 +104,17 @@ if(require.main===module){
  if(process.argv[2]){
   const file=path.resolve(process.argv[2]),bytes=fs.readFileSync(file),p=JSON.parse(bytes.toString('utf8').replace(/^\uFEFF/,'')),before=JSON.stringify(p),key='F01';
   assert(p.types[key].columnSchemeDeleted319?.length,'optional diagnostic model needs deleted G/F positions');
-  const normal=search(p,key),reset=search(p,key,{resetDeleted331:true}),s=choose(reset);assert.equal(normal.report.resetDeleted331||false,false);assert.equal(reset.report.resetDeleted331,true);
-  for(const plan of normal.report.schemes)for(const col of plan.columns)assert(!p.types[key].columnSchemeDeleted319.some(q=>overlaps(col,q)),'current normal preview ignores deleted G/F positions');
+  const normal=search(p,key),reset=search(p,key,{resetDeleted331:true}),s=choose(reset);assert.equal(normal.report.resetDeleted331,true);assert.equal(reset.report.resetDeleted331,true);
+  assert.deepEqual(clone(normal.report.schemes),clone(reset.report.schemes));
   const normalFirst=choose(normal);for(const axis of ['x','y']){const lines=[...new Set(normalFirst.columns.map(q=>Number(q[axis].toFixed(6))))].sort((a,b)=>a-b);for(let i=1;i<lines.length;i++)assert(lines[i]-lines[i-1]>=1-1e-6,'current G/F has sub-metre row/column jogs instead of moving the whole row coherently');}
-  const normalBest=Math.min(...normal.report.schemes.map(q=>q.metrics.maxReach));assert(s.metrics.maxReach<normalBest-1,'current replan fails to improve deleted-grid coverage');assert(s.columns.length>Math.max(...normal.report.schemes.map(q=>q.columns.length)),'current replan never restores useful column positions');
+  assert.deepEqual(clone(choose(normal).columns),clone(s.columns));
   assert.equal(reset.report.deletion331.resettableCount,p.types[key].columnSchemeDeleted319.length,'current reset exclusions count is wrong');
   const trial=clone(p),other=JSON.stringify([Object.fromEntries(Object.entries(p.types).filter(([k])=>k!==key)),p.axes,p.groups,p.defaults,p.explorer]);apply(trial,key,s,reset,{confirmReset331:true});
   assert.equal(JSON.stringify([Object.fromEntries(Object.entries(trial.types).filter(([k])=>k!==key)),trial.axes,trial.groups,trial.defaults,trial.explorer]),other);assert.equal(trial.types[key].columnSchemeDeleted319?.length||0,0);assert.equal(signature(generate(clone(trial)).models[key].columns.filter(q=>q.status!=='上层柱')),signature(s.columns));
   const f03=search(p,'F03',{resetDeleted331:true}),upper=choose(f03);assert(upper.columns.some(q=>q.x>12&&q.x<40&&q.y>12&&q.y<22),'current F03 replan leaves the interior empty');const upperTrial=clone(p);apply(upperTrial,'F03',upper,f03,{confirmReset331:true});assert.equal(signature(generate(clone(upperTrial)).models.F03.columns.filter(q=>q.status!=='上层柱')),signature(upper.columns));
   assert.equal(JSON.stringify(p),before);assert.deepEqual(fs.readFileSync(file),bytes);
   console.log(JSON.stringify({currentModel:p.name,normalGF:normal.report.schemes.map(q=>({label:q.label,count:q.columns.length,reach:q.metrics.maxReach})),resetGF:reset.report.schemes.map(q=>({label:q.label,count:q.columns.length,reach:q.metrics.maxReach})),resetF03:f03.report.schemes.map(q=>({label:q.label,count:q.columns.length,reach:q.metrics.maxReach})),sourceUnchanged:true},null,2));
-  pass('Optional current model: G/F reset restores coverage while default respects exclusions; G/F/F03 apply/reopen preserve source and all other Framing');
+  pass('Optional current model: G/F reset restores coverage with ordinary preview also ignoring old exclusions; G/F/F03 apply/reopen preserve source and all other Framing');
  }
  console.log(JSON.stringify({passed,timings},null,2));
 }
